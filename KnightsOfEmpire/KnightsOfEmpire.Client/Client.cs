@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using KnightsOfEmpire.Common.Test;
 using SFML.Window;
 using SFML.Graphics;
 using SFML.System;
+using KnightsOfEmpire.Common.Networking.TCP;
+using KnightsOfEmpire.Common.Networking;
 
 namespace KnightsOfEmpire
 {
@@ -27,15 +28,27 @@ namespace KnightsOfEmpire
         /// </summary>
         private static Clock DeltaTimeClock;
 
+        private static Clock MessageToServerClock;
+        
+        public static TCPClient TCPClient { get; protected set; }
+
         static void Main(string[] args)
         {
-            Class1 c = new Class1(45);
             DeltaTimeClock = new Clock();
+            MessageToServerClock = new Clock();
 
             VideoMode mode = new VideoMode(1280, 720);
             RenderWindow = new RenderWindow(mode, "Knights Of Empire");
 
-            RenderWindow.Closed += (obj, e) => { RenderWindow.Close(); };
+            TCPClient = new TCPClient("127.0.0.1", 26969);
+
+            TCPClient.Start();
+
+            RenderWindow.Closed += (obj, e) => 
+            {
+                TCPClient.Stop();
+                RenderWindow.Close(); 
+            };
 
 
             while (RenderWindow.IsOpen)
@@ -45,6 +58,29 @@ namespace KnightsOfEmpire
                 RenderWindow.Clear();
 
                 // Here should updates and rendering happen
+
+                if (TCPClient.isRunning)
+                {
+                    var ReceivedPackets = TCPClient.GetReceivedPackets();
+                    if (ReceivedPackets.Count > 0) Console.WriteLine($"Packets received so far: {ReceivedPackets.Count}");
+                    foreach (ReceivedPacket Packet in ReceivedPackets)
+                    {
+                        if (Packet.GetContent().IndexOf("4005 4") > -1)
+                        {
+                            Console.WriteLine("Server disconnected us due to no slots left");
+                            TCPClient.Stop();
+                            break;
+                        }
+                    }
+
+                    if (TCPClient.isRunning && MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
+                    {
+                        SentPacket pingPacket = new SentPacket();
+                        pingPacket.stringBuilder.Append("2001 PING");
+                        TCPClient.SendToServer(pingPacket);
+                        MessageToServerClock.Restart();
+                    }
+                }
 
                 RenderWindow.Display();
             }
