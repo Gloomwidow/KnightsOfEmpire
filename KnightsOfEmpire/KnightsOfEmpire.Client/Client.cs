@@ -68,8 +68,11 @@ namespace KnightsOfEmpire
                     gameState.Dispose();
                     gameState = GameLoop.NextGameState;
                     GameLoop.NextGameState = null;
+                    gameState.LoadResources();
+                    gameState.Initialize();
                 }
-
+                gameState.Update();
+                gameState.Render();
 
 
                 if (TCPClient.isRunning)
