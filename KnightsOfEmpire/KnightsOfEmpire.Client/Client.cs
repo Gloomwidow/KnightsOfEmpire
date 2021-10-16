@@ -71,8 +71,7 @@ namespace KnightsOfEmpire
                     gameState.LoadResources();
                     gameState.Initialize();
                 }
-                gameState.Update();
-                gameState.Render();
+                
 
 
                 if (TCPClient.isRunning)
@@ -97,6 +96,9 @@ namespace KnightsOfEmpire
                         MessageToServerClock.Restart();
                     }
                 }
+
+                gameState.Update();
+                gameState.Render();
 
                 RenderWindow.Display();
             }
