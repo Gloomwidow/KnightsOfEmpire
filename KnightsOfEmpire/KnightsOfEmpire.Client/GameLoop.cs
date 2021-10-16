@@ -9,6 +9,18 @@ namespace KnightsOfEmpire
 {
     public static class GameLoop
     {
-        public static GameState = null;
+        private static GameState nextGameState = null;
+        public static GameState NextGameState 
+        {
+            get
+            {
+                return nextGameState;
+            }
+            set
+            {
+                nextGameState = value;
+            }
+        }
+        
     }
 }
