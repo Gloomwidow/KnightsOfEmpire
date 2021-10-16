@@ -8,6 +8,7 @@ using SFML.Graphics;
 using SFML.System;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Definitions.GameStates;
 
 namespace KnightsOfEmpire
 {
@@ -29,6 +30,8 @@ namespace KnightsOfEmpire
         private static Clock DeltaTimeClock;
 
         private static Clock MessageToServerClock;
+
+        private static GameState gameState;
         
         public static TCPClient TCPClient { get; protected set; }
 
@@ -58,6 +61,16 @@ namespace KnightsOfEmpire
                 RenderWindow.Clear();
 
                 // Here should updates and rendering happen
+
+                // Game state change
+                if(GameLoop.NextGameState != null) 
+                {
+                    gameState.Dispose();
+                    gameState = GameLoop.NextGameState;
+                    GameLoop.NextGameState = null;
+                }
+
+
 
                 if (TCPClient.isRunning)
                 {
