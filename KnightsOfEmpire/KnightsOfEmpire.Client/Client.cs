@@ -62,31 +62,19 @@ namespace KnightsOfEmpire
 
                 // Game state change
                 GameStateManager.UpdateState();
-                
 
 
-                //if (TCPClient.isRunning)
-                //{
-                //    var ReceivedPackets = TCPClient.GetReceivedPackets();
-                //    if (ReceivedPackets.Count > 0) Console.WriteLine($"Packets received so far: {ReceivedPackets.Count}");
-                //    foreach (ReceivedPacket Packet in ReceivedPackets)
-                //    {
-                //        if (Packet.GetContent().IndexOf("4005 4") > -1)
-                //        {
-                //            Console.WriteLine("Server disconnected us due to no slots left");
-                //            TCPClient.Stop();
-                //            break;
-                //        }
-                //    }
 
-                //    if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
-                //    {
-                //        SentPacket pingPacket = new SentPacket();
-                //        pingPacket.stringBuilder.Append("2001 PING");
-                //        TCPClient.SendToServer(pingPacket);
-                //        MessageToServerClock.Restart();
-                //    }
-                //}
+                if (TCPClient.isRunning)
+                {
+                    if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
+                    {
+                        SentPacket pingPacket = new SentPacket();
+                        pingPacket.stringBuilder.Append("2001 PING");
+                        TCPClient.SendToServer(pingPacket);
+                        MessageToServerClock.Restart();
+                    }
+                }
 
                 if (GameStateManager.GameState != null)
                 {
