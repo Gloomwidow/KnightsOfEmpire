@@ -8,7 +8,7 @@ using SFML.Graphics;
 using SFML.System;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking;
-using KnightsOfEmpire.Definitions.GameStates;
+using KnightsOfEmpire.Common.GameStates;
 
 namespace KnightsOfEmpire
 {
@@ -31,8 +31,6 @@ namespace KnightsOfEmpire
 
         private static Clock MessageToServerClock;
 
-        private static GameState gameState;
-        
         public static TCPClient TCPClient { get; protected set; }
 
         static void Main(string[] args)
@@ -63,32 +61,13 @@ namespace KnightsOfEmpire
                 // Here should updates and rendering happen
 
                 // Game state change
-                if(GameLoop.NextGameState != null) 
-                {
-                    gameState.Dispose();
-                    gameState = GameLoop.NextGameState;
-                    GameLoop.NextGameState = null;
-                    gameState.LoadResources();
-                    gameState.Initialize();
-                }
-                
+                GameStateManager.UpdateState();
+
 
 
                 if (TCPClient.isRunning)
                 {
-                    var ReceivedPackets = TCPClient.GetReceivedPackets();
-                    if (ReceivedPackets.Count > 0) Console.WriteLine($"Packets received so far: {ReceivedPackets.Count}");
-                    foreach (ReceivedPacket Packet in ReceivedPackets)
-                    {
-                        if (Packet.GetContent().IndexOf("4005 4") > -1)
-                        {
-                            Console.WriteLine("Server disconnected us due to no slots left");
-                            TCPClient.Stop();
-                            break;
-                        }
-                    }
-
-                    if (TCPClient.isRunning && MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
+                    if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
                     {
                         SentPacket pingPacket = new SentPacket();
                         pingPacket.stringBuilder.Append("2001 PING");
@@ -97,8 +76,16 @@ namespace KnightsOfEmpire
                     }
                 }
 
-                gameState.Update();
-                gameState.Render();
+                if (GameStateManager.GameState != null)
+                {
+                    if (TCPClient.isRunning)
+                    {
+                        GameStateManager.GameState.HandlePackets(TCPClient.GetReceivedPackets());
+                    }
+                    GameStateManager.GameState.Update();
+                    GameStateManager.GameState.Render();
+                }
+
 
                 RenderWindow.Display();
             }

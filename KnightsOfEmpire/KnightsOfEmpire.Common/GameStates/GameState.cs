@@ -1,15 +1,17 @@
-﻿using System;
+﻿using KnightsOfEmpire.Common.Networking;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KnightsOfEmpire.Definitions.GameStates
+namespace KnightsOfEmpire.Common.GameStates
 {
     public abstract class GameState
     {
         public virtual void LoadResources() { }
         public virtual void Initialize() { }
+        public virtual void HandlePackets(List<ReceivedPacket> packets) { }
         public virtual void Update() { }
         public virtual void Render() { }
         public virtual void Dispose() { }
