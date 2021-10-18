@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KnightsOfEmpire.Definitions.GameStates
+namespace KnightsOfEmpire.Common.GameStates
 {
     public abstract class GameState
     {

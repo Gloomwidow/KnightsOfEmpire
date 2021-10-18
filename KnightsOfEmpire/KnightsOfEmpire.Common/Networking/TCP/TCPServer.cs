@@ -195,6 +195,11 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                 new AsyncCallback(SendCallback), packet.ClientID);
         }
 
+        public bool IsClientConnected(int clientID)
+        {
+            return !Connections[clientID].isEmpty;
+        }
+
         protected void SendCallback(IAsyncResult ar)
         {
             int receiverID = (int)ar.AsyncState;
