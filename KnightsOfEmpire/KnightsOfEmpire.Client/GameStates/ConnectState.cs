@@ -202,7 +202,7 @@ namespace KnightsOfEmpire.GameStates
 
         public override void Dispose()
         {
-            gui.Dispose();
+            gui.RemoveAllWidgets();
             return;
         }
 
