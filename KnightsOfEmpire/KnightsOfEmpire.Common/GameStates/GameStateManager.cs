@@ -27,7 +27,10 @@ namespace KnightsOfEmpire.Common.GameStates
         {
             if(nextGameState!=null)
             {
-                currentGameState.Dispose();
+                if(currentGameState != null)
+                {
+                    currentGameState.Dispose();
+                }
                 currentGameState = nextGameState;
                 nextGameState = null;
                 currentGameState.LoadResources();

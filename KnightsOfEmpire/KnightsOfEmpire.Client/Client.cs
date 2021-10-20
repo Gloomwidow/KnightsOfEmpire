@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using SFML.Window;
 using SFML.Graphics;
 using SFML.System;
+
+using TGUI;
+
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.GameStates;
+
+using KnightsOfEmpire.GameStates;
 
 namespace KnightsOfEmpire
 {
@@ -31,7 +37,7 @@ namespace KnightsOfEmpire
 
         private static Clock MessageToServerClock;
 
-        public static TCPClient TCPClient { get; protected set; }
+        public static TCPClient TCPClient { get; set; }
 
         static void Main(string[] args)
         {
@@ -41,31 +47,30 @@ namespace KnightsOfEmpire
             VideoMode mode = new VideoMode(1280, 720);
             RenderWindow = new RenderWindow(mode, "Knights Of Empire");
 
-            TCPClient = new TCPClient("127.0.0.1", 26969);
-
-            TCPClient.Start();
-
             RenderWindow.Closed += (obj, e) => 
             {
-                TCPClient.Stop();
+                if(TCPClient != null)
+                {
+                    TCPClient.Stop();
+                }
                 RenderWindow.Close(); 
             };
 
+            // Add first GameState
+            GameStateManager.GameState = new ConnectState();
 
             while (RenderWindow.IsOpen)
             {
                 DeltaTime = DeltaTimeClock.Restart().AsSeconds();
+
                 RenderWindow.DispatchEvents();
                 RenderWindow.Clear();
 
-                // Here should updates and rendering happen
-
-                // Game state change
+                
                 GameStateManager.UpdateState();
 
 
-
-                if (TCPClient.isRunning)
+                if (TCPClient != null && TCPClient.isRunning)
                 {
                     if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
                     {
@@ -78,7 +83,7 @@ namespace KnightsOfEmpire
 
                 if (GameStateManager.GameState != null)
                 {
-                    if (TCPClient.isRunning)
+                    if (TCPClient != null && TCPClient.isRunning)
                     {
                         GameStateManager.GameState.HandlePackets(TCPClient.GetReceivedPackets());
                     }
