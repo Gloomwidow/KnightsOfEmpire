@@ -9,12 +9,12 @@ namespace KnightsOfEmpire.Common.GameStates
 {
     public abstract class GameState
     {
-        public abstract void LoadResources();
-        public abstract void Initialize();
-        public abstract void HandlePackets(List<ReceivedPacket> packets);
-        public abstract void Update();
-        public abstract void Render();
-        public abstract void Dispose();
+        public virtual void LoadResources() { }
+        public virtual void Initialize() { }
+        public virtual void HandlePackets(List<ReceivedPacket> packets) { }
+        public virtual void Update() { }
+        public virtual void Render() { }
+        public virtual void Dispose() { }
 
     }
 }

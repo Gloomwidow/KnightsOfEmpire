@@ -8,6 +8,8 @@ using SFML.Window;
 using SFML.Graphics;
 using SFML.System;
 
+using TGUI;
+
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.GameStates;

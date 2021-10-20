@@ -19,11 +19,9 @@ namespace KnightsOfEmpire.GameStates
     {
         Gui gui;
 
-        public override void LoadResources()
-        {
-            return;
-        }
-
+        /// <summary>
+        /// Create GUI for TestState
+        /// </summary>
         public override void Initialize()
         {
             gui = new Gui(Client.RenderWindow);
@@ -43,16 +41,10 @@ namespace KnightsOfEmpire.GameStates
             return;
         }
 
-        public override void HandlePackets(List<ReceivedPacket> packets)
-        {
-            return;
-        }
 
-        public override void Update()
-        {
-            return;
-        }
-
+        /// <summary>
+        /// Draw GUI
+        /// </summary>
         public override void Render()
         {
             Client.RenderWindow.Clear(new Color(247, 247, 247));
@@ -60,9 +52,12 @@ namespace KnightsOfEmpire.GameStates
             return;
         }
 
+        /// <summary>
+        /// Clear GUI
+        /// </summary>
         public override void Dispose()
         {
-            gui.Dispose();
+            gui.RemoveAllWidgets();
             return;
         }
     }

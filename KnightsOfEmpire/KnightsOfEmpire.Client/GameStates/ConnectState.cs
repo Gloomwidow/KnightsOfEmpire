@@ -19,35 +19,35 @@ namespace KnightsOfEmpire.GameStates
     public class ConnectState : GameState
     {
         // Graphic User Interface
-        Gui gui;
+        protected Gui gui;
 
         // Private varible to control connection proces
-        enum State { Null, TryValidate, TryConnect, Unconnect, Connect }
-        State state = State.Null;
+        protected enum State { Null, TryValidate, TryConnect, Unconnect, Connect }
+        protected State state = State.Null;
 
         // IP and Port variable
-        string ip;
-        string port;
-        Int32 portInt;
+        private string ip;
+        private string port;
+        private Int32 portInt;
 
         // Error label
-        Label ipError;
-        Label portError;
-        Label unableToConnect;
+        private Label ipErrorLabel;
+        private Label portErrorLabel;
+        private Label unableToConnectLabel;
 
-        const string ipErrorStr = "Incorrect IP Adress";
-        const string ipEmptyStr = "Empty IP Adress";
-        const string portErrorStr = "Incorrect Port Adress";
-        const string portEmptyStr = "Empty Port Adress";
+        // Error strings
+        private const string ipErrorStr = "Incorrect IP Adress";
+        private const string ipEmptyStr = "Empty IP Adress";
+        private const string portErrorStr = "Incorrect Port Adress";
+        private const string portEmptyStr = "Empty Port Adress";
 
         // Connect view
-        Panel connectPanel;
+        private Panel connectPanel;
 
-        public override void LoadResources()
-        {
-            return;
-        }
 
+        /// <summary>
+        /// Initialize GUI for connection to server
+        /// </summary>
         public override void Initialize()
         {
             Vector2u windowSize = Client.RenderWindow.Size;
@@ -75,13 +75,13 @@ namespace KnightsOfEmpire.GameStates
             editBoxIP.InputValidator = "[0-9.]*";
             gui.Add(editBoxIP, "EditBoxIP");
 
-            ipError = new Label();
-            ipError.Position = new Vector2f(580, 440);
-            ipError.Text = ipErrorStr;
-            ipError.TextSize = 13;
-            ipError.Visible = false;
-            ipError.Renderer.TextColor = new Color(201, 52, 52);
-            gui.Add(ipError);
+            ipErrorLabel = new Label();
+            ipErrorLabel.Position = new Vector2f(580, 440);
+            ipErrorLabel.Text = ipErrorStr;
+            ipErrorLabel.TextSize = 13;
+            ipErrorLabel.Visible = false;
+            ipErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
+            gui.Add(ipErrorLabel);
 
             Label labelPort = new Label();
             labelPort.Text = "Port";
@@ -98,13 +98,13 @@ namespace KnightsOfEmpire.GameStates
             editBoxPort.InputValidator = "[0-9]*";
             gui.Add(editBoxPort, "EditBoxPort");
 
-            portError = new Label();
-            portError.Position = new Vector2f(580, 540);
-            portError.Text = portErrorStr;
-            portError.TextSize = 13;
-            portError.Visible = false;
-            portError.Renderer.TextColor = new Color(201, 52, 52);
-            gui.Add(portError);
+            portErrorLabel = new Label();
+            portErrorLabel.Position = new Vector2f(580, 540);
+            portErrorLabel.Text = portErrorStr;
+            portErrorLabel.TextSize = 13;
+            portErrorLabel.Visible = false;
+            portErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
+            gui.Add(portErrorLabel);
 
             Button button = new Button();
             button.Position = new Vector2f(565, 570);
@@ -114,13 +114,13 @@ namespace KnightsOfEmpire.GameStates
             button.Clicked += Connect;
             gui.Add(button);
 
-            unableToConnect = new Label();
-            unableToConnect.Position = new Vector2f(565, 630);
-            unableToConnect.Text = "Unable to connect";
-            unableToConnect.TextSize = 16;
-            unableToConnect.Visible = false;
-            unableToConnect.Renderer.TextColor = new Color(201, 52, 52);
-            gui.Add(unableToConnect);
+            unableToConnectLabel = new Label();
+            unableToConnectLabel.Position = new Vector2f(565, 630);
+            unableToConnectLabel.Text = "Unable to connect";
+            unableToConnectLabel.TextSize = 16;
+            unableToConnectLabel.Visible = false;
+            unableToConnectLabel.Renderer.TextColor = new Color(201, 52, 52);
+            gui.Add(unableToConnectLabel);
 
             connectPanel = new Panel();
             connectPanel.Position = new Vector2f(0, 0);
@@ -139,11 +139,9 @@ namespace KnightsOfEmpire.GameStates
 
         }
 
-        public override void HandlePackets(List<ReceivedPacket> packets)
-        {
-            return;
-        }
-
+        /// <summary>
+        /// Update state in ConnectState to check user data or connect to server
+        /// </summary>
         public override void Update()
         {
             switch (state)
@@ -152,14 +150,14 @@ namespace KnightsOfEmpire.GameStates
                     break;
                 case State.TryValidate:
                     {
-                        ipError.Visible = false;
-                        portError.Visible = false;
-                        unableToConnect.Visible = false;
+                        ipErrorLabel.Visible = false;
+                        portErrorLabel.Visible = false;
+                        unableToConnectLabel.Visible = false;
 
-                        ipValidation();
-                        portValidation();
+                        ValidationIP();
+                        ValidationPort();
 
-                        if (ipError.Visible == false && portError.Visible == false)
+                        if (ipErrorLabel.Visible == false && portErrorLabel.Visible == false)
                             state = State.TryConnect;
                     }
                     break;
@@ -180,35 +178,40 @@ namespace KnightsOfEmpire.GameStates
                     }
                     break;
                 case State.Unconnect:
-                    connectPanel.Visible = false;
+                    {
+                        connectPanel.Visible = false;
 
-                    unableToConnect.Visible = true;
+                        unableToConnectLabel.Visible = true;
 
-                    state = State.Null;
+                        state = State.Null;
+                    }
                     break;
                 case State.Connect:
                     GameStateManager.GameState = new TestState();
                     break;
             }
-            return;
         }
 
+        /// <summary>
+        /// Draw GUI
+        /// </summary>
         public override void Render()
         {
             Client.RenderWindow.Clear(new Color(247, 247, 247));
             gui.Draw();
-            return;
         }
 
+        /// <summary>
+        /// Remove all wigets from GUI
+        /// </summary>
         public override void Dispose()
         {
             gui.RemoveAllWidgets();
-            return;
         }
 
 
 
-        void Connect(object sender, EventArgs e)
+        private void Connect(object sender, EventArgs e)
         {
             ip = ((EditBox)((Button)sender).ParentGui.Get("EditBoxIP")).Text;
             port = ((EditBox)((Button)sender).ParentGui.Get("EditBoxPort")).Text;
@@ -218,48 +221,48 @@ namespace KnightsOfEmpire.GameStates
             Console.WriteLine("IP:" + ip + " Port: " + port);
         }
 
-        void ipValidation()
+        private void ValidationIP()
         {
             if (ip == "")
             {
-                ipError.Visible = true;
-                ipError.Text = ipEmptyStr;
+                ipErrorLabel.Visible = true;
+                ipErrorLabel.Text = ipEmptyStr;
             }
             else
             {
-                ipError.Text = ipErrorStr;
+                ipErrorLabel.Text = ipErrorStr;
 
                 string[] bytes = ip.Split('.');
                 if (bytes.Length != 4)
-                    ipError.Visible = true;
+                    ipErrorLabel.Visible = true;
 
                 foreach (string b in bytes)
                 {
                     if (b == "")
-                        ipError.Visible = true;
+                        ipErrorLabel.Visible = true;
                     else if (b.Length > 1 && b[0] == '0')
-                        ipError.Visible = true;
+                        ipErrorLabel.Visible = true;
                     else if (!byte.TryParse(b, out _))
-                        ipError.Visible = true;
+                        ipErrorLabel.Visible = true;
                 }
             }
         }
 
-        void portValidation()
+        void ValidationPort()
         {
             if (port == "")
             {
-                portError.Visible = true;
-                portError.Text = portEmptyStr;
+                portErrorLabel.Visible = true;
+                portErrorLabel.Text = portEmptyStr;
             }
             else
             {
-                portError.Text = portErrorStr;
+                portErrorLabel.Text = portErrorStr;
 
                 if (port.Length > 1 && port[0] == '0')
-                    portError.Visible = true;
+                    portErrorLabel.Visible = true;
                 if (!Int32.TryParse(port, out portInt))
-                    portError.Visible = true;
+                    portErrorLabel.Visible = true;
             }
         }
 
