@@ -154,8 +154,8 @@ namespace KnightsOfEmpire.GameStates
                         portErrorLabel.Visible = false;
                         unableToConnectLabel.Visible = false;
 
-                        ValidationIP();
-                        ValidationPort();
+                        ValidateIP();
+                        ValidatePort();
 
                         if (ipErrorLabel.Visible == false && portErrorLabel.Visible == false)
                             state = State.TryConnect;
@@ -221,7 +221,7 @@ namespace KnightsOfEmpire.GameStates
             Console.WriteLine("IP:" + ip + " Port: " + port);
         }
 
-        private void ValidationIP()
+        private void ValidateIP()
         {
             if (ip == "")
             {
@@ -248,7 +248,7 @@ namespace KnightsOfEmpire.GameStates
             }
         }
 
-        void ValidationPort()
+        void ValidatePort()
         {
             if (port == "")
             {
