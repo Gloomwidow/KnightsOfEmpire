@@ -18,9 +18,6 @@ namespace KnightsOfEmpire.GameStates
 {
     public class ConnectState : GameState
     {
-        // Graphic User Interface
-        protected Gui gui;
-
         // Private varible to control connection proces
         protected enum State { Null, TryValidate, TryConnect, Unconnect, Connect }
         protected State state = State.Null;
@@ -41,6 +38,9 @@ namespace KnightsOfEmpire.GameStates
         private const string portErrorStr = "Incorrect Port Adress";
         private const string portEmptyStr = "Empty Port Adress";
 
+        // Main view
+        private Panel mainPanel;
+
         // Connect view
         private Panel connectPanel;
 
@@ -52,19 +52,21 @@ namespace KnightsOfEmpire.GameStates
         {
             Vector2u windowSize = Client.RenderWindow.Size;
 
-            gui = new Gui(Client.RenderWindow);
+            mainPanel = new Panel();
+            mainPanel.Position = new Vector2f(0, 0);
+            mainPanel.Size = ((Vector2f)windowSize);
 
             Label label = new Label();
             label.Text = "Knights of Empire";
             label.Position = new Vector2f(270, 200);
             label.TextSize = 80;
-            gui.Add(label);
+            mainPanel.Add(label);
 
             Label labelIP = new Label();
             labelIP.Text = "IP Adress";
             labelIP.Position = new Vector2f(580, 360);
             labelIP.TextSize = 24;
-            gui.Add(labelIP);
+            mainPanel.Add(labelIP);
 
             EditBox editBoxIP = new EditBox();
             editBoxIP.Position = new Vector2f(490, 400);
@@ -73,7 +75,7 @@ namespace KnightsOfEmpire.GameStates
             editBoxIP.DefaultText = "0.0.0.0";
             editBoxIP.Alignment = HorizontalAlignment.Center;
             editBoxIP.InputValidator = "[0-9.]*";
-            gui.Add(editBoxIP, "EditBoxIP");
+            mainPanel.Add(editBoxIP, "EditBoxIP");
 
             ipErrorLabel = new Label();
             ipErrorLabel.Position = new Vector2f(580, 440);
@@ -81,13 +83,13 @@ namespace KnightsOfEmpire.GameStates
             ipErrorLabel.TextSize = 13;
             ipErrorLabel.Visible = false;
             ipErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
-            gui.Add(ipErrorLabel);
+            mainPanel.Add(ipErrorLabel);
 
             Label labelPort = new Label();
             labelPort.Text = "Port";
             labelPort.Position = new Vector2f(610, 460);
             labelPort.TextSize = 24;
-            gui.Add(labelPort);
+            mainPanel.Add(labelPort);
 
             EditBox editBoxPort = new EditBox();
             editBoxPort.Position = new Vector2f(490, 500);
@@ -96,7 +98,7 @@ namespace KnightsOfEmpire.GameStates
             editBoxPort.DefaultText = "00000";
             editBoxPort.Alignment = HorizontalAlignment.Center;
             editBoxPort.InputValidator = "[0-9]*";
-            gui.Add(editBoxPort, "EditBoxPort");
+            mainPanel.Add(editBoxPort, "EditBoxPort");
 
             portErrorLabel = new Label();
             portErrorLabel.Position = new Vector2f(580, 540);
@@ -104,7 +106,7 @@ namespace KnightsOfEmpire.GameStates
             portErrorLabel.TextSize = 13;
             portErrorLabel.Visible = false;
             portErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
-            gui.Add(portErrorLabel);
+            mainPanel.Add(portErrorLabel);
 
             Button button = new Button();
             button.Position = new Vector2f(565, 570);
@@ -112,7 +114,7 @@ namespace KnightsOfEmpire.GameStates
             button.Text = "Connect";
             button.TextSize = 18;
             button.Clicked += Connect;
-            gui.Add(button);
+            mainPanel.Add(button);
 
             unableToConnectLabel = new Label();
             unableToConnectLabel.Position = new Vector2f(565, 630);
@@ -120,7 +122,10 @@ namespace KnightsOfEmpire.GameStates
             unableToConnectLabel.TextSize = 16;
             unableToConnectLabel.Visible = false;
             unableToConnectLabel.Renderer.TextColor = new Color(201, 52, 52);
-            gui.Add(unableToConnectLabel);
+            mainPanel.Add(unableToConnectLabel);
+
+            mainPanel.Visible = true;
+            Client.Gui.Add(mainPanel);
 
             connectPanel = new Panel();
             connectPanel.Position = new Vector2f(0, 0);
@@ -135,7 +140,7 @@ namespace KnightsOfEmpire.GameStates
             connectPanel.Add(connectLabel);
 
             connectPanel.Visible = false;
-            gui.Add(connectPanel);
+            Client.Gui.Add(connectPanel);
 
         }
 
@@ -198,7 +203,7 @@ namespace KnightsOfEmpire.GameStates
         public override void Render()
         {
             Client.RenderWindow.Clear(new Color(247, 247, 247));
-            gui.Draw();
+            Client.Gui.Draw();
         }
 
         /// <summary>
@@ -206,7 +211,7 @@ namespace KnightsOfEmpire.GameStates
         /// </summary>
         public override void Dispose()
         {
-            gui.RemoveAllWidgets();
+            Client.Gui.RemoveAllWidgets();
         }
 
 

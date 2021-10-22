@@ -26,6 +26,11 @@ namespace KnightsOfEmpire
         public static RenderWindow RenderWindow { get; private set; }
 
         /// <summary>
+        /// GUI for interact with user.
+        /// </summary>
+        public static Gui Gui { get; private set; }
+
+        /// <summary>
         /// Time between each frame render. Use it to synchronize rendering with real-time, so frames per second won't have impact on graphic execution speed.
         /// </summary>
         public static float DeltaTime { get; private set; }
@@ -46,6 +51,8 @@ namespace KnightsOfEmpire
 
             VideoMode mode = new VideoMode(1280, 720);
             RenderWindow = new RenderWindow(mode, "Knights Of Empire");
+
+            Gui = new Gui(RenderWindow);
 
             RenderWindow.Closed += (obj, e) => 
             {
