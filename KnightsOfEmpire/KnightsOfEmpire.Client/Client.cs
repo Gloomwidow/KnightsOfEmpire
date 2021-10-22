@@ -64,7 +64,7 @@ namespace KnightsOfEmpire
             };
 
             // Add first GameState
-            GameStateManager.GameState = new ConnectState();
+            GameStateManager.GameState = new MainState();
 
             while (RenderWindow.IsOpen)
             {

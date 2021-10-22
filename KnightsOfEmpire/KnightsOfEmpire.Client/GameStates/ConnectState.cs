@@ -50,95 +50,11 @@ namespace KnightsOfEmpire.GameStates
         /// </summary>
         public override void Initialize()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
-            mainPanel = new Panel();
-            mainPanel.Position = new Vector2f(0, 0);
-            mainPanel.Size = ((Vector2f)windowSize);
-
-            Label label = new Label();
-            label.Text = "Knights of Empire";
-            label.Position = new Vector2f(270, 200);
-            label.TextSize = 80;
-            mainPanel.Add(label);
-
-            Label labelIP = new Label();
-            labelIP.Text = "IP Adress";
-            labelIP.Position = new Vector2f(580, 360);
-            labelIP.TextSize = 24;
-            mainPanel.Add(labelIP);
-
-            EditBox editBoxIP = new EditBox();
-            editBoxIP.Position = new Vector2f(490, 400);
-            editBoxIP.Size = new Vector2f(300, 40);
-            editBoxIP.TextSize = 18;
-            editBoxIP.DefaultText = "0.0.0.0";
-            editBoxIP.Alignment = HorizontalAlignment.Center;
-            editBoxIP.InputValidator = "[0-9.]*";
-            mainPanel.Add(editBoxIP, "EditBoxIP");
-
-            ipErrorLabel = new Label();
-            ipErrorLabel.Position = new Vector2f(580, 440);
-            ipErrorLabel.Text = ipErrorStr;
-            ipErrorLabel.TextSize = 13;
-            ipErrorLabel.Visible = false;
-            ipErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
-            mainPanel.Add(ipErrorLabel);
-
-            Label labelPort = new Label();
-            labelPort.Text = "Port";
-            labelPort.Position = new Vector2f(610, 460);
-            labelPort.TextSize = 24;
-            mainPanel.Add(labelPort);
-
-            EditBox editBoxPort = new EditBox();
-            editBoxPort.Position = new Vector2f(490, 500);
-            editBoxPort.Size = new Vector2f(300, 40);
-            editBoxPort.TextSize = 18;
-            editBoxPort.DefaultText = "00000";
-            editBoxPort.Alignment = HorizontalAlignment.Center;
-            editBoxPort.InputValidator = "[0-9]*";
-            mainPanel.Add(editBoxPort, "EditBoxPort");
-
-            portErrorLabel = new Label();
-            portErrorLabel.Position = new Vector2f(580, 540);
-            portErrorLabel.Text = portErrorStr;
-            portErrorLabel.TextSize = 13;
-            portErrorLabel.Visible = false;
-            portErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
-            mainPanel.Add(portErrorLabel);
-
-            Button button = new Button();
-            button.Position = new Vector2f(565, 570);
-            button.Size = new Vector2f(150, 40);
-            button.Text = "Connect";
-            button.TextSize = 18;
-            button.Clicked += Connect;
-            mainPanel.Add(button);
-
-            unableToConnectLabel = new Label();
-            unableToConnectLabel.Position = new Vector2f(565, 630);
-            unableToConnectLabel.Text = "Unable to connect";
-            unableToConnectLabel.TextSize = 16;
-            unableToConnectLabel.Visible = false;
-            unableToConnectLabel.Renderer.TextColor = new Color(201, 52, 52);
-            mainPanel.Add(unableToConnectLabel);
-
+            InitializeMainPanel();
             mainPanel.Visible = true;
             Client.Gui.Add(mainPanel);
 
-            connectPanel = new Panel();
-            connectPanel.Position = new Vector2f(0, 0);
-            connectPanel.Size = ((Vector2f)windowSize);
-            connectPanel.Renderer.BackgroundColor = new Color(247, 247, 247);
-            connectPanel.Renderer.Opacity = 0.9f;
-
-            Label connectLabel = new Label();
-            connectLabel.Text = "Connection...";
-            connectLabel.Position = new Vector2f(470, 327);
-            connectLabel.TextSize = 50;
-            connectPanel.Add(connectLabel);
-
+            InitializeConnectPanle();
             connectPanel.Visible = false;
             Client.Gui.Add(connectPanel);
 
@@ -226,6 +142,11 @@ namespace KnightsOfEmpire.GameStates
             Console.WriteLine("IP:" + ip + " Port: " + port);
         }
 
+        private void Back(object sender, EventArgs e)
+        {
+            GameStateManager.GameState = new MainState();
+        }
+
         private void ValidateIP()
         {
             if (ip == "")
@@ -271,5 +192,114 @@ namespace KnightsOfEmpire.GameStates
             }
         }
 
+        void InitializeMainPanel()
+        {
+            Vector2u windowSize = Client.RenderWindow.Size;
+
+            mainPanel = new Panel();
+            mainPanel.Position = new Vector2f(0, 0);
+            mainPanel.Size = ((Vector2f)windowSize);
+
+            Label label = new Label();
+            label.Text = "Knights of Empire";
+            label.Position = new Vector2f(270, 200);
+            label.TextSize = 80;
+            mainPanel.Add(label);
+
+            label = new Label();
+            label.Text = "Connect to server";
+            label.Position = new Vector2f(0, 290);
+            label.Size = new Vector2f(1280, 30);
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.TextSize = 20;
+            mainPanel.Add(label);
+
+            Label labelIP = new Label();
+            labelIP.Text = "IP Adress";
+            labelIP.Position = new Vector2f(580, 360);
+            labelIP.TextSize = 24;
+            mainPanel.Add(labelIP);
+
+            EditBox editBoxIP = new EditBox();
+            editBoxIP.Position = new Vector2f(490, 400);
+            editBoxIP.Size = new Vector2f(300, 40);
+            editBoxIP.TextSize = 18;
+            editBoxIP.DefaultText = "0.0.0.0";
+            editBoxIP.Alignment = HorizontalAlignment.Center;
+            editBoxIP.InputValidator = "[0-9.]*";
+            mainPanel.Add(editBoxIP, "EditBoxIP");
+
+            ipErrorLabel = new Label();
+            ipErrorLabel.Position = new Vector2f(580, 440);
+            ipErrorLabel.Text = ipErrorStr;
+            ipErrorLabel.TextSize = 13;
+            ipErrorLabel.Visible = false;
+            ipErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
+            mainPanel.Add(ipErrorLabel);
+
+            Label labelPort = new Label();
+            labelPort.Text = "Port";
+            labelPort.Position = new Vector2f(610, 460);
+            labelPort.TextSize = 24;
+            mainPanel.Add(labelPort);
+
+            EditBox editBoxPort = new EditBox();
+            editBoxPort.Position = new Vector2f(490, 500);
+            editBoxPort.Size = new Vector2f(300, 40);
+            editBoxPort.TextSize = 18;
+            editBoxPort.DefaultText = "00000";
+            editBoxPort.Alignment = HorizontalAlignment.Center;
+            editBoxPort.InputValidator = "[0-9]*";
+            mainPanel.Add(editBoxPort, "EditBoxPort");
+
+            portErrorLabel = new Label();
+            portErrorLabel.Position = new Vector2f(580, 540);
+            portErrorLabel.Text = portErrorStr;
+            portErrorLabel.TextSize = 13;
+            portErrorLabel.Visible = false;
+            portErrorLabel.Renderer.TextColor = new Color(201, 52, 52);
+            mainPanel.Add(portErrorLabel);
+
+            Button button = new Button();
+            button.Position = new Vector2f(565, 570);
+            button.Size = new Vector2f(150, 40);
+            button.Text = "Connect";
+            button.TextSize = 18;
+            button.Clicked += Connect;
+            mainPanel.Add(button);
+
+            unableToConnectLabel = new Label();
+            unableToConnectLabel.Position = new Vector2f(565, 630);
+            unableToConnectLabel.Text = "Unable to connect";
+            unableToConnectLabel.TextSize = 16;
+            unableToConnectLabel.Visible = false;
+            unableToConnectLabel.Renderer.TextColor = new Color(201, 52, 52);
+            mainPanel.Add(unableToConnectLabel);
+
+            button = new Button();
+            button.Position = new Vector2f(1095, 650);
+            button.Size = new Vector2f(150, 40);
+            button.Text = "Back";
+            button.TextSize = 18;
+            button.Clicked += Back;
+            mainPanel.Add(button);
+        }
+
+        void InitializeConnectPanle()
+        {
+            Vector2u windowSize = Client.RenderWindow.Size;
+
+            connectPanel = new Panel();
+            connectPanel.Position = new Vector2f(0, 0);
+            connectPanel.Size = ((Vector2f)windowSize);
+            connectPanel.Renderer.BackgroundColor = new Color(247, 247, 247);
+            connectPanel.Renderer.Opacity = 0.9f;
+
+            Label connectLabel = new Label();
+            connectLabel.Text = "Connection...";
+            connectLabel.Position = new Vector2f(470, 327);
+            connectLabel.TextSize = 50;
+            connectPanel.Add(connectLabel);
+        }
     }
 }
