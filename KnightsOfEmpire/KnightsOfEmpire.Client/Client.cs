@@ -102,7 +102,11 @@ namespace KnightsOfEmpire
                 {
                     if (TCPClient != null && TCPClient.isRunning)
                     {
-                        GameStateManager.GameState.HandlePackets(TCPClient.GetReceivedPackets());
+                        GameStateManager.GameState.HandleTCPPackets(TCPClient.GetReceivedPackets());
+                    }
+                    if (UDPClient != null && UDPClient.isRunning)
+                    {
+                        GameStateManager.GameState.HandleUDPPackets(UDPClient.GetReceivedPackets());
                     }
                     GameStateManager.GameState.Update();
                     GameStateManager.GameState.Render();

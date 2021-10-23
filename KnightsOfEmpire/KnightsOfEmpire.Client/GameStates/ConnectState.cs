@@ -175,7 +175,11 @@ namespace KnightsOfEmpire.GameStates
                             {
                                 IPEndPoint tcpEndpoint = Client.TCPClient.ClientAddress;
                                 Client.UDPClient = new UDPClient(tcpEndpoint.Address.ToString(), tcpEndpoint.Port);
-                                Client.UDPClient.Start();
+                                Client.UDPClient.Start();                                
+                            }
+
+                            if(Client.TCPClient.isRunning && Client.UDPClient.isRunning)
+                            {
                                 state = State.Connect;
                             }
                             else
