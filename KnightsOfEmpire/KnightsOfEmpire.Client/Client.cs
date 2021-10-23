@@ -13,6 +13,7 @@ using TGUI;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Resources;
 
 using KnightsOfEmpire.GameStates;
 
@@ -34,6 +35,11 @@ namespace KnightsOfEmpire
         /// Time between each frame render. Use it to synchronize rendering with real-time, so frames per second won't have impact on graphic execution speed.
         /// </summary>
         public static float DeltaTime { get; private set; }
+
+        /// <summary>
+        /// Class to storage client resource e.g. nickname, units set and other...
+        /// </summary>
+        public static ClientResources Resources { get; private set; }
 
         /// <summary>
         /// Clock for counting Delta-Time.
@@ -62,6 +68,9 @@ namespace KnightsOfEmpire
                 }
                 RenderWindow.Close(); 
             };
+
+            // Add client resource
+            Resources = new ClientResources();
 
             // Add first GameState
             GameStateManager.GameState = new MainState();

@@ -25,9 +25,6 @@ namespace KnightsOfEmpire.GameStates
         private Label errorNicknameLabel;
         private EditBox nicknameEditBox;
 
-        // TODO: Replace on struct in client
-        private string nickname;
-
         private const string errorNicknameStr = "Incorrect Nickname";
         private const string emptyNicknameStr = "Empty Nickname";
 
@@ -38,11 +35,6 @@ namespace KnightsOfEmpire.GameStates
         private enum State { Main, Settings, AfterUnits }
         private State state = State.Main;
 
-        public MainState()
-        {
-            // TODO: get nickname
-            nickname = "";
-        }
 
         /// <summary>
         /// Initialize GUI for main menu
@@ -109,7 +101,7 @@ namespace KnightsOfEmpire.GameStates
             state = State.Settings;
 
             // Uppdate all settings
-            nicknameEditBox.Text = nickname;
+            nicknameEditBox.Text = Client.Resources.Nickname;
 
             // Clear all errors in settings panel
             errorNicknameLabel.Visible = false;
@@ -196,7 +188,7 @@ namespace KnightsOfEmpire.GameStates
             {
                 state = State.Main;
 
-                nickname = nicknameEditBox.Text;
+                Client.Resources.Nickname = nicknameEditBox.Text;
 
                 messageLabel.Text = settingsSaveStr;
                 messageLabel.Visible = true;
@@ -207,7 +199,7 @@ namespace KnightsOfEmpire.GameStates
         {
             state = State.Main;
 
-            if(nicknameEditBox.Text != nickname)
+            if(nicknameEditBox.Text != Client.Resources.Nickname)
             {
                 messageLabel.Text = settingsUnsaveStr;
                 messageLabel.Visible = true;

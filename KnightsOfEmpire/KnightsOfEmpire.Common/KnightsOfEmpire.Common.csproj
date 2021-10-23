@@ -67,6 +67,7 @@
     <Compile Include="Networking\TCP\TCPClient.cs" />
     <Compile Include="Networking\TCP\TCPServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\ClientResources.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
