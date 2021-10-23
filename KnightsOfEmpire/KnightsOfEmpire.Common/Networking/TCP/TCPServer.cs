@@ -109,8 +109,8 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                             Connections[i].socket = socket;
                             Connections[i].lastMessageTime = DateTime.Now;
                             CurrentActiveConnections++;
-                            TCPDataState state = new TCPDataState(i);
-                            Connections[i].socket.BeginReceive(state.buffer, 0, TCPDataState.BufferSize, 0,
+                            DataState state = new DataState(i);
+                            Connections[i].socket.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                                 new AsyncCallback(ReceiveCallback), state);
 
                             break;
@@ -195,6 +195,12 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                 new AsyncCallback(SendCallback), packet.ClientID);
         }
 
+        public IPEndPoint GetClientAddress(int id)
+        {
+            if (!IsClientConnected(id)) return null;
+            return (IPEndPoint)Connections[id].socket.RemoteEndPoint;
+        }
+
         public bool IsClientConnected(int clientID)
         {
             return !Connections[clientID].isEmpty;
@@ -220,7 +226,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
         {
             String content = String.Empty;
 
-            TCPDataState state = (TCPDataState)ar.AsyncState;
+            DataState state = (DataState)ar.AsyncState;
             Socket sender = Connections[state.ConnectionID].socket;
             Console.WriteLine($"Receiving data from client {state.ConnectionID}");
 
@@ -255,13 +261,13 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
 
 
-                        TCPDataState newState = new TCPDataState(state.ConnectionID);
-                        sender.BeginReceive(newState.buffer, 0, TCPDataState.BufferSize, 0,
+                        DataState newState = new DataState(state.ConnectionID);
+                        sender.BeginReceive(newState.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), newState);
                     }
                     else
                     {
-                        sender.BeginReceive(state.buffer, 0, TCPDataState.BufferSize, 0,
+                        sender.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
                     }
                 }

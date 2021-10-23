@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KnightsOfEmpire.Common.Networking
 {
-    public class TCPDataState
+    public class DataState
     {
         public int ConnectionID;
 
@@ -15,7 +15,7 @@ namespace KnightsOfEmpire.Common.Networking
         public byte[] buffer;
         public StringBuilder sb;
 
-        public TCPDataState(int connectionID)
+        public DataState(int connectionID)
         {
             ConnectionID = connectionID;
             buffer = new byte[BufferSize];

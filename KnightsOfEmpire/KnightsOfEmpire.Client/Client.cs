@@ -15,6 +15,7 @@ using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.GameStates;
 
 using KnightsOfEmpire.GameStates;
+using KnightsOfEmpire.Common.Networking.UDP;
 
 namespace KnightsOfEmpire
 {
@@ -39,6 +40,8 @@ namespace KnightsOfEmpire
 
         public static TCPClient TCPClient { get; set; }
 
+        public static UDPClient UDPClient { get; set; }
+
         static void Main(string[] args)
         {
             DeltaTimeClock = new Clock();
@@ -53,6 +56,10 @@ namespace KnightsOfEmpire
                 {
                     TCPClient.Stop();
                 }
+                if(UDPClient != null)
+                {
+                    UDPClient.Stop();
+                }
                 RenderWindow.Close(); 
             };
 
@@ -66,6 +73,16 @@ namespace KnightsOfEmpire
                 RenderWindow.DispatchEvents();
                 RenderWindow.Clear();
 
+                //UDPClient works as a additional connection client for TCPClient
+                //Since UDP is connectionless, we won't know, if it successfully connected to the server.
+                //TCP can tell that, so if TCPClient is down, this code will also disable UDPClient
+                if (TCPClient != null && UDPClient != null)
+                {
+                    if (!TCPClient.isRunning && UDPClient.isRunning)
+                    {
+                        UDPClient.Stop();
+                    }
+                }
                 
                 GameStateManager.UpdateState();
 
