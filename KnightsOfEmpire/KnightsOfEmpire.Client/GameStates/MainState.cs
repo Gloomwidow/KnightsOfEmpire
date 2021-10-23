@@ -22,10 +22,27 @@ namespace KnightsOfEmpire.GameStates
 
         // Settings view
         private Panel settingsPanel;
+        private Label errorNicknameLabel;
+        private EditBox nicknameEditBox;
+
+        // TODO: Replace on struct in client
+        private string nickname;
+
+        private const string errorNicknameStr = "Incorrect Nickname";
+        private const string emptyNicknameStr = "Empty Nickname";
+
+        private const string settingsSaveStr = "Settings save correctly";
+        private const string settingsUnsaveStr = "Settings unsave";
 
         // Private state to control GameState
         private enum State { Main, Settings, AfterUnits }
         private State state = State.Main;
+
+        public MainState()
+        {
+            // TODO: get nickname
+            nickname = "";
+        }
 
         /// <summary>
         /// Initialize GUI for main menu
@@ -35,6 +52,10 @@ namespace KnightsOfEmpire.GameStates
             InitializeMainPanel();
             mainPanel.Visible = true;
             Client.Gui.Add(mainPanel);
+
+            InitializeSettingsPanel();
+            settingsPanel.Visible = false;
+            Client.Gui.Add(settingsPanel);
         }
 
         public override void Update()
@@ -43,8 +64,11 @@ namespace KnightsOfEmpire.GameStates
             {
                 case State.Main:
                     mainPanel.Visible = true;
+                    settingsPanel.Visible = false;
                     break;
                 case State.Settings:
+                    mainPanel.Visible = false;
+                    settingsPanel.Visible = true;
                     break;
                 case State.AfterUnits:
                     break;
@@ -77,12 +101,18 @@ namespace KnightsOfEmpire.GameStates
 
         private void UnitsButton(object sender, EventArgs e)
         {
-
+            // TODO: add units panel
         }
 
         private void SettingsButton(object sender, EventArgs e)
         {
+            state = State.Settings;
 
+            // Uppdate all settings
+            nicknameEditBox.Text = nickname;
+
+            // Clear all errors in settings panel
+            errorNicknameLabel.Visible = false;
         }
 
         private void ExitButton(object sender, EventArgs e)
@@ -160,6 +190,51 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(messageLabel);
         }
 
+        private void SettingsSave(object sender, EventArgs e)
+        {
+            if (NicknameValidate())
+            {
+                state = State.Main;
+
+                nickname = nicknameEditBox.Text;
+
+                messageLabel.Text = settingsSaveStr;
+                messageLabel.Visible = true;
+            }
+        }
+
+        private void SettingsBack(object sender, EventArgs e)
+        {
+            state = State.Main;
+
+            if(nicknameEditBox.Text != nickname)
+            {
+                messageLabel.Text = settingsUnsaveStr;
+                messageLabel.Visible = true;
+            }
+            else
+            {
+                messageLabel.Visible = false;
+            }
+        }
+
+        private bool NicknameValidate()
+        {
+            if (nicknameEditBox.Text == "")
+            {
+                errorNicknameLabel.Text = emptyNicknameStr;
+                errorNicknameLabel.Visible = true;
+                return false;
+            }
+            if(nicknameEditBox.Text.Length < 3 || nicknameEditBox.Text.Length > 20)
+            {
+                errorNicknameLabel.Text = errorNicknameStr;
+                errorNicknameLabel.Visible = true;
+                return false;
+            }
+            return true;
+        }
+
         private void InitializeSettingsPanel()
         {
             Vector2u windowSize = Client.RenderWindow.Size;
@@ -170,30 +245,63 @@ namespace KnightsOfEmpire.GameStates
 
             Label label = new Label();
             label.Text = "Knights of Empire";
-            label.Position = new Vector2f(0, 190);
-            label.Size = new Vector2f(1280, 150);
-            label.TextSize = 100;
+            label.Position = new Vector2f(0, 160);
+            label.Size = new Vector2f(1280, 110);
+            label.TextSize = 80;
             label.HorizontalAlignment = HorizontalAlignment.Center;
             settingsPanel.Add(label);
 
             label = new Label();
-            label.Text = "Menu";
-            label.Position = new Vector2f(0, 370);
-            label.Size = new Vector2f(1280, 30);
-            label.TextSize = 22;
+            label.Text = "Settings";
+            label.Position = new Vector2f(0, 260);
+            label.Size = new Vector2f(1280, 38);
+            label.TextSize = 20;
             label.HorizontalAlignment = HorizontalAlignment.Center;
             settingsPanel.Add(label);
 
-            
+            label = new Label();
+            label.Text = "Nickname";
+            label.Position = new Vector2f(0, 340);
+            label.Size = new Vector2f(1280, 32);
+            label.TextSize = 24;
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            settingsPanel.Add(label);
 
-            messageLabel = new Label();
-            messageLabel.Text = "Error message";
-            messageLabel.Position = new Vector2f(0, 645);
-            messageLabel.Size = new Vector2f(1280, 30);
-            messageLabel.TextSize = 18;
-            messageLabel.HorizontalAlignment = HorizontalAlignment.Center;
-            messageLabel.Visible = false;
-            settingsPanel.Add(messageLabel);
+            nicknameEditBox = new EditBox();
+            nicknameEditBox.Position = new Vector2f(490, 380);
+            nicknameEditBox.Size = new Vector2f(300, 40);
+            nicknameEditBox.DefaultText = "User";
+            nicknameEditBox.Alignment = HorizontalAlignment.Center;
+            nicknameEditBox.TextSize = 18;
+            nicknameEditBox.InputValidator = "[-0-9a-zA-Z_]*";
+            settingsPanel.Add(nicknameEditBox);
+
+
+            errorNicknameLabel = new Label();
+            errorNicknameLabel.Text = errorNicknameStr;
+            errorNicknameLabel.Position = new Vector2f(0, 425);
+            errorNicknameLabel.Size = new Vector2f(1280, 18);
+            errorNicknameLabel.TextSize = 13;
+            errorNicknameLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            errorNicknameLabel.Renderer.TextColor = new Color(201, 52, 52);
+            errorNicknameLabel.Visible = false;
+            settingsPanel.Add(errorNicknameLabel);
+
+            Button button = new Button();
+            button.Position = new Vector2f(565, 470);
+            button.Size = new Vector2f(150, 40);
+            button.Text = "Save";
+            button.TextSize = 18;
+            button.Clicked += SettingsSave;
+            settingsPanel.Add(button);
+
+            button = new Button();
+            button.Position = new Vector2f(1095, 650);
+            button.Size = new Vector2f(150, 40);
+            button.Text = "Back";
+            button.TextSize = 18;
+            button.Clicked += SettingsBack;
+            settingsPanel.Add(button);
         }
 
     }
