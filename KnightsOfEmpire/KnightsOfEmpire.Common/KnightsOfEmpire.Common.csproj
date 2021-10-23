@@ -62,10 +62,13 @@
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Networking\Common\Packet.cs" />
-    <Compile Include="Networking\Common\TCPDataState.cs" />
+    <Compile Include="Networking\Common\DataState.cs" />
     <Compile Include="Networking\TCP\TCPBase.cs" />
     <Compile Include="Networking\TCP\TCPClient.cs" />
     <Compile Include="Networking\TCP\TCPServer.cs" />
+    <Compile Include="Networking\UDP\UDPBase.cs" />
+    <Compile Include="Networking\UDP\UDPClient.cs" />
+    <Compile Include="Networking\UDP\UDPServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ClientResources.cs" />
   </ItemGroup>

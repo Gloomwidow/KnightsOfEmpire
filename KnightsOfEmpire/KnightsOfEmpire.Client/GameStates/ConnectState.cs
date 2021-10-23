@@ -13,6 +13,8 @@ using TGUI;
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Networking.TCP;
+using KnightsOfEmpire.Common.Networking.UDP;
+using System.Net;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -91,7 +93,16 @@ namespace KnightsOfEmpire.GameStates
                             Client.TCPClient.Start();
 
                             if (Client.TCPClient.isRunning)
+                            {
+                                IPEndPoint tcpEndpoint = Client.TCPClient.ClientAddress;
+                                Client.UDPClient = new UDPClient(tcpEndpoint.Address.ToString(), tcpEndpoint.Port);
+                                Client.UDPClient.Start();                                
+                            }
+
+                            if(Client.TCPClient.isRunning && Client.UDPClient.isRunning)
+                            {
                                 state = State.Connect;
+                            }
                             else
                                 state = State.Unconnect;
                         }

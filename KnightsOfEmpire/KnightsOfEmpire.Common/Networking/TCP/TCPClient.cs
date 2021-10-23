@@ -24,6 +24,16 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             isRunning = false;
         }
 
+        /// <summary>
+        /// Gets IP Address of this client. Used for setting up UDP Client.
+        /// </summary>
+        public IPEndPoint ClientAddress
+        {
+            get
+            {
+                return (IPEndPoint)ServerSocket.LocalEndPoint;
+            }
+        }
 
         public void Start()
         {
@@ -43,13 +53,11 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
 
             isRunning = true;
-            TCPDataState state = new TCPDataState(-1);
-            ServerSocket.BeginReceive(state.buffer, 0, TCPDataState.BufferSize, 0,
+            DataState state = new DataState(-1);
+            ServerSocket.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                new AsyncCallback(ReceiveCallback), state);
 
         }
-
-        
 
         public void SendToServer(SentPacket packet)
         {
@@ -89,7 +97,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             {
                 String content = String.Empty;
 
-                TCPDataState state = (TCPDataState)ar.AsyncState;
+                DataState state = (DataState)ar.AsyncState;
                 Console.WriteLine($"Receiving data from server!");
 
                 int bytesRead = ServerSocket.EndReceive(ar);
@@ -110,13 +118,13 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                         ReceivedPackets.Enqueue(packet);
 
 
-                        TCPDataState newState = new TCPDataState(state.ConnectionID);
-                        ServerSocket.BeginReceive(newState.buffer, 0, TCPDataState.BufferSize, 0,
+                        DataState newState = new DataState(state.ConnectionID);
+                        ServerSocket.BeginReceive(newState.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), newState);
                     }
                     else
                     {
-                        ServerSocket.BeginReceive(state.buffer, 0, TCPDataState.BufferSize, 0,
+                        ServerSocket.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
                     }
                 }
