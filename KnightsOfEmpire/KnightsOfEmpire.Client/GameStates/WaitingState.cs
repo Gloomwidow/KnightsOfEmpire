@@ -32,6 +32,18 @@ namespace KnightsOfEmpire.GameStates
             InitializeWaitingPanel();
             waitingPanel.Visible = true;
             Client.Gui.Add(waitingPanel);
+
+            int numPl = 10;
+            for(int i=0; i<numPl; i++)
+            {
+                Panel panel = CreatePlayerPanel(i + 1, "Player" + (i + 1).ToString(), false, numPl);
+                panel.Position = new Vector2f(10, i * 40);
+                playerListPanel.Add(panel);
+            }
+            Group group = new Group();
+            group.Size = new Vector2f(10, 10);
+            group.Position = new Vector2f(10, numPl * 40 - 10);
+            playerListPanel.Add(group);
         }
 
         /// <summary>
@@ -162,6 +174,47 @@ namespace KnightsOfEmpire.GameStates
             //button.Clicked += ;
             waitingPanel.Add(button);
 
+        }
+
+        private Panel CreatePlayerPanel(int number, string nickname, bool isReady, int total = 4)
+        {
+            Panel panel = new Panel();
+            panel.Size = new Vector2f(total > 4 ? 565 : 580, 30);
+
+            Label label = new Label();
+            label.Text = number.ToString();
+            label.Position = new Vector2f(0, 0);
+            label.Size = new Vector2f(70, 30);
+            label.TextSize = 18;
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.VerticalAlignmentAlignment = VerticalAlignment.Center;
+            label.IgnoreMouseEvents = true;
+            panel.Add(label);
+
+            label = new Label();
+            label.Text = nickname;
+            label.Position = new Vector2f(70, 0);
+            label.Size = new Vector2f(320, 30);
+            label.TextSize = 18;
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.VerticalAlignmentAlignment = VerticalAlignment.Center;
+            label.IgnoreMouseEvents = true;
+            panel.Add(label);
+
+            label = new Label();
+            if (isReady)
+                label.Text = "Yes";
+            else
+                label.Text = "No";
+            label.Position = new Vector2f(390, 0);
+            label.Size = new Vector2f(190, 30);
+            label.TextSize = 18;
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.VerticalAlignmentAlignment = VerticalAlignment.Center;
+            label.IgnoreMouseEvents = true;
+            panel.Add(label);
+
+            return panel;
         }
     }
 }
