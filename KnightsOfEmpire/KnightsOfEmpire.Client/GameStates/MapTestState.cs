@@ -22,41 +22,51 @@ namespace KnightsOfEmpire.GameStates
     {
         public RectangleShape RectangleShape = new RectangleShape(new Vector2f (800, 800));
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
-        
+
+        public Vector2i MousePosition;
+        public int EdgeViewMoveOffset = 50;
+        public int ViewCenterLeftBoundX = 300;
+        public int ViewCenterRightBoundX = 700;
+        public int ViewCenterTopBoundY = 300;
+        public int ViewCenterBottomBoundY = 700;
+        public float ViewScrollSpeed = 200;
+
+
         public override void Render()
         {
             Client.RenderWindow.Clear(new Color(100, 50, 247));
             Client.RenderWindow.SetView(View);
-            //View.Center = ((Vector2f)Mouse.GetPosition(Client.RenderWindow));
-            if(Mouse.GetPosition(Client.RenderWindow).X >= 0 && Mouse.GetPosition(Client.RenderWindow).X <= 50) 
+            MousePosition = Mouse.GetPosition(Client.RenderWindow);
+            float ViewScrollSpeedPerFrame = ViewScrollSpeed * Client.DeltaTime; 
+
+            if (MousePosition.X >= 0 && MousePosition.X <= EdgeViewMoveOffset) 
             {
-                if(View.Center.X >= 300) 
+                if(View.Center.X >= ViewCenterLeftBoundX)
                 {
-                    View.Move(new Vector2f(-0.05f, 0));
+                    View.Move(new Vector2f(-ViewScrollSpeedPerFrame, 0));
                 }      
             }
-            else if (Mouse.GetPosition(Client.RenderWindow).X >= Client.RenderWindow.Size.X - 50 && Mouse.GetPosition(Client.RenderWindow).X <= Client.RenderWindow.Size.X)
+            else if (MousePosition.X >= (Client.RenderWindow.Size.X - EdgeViewMoveOffset) && MousePosition.X <= Client.RenderWindow.Size.X)
             {
-                if (View.Center.X <= 700)
+                if (View.Center.X <= ViewCenterRightBoundX)
                 {
-                    View.Move(new Vector2f(0.05f, 0));
+                    View.Move(new Vector2f(ViewScrollSpeedPerFrame, 0));
                 }
             }
-            if (Mouse.GetPosition(Client.RenderWindow).Y >= 0 && Mouse.GetPosition(Client.RenderWindow).Y <= 50)
+            if (MousePosition.Y >= 0 && MousePosition.Y <= EdgeViewMoveOffset)
             {
-                if (View.Center.Y >= 300)
+                if (View.Center.Y >= ViewCenterTopBoundY)
                 {
-                    View.Move(new Vector2f(0, -0.05f));
+                    View.Move(new Vector2f(0, -ViewScrollSpeedPerFrame));
                 }
             }
-            else if (Mouse.GetPosition(Client.RenderWindow).Y >= Client.RenderWindow.Size.Y - 50 && Mouse.GetPosition(Client.RenderWindow).Y <= Client.RenderWindow.Size.Y)
+            else if (MousePosition.Y >= (Client.RenderWindow.Size.Y - EdgeViewMoveOffset) && MousePosition.Y <= Client.RenderWindow.Size.Y)
             {
-                if (View.Center.Y <= 700)
+                if (View.Center.Y <= ViewCenterBottomBoundY)
                 {
-                    View.Move(new Vector2f(0, 0.05f));
+                    View.Move(new Vector2f(0, ViewScrollSpeedPerFrame));
                 }
             }
-            //Console.WriteLine(Mouse.GetPosition(Client.RenderWindow).X + Mouse.GetPosition(Client.RenderWindow).Y);
             RectangleShape.Position = new Vector2f(100, 100);
             RectangleShape.FillColor = new Color(Color.Green);
             Client.RenderWindow.Draw(RectangleShape);
