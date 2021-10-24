@@ -118,11 +118,9 @@ namespace KnightsOfEmpire.GameStates
 
         private void InitializeMainPanel()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
             mainPanel = new Panel();
             mainPanel.Position = new Vector2f(0, 0);
-            mainPanel.Size = ((Vector2f)windowSize);
+            mainPanel.Size = new Vector2f(1280, 720);
 
             Label label = new Label();
             label.Text = "Knights of Empire";
@@ -229,11 +227,9 @@ namespace KnightsOfEmpire.GameStates
 
         private void InitializeSettingsPanel()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
             settingsPanel = new Panel();
             settingsPanel.Position = new Vector2f(0, 0);
-            settingsPanel.Size = ((Vector2f)windowSize);
+            settingsPanel.Size = new Vector2f(1280, 720);
 
             Label label = new Label();
             label.Text = "Knights of Empire";
