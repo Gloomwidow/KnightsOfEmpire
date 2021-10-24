@@ -83,8 +83,10 @@
     <Compile Include="Client.cs" />
     <Compile Include="GameStates\ConnectState.cs" />
     <Compile Include="GameStates\MainState.cs" />
+    <Compile Include="GameStates\MapTestState.cs" />
     <Compile Include="GameStates\TestState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\ViewRTS.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
