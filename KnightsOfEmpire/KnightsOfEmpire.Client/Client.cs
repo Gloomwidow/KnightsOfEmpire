@@ -26,6 +26,7 @@ namespace KnightsOfEmpire
         /// Render Window for rendering graphics with SFML.
         /// </summary>
         public static RenderWindow RenderWindow { get; private set; }
+        
 
         /// <summary>
         /// GUI for interact with user.
@@ -80,7 +81,7 @@ namespace KnightsOfEmpire
             Resources = new ClientResources();
 
             // Add first GameState
-            GameStateManager.GameState = new MainState();
+            GameStateManager.GameState = new MapTestState();
 
             while (RenderWindow.IsOpen)
             {
