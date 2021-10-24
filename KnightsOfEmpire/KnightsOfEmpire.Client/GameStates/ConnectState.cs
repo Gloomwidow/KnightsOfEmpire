@@ -108,7 +108,7 @@ namespace KnightsOfEmpire.GameStates
                     }
                     break;
                 case State.Connect:
-                    GameStateManager.GameState = new TestState();
+                    GameStateManager.GameState = new WaitingState();
                     break;
             }
         }

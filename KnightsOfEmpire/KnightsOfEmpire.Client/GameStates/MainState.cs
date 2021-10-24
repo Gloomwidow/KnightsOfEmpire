@@ -26,6 +26,8 @@ namespace KnightsOfEmpire.GameStates
         private Label errorNicknameLabel;
         private EditBox nicknameEditBox;
 
+        private const string setNicknameStr = "Set your game nickname";
+
         private const string errorNicknameStr = "Incorrect Nickname";
         private const string emptyNicknameStr = "Empty Nickname";
 
@@ -112,6 +114,14 @@ namespace KnightsOfEmpire.GameStates
 
         private void StartButton(object sender, EventArgs e)
         {
+            // TODO: add units check
+            if(Client.Resources.Nickname == "")
+            {
+                state = State.Message;
+                messageLabel.Text = setNicknameStr;
+                return;
+            }
+
             GameStateManager.GameState = new ConnectState();
         }
 
@@ -204,11 +214,11 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(messageLabel);
         }
 
-        private void SettingsSave(object sender, EventArgs e)
+        private void SettingsSaveButton(object sender, EventArgs e)
         {
             if (NicknameValidate())
             {
-                state = State.Main;
+                state = State.Message;
 
                 Client.Resources.Nickname = nicknameEditBox.Text;
 
@@ -217,17 +227,17 @@ namespace KnightsOfEmpire.GameStates
             }
         }
 
-        private void SettingsBack(object sender, EventArgs e)
+        private void SettingsBackButton(object sender, EventArgs e)
         {
-            state = State.Main;
-
             if(nicknameEditBox.Text != Client.Resources.Nickname)
             {
+                state = State.Message;
                 messageLabel.Text = settingsUnsaveStr;
                 messageLabel.Visible = true;
             }
             else
             {
+                state = State.Main;
                 messageLabel.Visible = false;
             }
         }
@@ -304,7 +314,7 @@ namespace KnightsOfEmpire.GameStates
             button.Size = new Vector2f(150, 40);
             button.Text = "Save";
             button.TextSize = 18;
-            button.Clicked += SettingsSave;
+            button.Clicked += SettingsSaveButton;
             settingsPanel.Add(button);
 
             button = new Button();
@@ -312,7 +322,7 @@ namespace KnightsOfEmpire.GameStates
             button.Size = new Vector2f(150, 40);
             button.Text = "Back";
             button.TextSize = 18;
-            button.Clicked += SettingsBack;
+            button.Clicked += SettingsBackButton;
             settingsPanel.Add(button);
         }
 

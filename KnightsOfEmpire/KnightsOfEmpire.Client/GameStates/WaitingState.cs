@@ -33,6 +33,7 @@ namespace KnightsOfEmpire.GameStates
             waitingPanel.Visible = true;
             Client.Gui.Add(waitingPanel);
 
+            // Exsample of player list
             int numPl = 10;
             for(int i=0; i<numPl; i++)
             {
@@ -44,6 +45,11 @@ namespace KnightsOfEmpire.GameStates
             group.Size = new Vector2f(10, 10);
             group.Position = new Vector2f(10, numPl * 40 - 10);
             playerListPanel.Add(group);
+        }
+
+        public override void HandlePackets(List<ReceivedPacket> packets)
+        {
+            // TODO: Get player list form server and add to list
         }
 
         /// <summary>
