@@ -19,6 +19,7 @@ namespace KnightsOfEmpire.GameStates
         // Main view
         private Panel mainPanel;
         private Label messageLabel;
+        private string message = "";
 
         // Settings view
         private Panel settingsPanel;
@@ -32,9 +33,26 @@ namespace KnightsOfEmpire.GameStates
         private const string settingsUnsaveStr = "Settings unsave";
 
         // Private state to control GameState
-        private enum State { Main, Settings, AfterUnits }
+        private enum State { Main, Settings, Message }
         private State state = State.Main;
 
+        /// <summary>
+        /// For create Main State without any message
+        /// </summary>
+        public MainState()
+        {
+            state = State.Main;
+        }
+
+        /// <summary>
+        /// For create Main State with message
+        /// </summary>
+        /// <param name="message">Message to show in state</param>
+        public MainState(string message)
+        {
+            state = State.Message;
+            this.message = message;
+        }
 
         /// <summary>
         /// Initialize GUI for main menu
@@ -50,6 +68,9 @@ namespace KnightsOfEmpire.GameStates
             Client.Gui.Add(settingsPanel);
         }
 
+        /// <summary>
+        /// Update Main State
+        /// </summary>
         public override void Update()
         {
             switch (state)
@@ -62,7 +83,10 @@ namespace KnightsOfEmpire.GameStates
                     mainPanel.Visible = false;
                     settingsPanel.Visible = true;
                     break;
-                case State.AfterUnits:
+                case State.Message:
+                    mainPanel.Visible = true;
+                    settingsPanel.Visible = false;
+                    messageLabel.Visible = true;
                     break;
             }
         }
@@ -171,7 +195,7 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(button);
 
             messageLabel = new Label();
-            messageLabel.Text = "Error message";
+            messageLabel.Text = message;
             messageLabel.Position = new Vector2f(0, 625);
             messageLabel.Size = new Vector2f(1280, 30);
             messageLabel.TextSize = 18;

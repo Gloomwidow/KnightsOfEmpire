@@ -154,7 +154,7 @@ namespace KnightsOfEmpire.GameStates
             readyButton.Position = new Vector2f(685, 520);
             readyButton.Size = new Vector2f(150, 40);
             readyButton.TextSize = 18;
-            //readyButton.Clicked += ;
+            readyButton.Clicked += ReadyButton;
             waitingPanel.Add(readyButton);
 
             notReadyButton = new Button();
@@ -163,7 +163,7 @@ namespace KnightsOfEmpire.GameStates
             notReadyButton.Size = new Vector2f(150, 40);
             notReadyButton.TextSize = 18;
             notReadyButton.Enabled = false;
-            //button.Clicked += ;
+            notReadyButton.Clicked += NotReadyButton;
             waitingPanel.Add(notReadyButton);
 
             Button button = new Button();
@@ -171,9 +171,32 @@ namespace KnightsOfEmpire.GameStates
             button.Position = new Vector2f(1095, 650);
             button.Size = new Vector2f(150, 40);
             button.TextSize = 18;
-            //button.Clicked += ;
+            button.Clicked += DisconnectButton;
             waitingPanel.Add(button);
 
+        }
+
+        private void ReadyButton(object sender, EventArgs e)
+        {
+            // TODO: Send to server that player is ready
+
+            // TODO: Get player list from server
+        }
+
+        private void NotReadyButton(object sender, EventArgs e)
+        {
+            // TODO: Send to server that player is not ready
+
+            // TODO: Get player list from server
+        }
+
+        private void DisconnectButton(object sender, EventArgs e)
+        {
+            if(Client.TCPClient != null)
+            {
+                Client.TCPClient.Stop();
+            }
+            GameStateManager.GameState = new MainState("Disconnect from server");
         }
 
         private Panel CreatePlayerPanel(int number, string nickname, bool isReady, int total = 4)

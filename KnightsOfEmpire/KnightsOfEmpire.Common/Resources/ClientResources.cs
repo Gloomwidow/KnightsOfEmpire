@@ -11,6 +11,11 @@ namespace KnightsOfEmpire.Common.Resources
     /// </summary>
     public class ClientResources
     {
+        public ClientResources()
+        {
+            Nickname = "";
+        }
+
         public string Nickname { get; set; }
     }
 }
