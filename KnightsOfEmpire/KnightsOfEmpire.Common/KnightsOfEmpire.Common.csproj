@@ -61,6 +61,8 @@
   <ItemGroup>
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\TileType.cs" />
     <Compile Include="Networking\Common\Packet.cs" />
     <Compile Include="Networking\Common\DataState.cs" />
     <Compile Include="Networking\TCP\TCPBase.cs" />
@@ -71,6 +73,12 @@
     <Compile Include="Networking\UDP\UDPServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ClientResources.cs" />
+    <Compile Include="Units\UnitStance.cs" />
+    <Compile Include="Units\UnitStats.cs" />
+    <Compile Include="Units\Unit.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Buildings\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
