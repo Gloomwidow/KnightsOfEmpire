@@ -119,7 +119,7 @@ namespace KnightsOfEmpire.GameStates
                     }
                     break;
                 case State.Connect:
-                    GameStateManager.GameState = new TestState();
+                    GameStateManager.GameState = new WaitingState();
                     break;
             }
         }
@@ -205,11 +205,9 @@ namespace KnightsOfEmpire.GameStates
 
         void InitializeMainPanel()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
             mainPanel = new Panel();
             mainPanel.Position = new Vector2f(0, 0);
-            mainPanel.Size = ((Vector2f)windowSize);
+            mainPanel.Size = new Vector2f(1280, 720);
 
             Label label = new Label();
             label.Text = "Knights of Empire";
@@ -298,11 +296,9 @@ namespace KnightsOfEmpire.GameStates
 
         void InitializeConnectPanle()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
             connectPanel = new Panel();
             connectPanel.Position = new Vector2f(0, 0);
-            connectPanel.Size = ((Vector2f)windowSize);
+            connectPanel.Size = new Vector2f(1280, 720);
             connectPanel.Renderer.BackgroundColor = new Color(247, 247, 247);
             connectPanel.Renderer.Opacity = 0.9f;
 

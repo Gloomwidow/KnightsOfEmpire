@@ -19,11 +19,14 @@ namespace KnightsOfEmpire.GameStates
         // Main view
         private Panel mainPanel;
         private Label messageLabel;
+        private string message = "";
 
         // Settings view
         private Panel settingsPanel;
         private Label errorNicknameLabel;
         private EditBox nicknameEditBox;
+
+        private const string setNicknameStr = "Set your game nickname";
 
         private const string errorNicknameStr = "Incorrect Nickname";
         private const string emptyNicknameStr = "Empty Nickname";
@@ -32,9 +35,26 @@ namespace KnightsOfEmpire.GameStates
         private const string settingsUnsaveStr = "Settings unsave";
 
         // Private state to control GameState
-        private enum State { Main, Settings, AfterUnits }
+        private enum State { Main, Settings, Message }
         private State state = State.Main;
 
+        /// <summary>
+        /// For create Main State without any message
+        /// </summary>
+        public MainState()
+        {
+            state = State.Main;
+        }
+
+        /// <summary>
+        /// For create Main State with message
+        /// </summary>
+        /// <param name="message">Message to show in state</param>
+        public MainState(string message)
+        {
+            state = State.Message;
+            this.message = message;
+        }
 
         /// <summary>
         /// Initialize GUI for main menu
@@ -50,6 +70,9 @@ namespace KnightsOfEmpire.GameStates
             Client.Gui.Add(settingsPanel);
         }
 
+        /// <summary>
+        /// Update Main State
+        /// </summary>
         public override void Update()
         {
             switch (state)
@@ -62,7 +85,10 @@ namespace KnightsOfEmpire.GameStates
                     mainPanel.Visible = false;
                     settingsPanel.Visible = true;
                     break;
-                case State.AfterUnits:
+                case State.Message:
+                    mainPanel.Visible = true;
+                    settingsPanel.Visible = false;
+                    messageLabel.Visible = true;
                     break;
             }
         }
@@ -88,6 +114,14 @@ namespace KnightsOfEmpire.GameStates
 
         private void StartButton(object sender, EventArgs e)
         {
+            // TODO: add units check
+            if(Client.Resources.Nickname == "")
+            {
+                state = State.Message;
+                messageLabel.Text = setNicknameStr;
+                return;
+            }
+
             GameStateManager.GameState = new ConnectState();
         }
 
@@ -118,11 +152,9 @@ namespace KnightsOfEmpire.GameStates
 
         private void InitializeMainPanel()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
             mainPanel = new Panel();
             mainPanel.Position = new Vector2f(0, 0);
-            mainPanel.Size = ((Vector2f)windowSize);
+            mainPanel.Size = new Vector2f(1280, 720);
 
             Label label = new Label();
             label.Text = "Knights of Empire";
@@ -173,7 +205,7 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(button);
 
             messageLabel = new Label();
-            messageLabel.Text = "Error message";
+            messageLabel.Text = message;
             messageLabel.Position = new Vector2f(0, 625);
             messageLabel.Size = new Vector2f(1280, 30);
             messageLabel.TextSize = 18;
@@ -182,11 +214,11 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(messageLabel);
         }
 
-        private void SettingsSave(object sender, EventArgs e)
+        private void SettingsSaveButton(object sender, EventArgs e)
         {
             if (NicknameValidate())
             {
-                state = State.Main;
+                state = State.Message;
 
                 Client.Resources.Nickname = nicknameEditBox.Text;
 
@@ -195,17 +227,17 @@ namespace KnightsOfEmpire.GameStates
             }
         }
 
-        private void SettingsBack(object sender, EventArgs e)
+        private void SettingsBackButton(object sender, EventArgs e)
         {
-            state = State.Main;
-
             if(nicknameEditBox.Text != Client.Resources.Nickname)
             {
+                state = State.Message;
                 messageLabel.Text = settingsUnsaveStr;
                 messageLabel.Visible = true;
             }
             else
             {
+                state = State.Main;
                 messageLabel.Visible = false;
             }
         }
@@ -229,11 +261,9 @@ namespace KnightsOfEmpire.GameStates
 
         private void InitializeSettingsPanel()
         {
-            Vector2u windowSize = Client.RenderWindow.Size;
-
             settingsPanel = new Panel();
             settingsPanel.Position = new Vector2f(0, 0);
-            settingsPanel.Size = ((Vector2f)windowSize);
+            settingsPanel.Size = new Vector2f(1280, 720);
 
             Label label = new Label();
             label.Text = "Knights of Empire";
@@ -284,7 +314,7 @@ namespace KnightsOfEmpire.GameStates
             button.Size = new Vector2f(150, 40);
             button.Text = "Save";
             button.TextSize = 18;
-            button.Clicked += SettingsSave;
+            button.Clicked += SettingsSaveButton;
             settingsPanel.Add(button);
 
             button = new Button();
@@ -292,7 +322,7 @@ namespace KnightsOfEmpire.GameStates
             button.Size = new Vector2f(150, 40);
             button.Text = "Back";
             button.TextSize = 18;
-            button.Clicked += SettingsBack;
+            button.Clicked += SettingsBackButton;
             settingsPanel.Add(button);
         }
 

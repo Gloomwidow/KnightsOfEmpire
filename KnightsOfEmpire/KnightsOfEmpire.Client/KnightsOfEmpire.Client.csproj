@@ -85,6 +85,7 @@
     <Compile Include="GameStates\MainState.cs" />
     <Compile Include="GameStates\MapTestState.cs" />
     <Compile Include="GameStates\TestState.cs" />
+    <Compile Include="GameStates\WaitingState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
