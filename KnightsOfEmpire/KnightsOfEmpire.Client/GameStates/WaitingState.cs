@@ -47,10 +47,10 @@ namespace KnightsOfEmpire.GameStates
             playerListPanel.Add(group);
         }
 
-        public override void HandlePackets(List<ReceivedPacket> packets)
-        {
-            // TODO: Get player list form server and add to list
-        }
+        //public override void HandleTCPPackets(List<ReceivedPacket> packets)
+        //{
+        //    // TODO: Get player list form server and add to list
+        //}
 
         /// <summary>
         /// Draw GUI
