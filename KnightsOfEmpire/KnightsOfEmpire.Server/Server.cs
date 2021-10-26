@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
+using KnightsOfEmpire.Server.GameStates;
 
 namespace KnightsOfEmpire.Server
 {
@@ -18,12 +21,21 @@ namespace KnightsOfEmpire.Server
         public static UDPServer UDPServer { get; protected set; }
 
         private static Task TestUDPBroadcast;
+
+        /// <summary>
+        /// Time for server to do one gamestate loop
+        /// </summary>
+        private static float TickRate = 1.0f / 60.0f;
+
+        private static Stopwatch TickTimer;
+
         static void Main(string[] args)
         {
             
             Console.WriteLine("Server starting up!");
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnExit);
+            TickTimer = new Stopwatch();
 
             TCPServer = new TCPServer("127.0.0.1", 26969, 4, 30);
 
@@ -39,30 +51,29 @@ namespace KnightsOfEmpire.Server
                 return;
             }
 
-            TestUDPBroadcast = new Task(() =>
-            {
-                while(isRunning)
-                {
-                    Thread.Sleep(100);
-                    
-                    for (int i = 0; i < TCPServer.MaxConnections; i++)
-                    {
-                        var address = TCPServer.GetClientAddress(i);
-                        if (address != null)
-                        {
-                            SentPacket packet = new SentPacket();
-                            packet.stringBuilder.Append($"{DateTime.Now.ToString()} UDP IS COOL {i}");
-                            UDPServer.SentTo(packet, address, i);
-                        }
-                    }
-                    
-                }
-            });
+            GameStateManager.GameState = new WaitingGameState();
 
-            TestUDPBroadcast.Start();
             while (isRunning)
             {
-                
+                TickTimer.Start();
+                GameStateManager.UpdateState();
+                if (GameStateManager.GameState != null)
+                {
+                    if (TCPServer.isRunning)
+                    {
+                        GameStateManager.GameState.HandleTCPPackets(TCPServer.GetReceivedPackets());
+                    }
+                    GameStateManager.GameState.Update();
+                }
+                TickTimer.Stop();
+
+                float elapsedTime = TickTimer.ElapsedMilliseconds / 1000.0f;
+                // The server will wait for the next update in case of doing it much faster
+                if(elapsedTime<=TickRate)
+                {
+                    float Difference = TickRate - elapsedTime;
+                    Thread.Sleep((int)(Difference * 1000));
+                }
             }
 
             UDPServer.Stop();
