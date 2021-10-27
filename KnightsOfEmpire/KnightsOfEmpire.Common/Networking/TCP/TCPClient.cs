@@ -109,20 +109,24 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
                     content = state.sb.ToString();
 
-                    if (content.IndexOf(Packet.EOFTag) > -1)
+                    int bufferPacketStart = 0;
+                    int lastEofPos = 0;
+
+                    while (bufferPacketStart < content.Length && (lastEofPos = content.IndexOf(Packet.EOFTag, bufferPacketStart)) > -1)
                     {
+                        string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
+                        bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
                         Console.WriteLine($"Read {content.Length} bytes from server. \n Data : {content}");
 
-                        ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, content);
+                        ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, packetContent);
 
                         ReceivedPackets.Enqueue(packet);
-
 
                         DataState newState = new DataState(state.ConnectionID);
                         ServerSocket.BeginReceive(newState.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), newState);
                     }
-                    else
+                    if (bufferPacketStart < content.Length)
                     {
                         ServerSocket.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
