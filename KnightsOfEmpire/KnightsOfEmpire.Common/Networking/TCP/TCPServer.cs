@@ -262,7 +262,8 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                         sender.BeginReceive(newState.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), newState);
                     }
-                    if(bufferPacketStart<content.Length)
+                    //bufferPacketStart<content.Length
+                    if (!content.EndsWith(Packet.EOFTag))
                     {
                         sender.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
