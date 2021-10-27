@@ -17,5 +17,6 @@ namespace KnightsOfEmpire.Common.Resources
         }
 
         public string Nickname { get; set; }
+
     }
 }
