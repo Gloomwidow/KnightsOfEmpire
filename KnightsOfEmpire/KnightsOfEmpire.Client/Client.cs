@@ -109,7 +109,7 @@ namespace KnightsOfEmpire
                     if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
                     {
                         SentPacket pingPacket = new SentPacket();
-                        pingPacket.stringBuilder.Append("2001 PING<EOF>2001 PING");
+                        pingPacket.stringBuilder.Append("2001 PING");
                         TCPClient.SendToServer(pingPacket);
                         MessageToServerClock.Restart();
                     }
