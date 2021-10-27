@@ -245,28 +245,25 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
                     content = state.sb.ToString();
 
-                    if (content.IndexOf(Packet.EOFTag) > -1)
-                    {
-                        Console.WriteLine($"Read {content.Length} bytes from {sender.RemoteEndPoint}. \n Data : {content}");
+                    int bufferPacketStart = 0;
+                    int lastEofPos = 0;
 
-                        ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, content);
+                    while (bufferPacketStart < content.Length && (lastEofPos = content.IndexOf(Packet.EOFTag, bufferPacketStart)) > -1)
+                    {
+                        string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
+                        bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
+                        Console.WriteLine($"Read {content.Length} bytes from {sender.RemoteEndPoint}. \n Data : {packetContent}");
+
+                        ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, packetContent);
 
                         ReceivedPackets.Enqueue(packet);
-
-                        // Test response to client - remove when not needed anymore
-                        SentPacket responsePacket = new SentPacket(state.ConnectionID);
-
-                        responsePacket.stringBuilder.Append("2001 OK");
-
-                        SendToClient(responsePacket);
-
-
 
                         DataState newState = new DataState(state.ConnectionID);
                         sender.BeginReceive(newState.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), newState);
                     }
-                    else
+                    //bufferPacketStart<content.Length
+                    if (!content.EndsWith(Packet.EOFTag))
                     {
                         sender.BeginReceive(state.buffer, 0, DataState.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
