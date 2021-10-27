@@ -8,6 +8,8 @@ using System.Collections.Generic;
 
 using KnightsOfEmpire.Common.Networking;
 using System.Threading;
+using KnightsOfEmpire.Common.Resources.Waiting;
+using System.Text.Json;
 
 namespace KnightsOfEmpire.Common.Networking.TCP
 {
@@ -99,11 +101,6 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                         if(Connections[i].isEmpty)
                         {
                             Console.WriteLine($"Accepting this client at position {i}!");
-
-                            SentPacket acceptPacket = new SentPacket();
-                            acceptPacket.stringBuilder.Append("2005");
-                            socket.Send(Encoding.ASCII.GetBytes(acceptPacket.GetContent()));
-
                             hasBeenAccepted = true;
                             Connections[i].isEmpty = false;
                             Connections[i].socket = socket;
@@ -120,9 +117,13 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                     if(!hasBeenAccepted)
                     {
                         Console.WriteLine("Max Connections Achieved! Acknowledging and closing connection with this client!");
-                        SentPacket rejectionPacket = new SentPacket();
-                        rejectionPacket.stringBuilder.Append("4005 4");
-                        socket.Send(Encoding.ASCII.GetBytes(rejectionPacket.GetContent()));
+                        WaitingStateServerResponse ServerFullResponse = new WaitingStateServerResponse
+                        {
+                            Message = WaitingMessage.ServerFull,
+                        };
+                        SentPacket serverFullPacket = new SentPacket(-1);
+                        serverFullPacket.stringBuilder.Append(JsonSerializer.Serialize(ServerFullResponse));
+                        socket.Send(Encoding.ASCII.GetBytes(serverFullPacket.GetContent()));
                         socket.Close();
                    }
                 }
@@ -279,7 +280,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
         }
 
-        protected void DisconnectClient(int clientID)
+        public void DisconnectClient(int clientID)
         {
             Connections[clientID].socket.Disconnect(true);
             Connections[clientID].isEmpty = true;

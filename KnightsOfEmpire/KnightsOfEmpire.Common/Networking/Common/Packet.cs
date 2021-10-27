@@ -13,7 +13,7 @@ namespace KnightsOfEmpire.Common.Networking
         /// <summary>
         /// ID of client who send this packet. This can also be used to send back packet to particular client.
         /// </summary>        
-        public int ClientID { get; protected set; }
+        public int ClientID { get; set; }
 
         /*
          * Idea of structure of packets send through network:
