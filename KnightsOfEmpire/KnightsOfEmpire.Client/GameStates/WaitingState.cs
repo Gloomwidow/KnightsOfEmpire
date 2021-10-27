@@ -155,6 +155,11 @@ namespace KnightsOfEmpire.GameStates
                             if(playersNicknames[i] != string.Empty)
                             {
                                 playerNumber++;
+
+                                if(playersNicknames[i] == Client.Resources.Nickname)
+                                {
+                                    // 
+                                }
                             }
                         }
                         int j = 0;

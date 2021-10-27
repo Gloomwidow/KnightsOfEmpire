@@ -249,6 +249,7 @@ namespace KnightsOfEmpire.GameStates
             EditBox editBoxIP = new EditBox();
             editBoxIP.Position = new Vector2f(490, 400);
             editBoxIP.Size = new Vector2f(300, 40);
+            editBoxIP.Text = "127.0.0.1";
             editBoxIP.TextSize = 18;
             editBoxIP.DefaultText = "0.0.0.0";
             editBoxIP.Alignment = HorizontalAlignment.Center;
@@ -272,6 +273,7 @@ namespace KnightsOfEmpire.GameStates
             EditBox editBoxPort = new EditBox();
             editBoxPort.Position = new Vector2f(490, 500);
             editBoxPort.Size = new Vector2f(300, 40);
+            editBoxPort.Text = "26969";
             editBoxPort.TextSize = 18;
             editBoxPort.DefaultText = "00000";
             editBoxPort.Alignment = HorizontalAlignment.Center;
