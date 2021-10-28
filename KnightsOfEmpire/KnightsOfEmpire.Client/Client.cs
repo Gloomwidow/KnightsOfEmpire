@@ -17,6 +17,7 @@ using KnightsOfEmpire.Common.Resources;
 
 using KnightsOfEmpire.GameStates;
 using KnightsOfEmpire.Common.Networking.UDP;
+using KnightsOfEmpire.Common.Map;
 
 namespace KnightsOfEmpire
 {
