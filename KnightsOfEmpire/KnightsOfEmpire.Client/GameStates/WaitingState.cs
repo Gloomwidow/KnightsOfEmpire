@@ -36,10 +36,11 @@ namespace KnightsOfEmpire.GameStates
         // Panel for wait state
         private Panel waitingPanel;
 
+        private const int maxPlayers = 4;
         private ScrollablePanel playerListPanel;
-        private const string NumLabelStr = "Num";
-        private const string NicknameLabelStr = "Nick";
-        private const string ReadyLabelStr = "Ready";
+        private const string numLabelStr = "Num";
+        private const string nicknameLabelStr = "Nick";
+        private const string readyLabelStr = "Ready";
 
         private Button readyButton;
         private Button notReadyButton;
@@ -53,22 +54,18 @@ namespace KnightsOfEmpire.GameStates
             waitingPanel.Visible = true;
             Client.Gui.Add(waitingPanel);
 
+            for(int i = 0; i<maxPlayers; i++)
+            {
+                Panel panel = CreatePlayerPanel(i + 1, "", false, maxPlayers);
+                panel.Position = new Vector2f(10, i * 40);
+                panel.Visible = false;
+                playerListPanel.Add(panel, "Player" + i.ToString());
+            }
+
             InitializeConnectPanle();
             connectPanel.Visible = true;
             Client.Gui.Add(connectPanel);
 
-            // Exsample of player list
-            //int numPl = 10;
-            //for(int i=0; i<numPl; i++)
-            //{
-            //    Panel panel = CreatePlayerPanel(i + 1, "Player" + (i + 1).ToString(), false, numPl);
-            //    panel.Position = new Vector2f(10, i * 40);
-            //    playerListPanel.Add(panel, "");
-            //}
-            //Group group = new Group();
-            //group.Size = new Vector2f(10, 10);
-            //group.Position = new Vector2f(10, numPl * 40 - 10);
-            //playerListPanel.Add(group);
         }
 
         /// <summary>
@@ -108,12 +105,18 @@ namespace KnightsOfEmpire.GameStates
                             break;
                         case WaitingMessage.ServerRefuse:
                             {
+                                Console.WriteLine("Stop TCP");
+                                Client.TCPClient.Stop();
+                                Console.WriteLine("Server is refuse you");
                                 GameStateManager.GameState = new MainState("Server refuse you");
                             }
                             break;
                         case WaitingMessage.ServerFull:
                             {
+                                Console.WriteLine("Server is full");
                                 GameStateManager.GameState = new MainState("Server was full");
+                                Console.WriteLine("Stop TCP");
+                                Client.TCPClient.Stop();
                             }
                             break;
                         case WaitingMessage.ServerInGame:
@@ -121,6 +124,14 @@ namespace KnightsOfEmpire.GameStates
                                 playersNicknames = request.PlayerNicknames;
                                 playersReadyStatus = request.PlayerReadyStatus;
                                 state = State.StartGame;
+                            }
+                            break;
+                        case WaitingMessage.ServerChangeNick:
+                            {
+                                Console.WriteLine("Change your nickname");
+                                GameStateManager.GameState = new MainState("Change your nickname");
+                                Console.WriteLine("Stop TCP");
+                                Client.TCPClient.Stop();
                             }
                             break;
                     }
@@ -147,8 +158,6 @@ namespace KnightsOfEmpire.GameStates
                     break;
                 case State.Uppdate:
                     {
-                        playerListPanel.RemoveAllWidgets();
-
                         int playerNumber = 0;
                         for (int i=0; i<playersNicknames.Length; i++)
                         {
@@ -158,25 +167,43 @@ namespace KnightsOfEmpire.GameStates
 
                                 if(playersNicknames[i] == Client.Resources.Nickname)
                                 {
-                                    // 
+                                    // Uppdate buttons
+                                    if(playersReadyStatus[i])
+                                    {
+                                        readyButton.Enabled = false;
+                                        notReadyButton.Enabled = true;
+                                    }
+                                    else
+                                    {
+                                        readyButton.Enabled = true;
+                                        notReadyButton.Enabled = false;
+                                    }
                                 }
                             }
                         }
+                        if(playerNumber > maxPlayers)
+                        {
+                            throw new Exception("Too many player, change max player");
+                        }
+
                         int j = 0;
                         for (int i = 0; i < playersNicknames.Length; i++)
                         {
                             if (playersNicknames[i] != string.Empty)
                             {
-                                Panel panel = CreatePlayerPanel(j + 1, playersNicknames[i], playersReadyStatus[i], playerNumber);
-                                panel.Position = new Vector2f(10, j * 40);
-                                playerListPanel.Add(panel, (j+1).ToString());
+                                Panel panel = (Panel)playerListPanel.Get("Player" + j.ToString());
+                                ((Label)panel.Get(nicknameLabelStr)).Text = playersNicknames[i];
+                                ((Label)panel.Get(readyLabelStr)).Text = playersReadyStatus[i] ? "Yes" : "No";
+                                panel.Visible = true;
                                 j++;
                             }
                         }
-                        Group group = new Group();
-                        group.Size = new Vector2f(10, 10);
-                        group.Position = new Vector2f(10, playerNumber * 40 - 10);
-                        playerListPanel.Add(group);
+                        for (; j < maxPlayers; j++)
+                        {
+                            Panel panel = (Panel)playerListPanel.Get("Player" + j.ToString());
+                            panel.Visible = false;
+                        }
+
                         state = State.Main;
                     }
                     break;
@@ -332,16 +359,14 @@ namespace KnightsOfEmpire.GameStates
 
         private void ReadyButton(object sender, EventArgs e)
         {
-            // TODO: Send to server that player is ready
-
-            // TODO: Get player list from server
+            clientReady = true;
+            SendInfoPacket();
         }
 
         private void NotReadyButton(object sender, EventArgs e)
         {
-            // TODO: Send to server that player is not ready
-
-            // TODO: Get player list from server
+            clientReady = false;
+            SendInfoPacket();
         }
 
         private void DisconnectButton(object sender, EventArgs e)
@@ -366,7 +391,7 @@ namespace KnightsOfEmpire.GameStates
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label, NumLabelStr);
+            panel.Add(label, numLabelStr);
 
             label = new Label();
             label.Text = nickname;
@@ -376,7 +401,7 @@ namespace KnightsOfEmpire.GameStates
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label, NicknameLabelStr);
+            panel.Add(label, nicknameLabelStr);
 
             label = new Label();
             if (isReady)
@@ -389,7 +414,7 @@ namespace KnightsOfEmpire.GameStates
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label, ReadyLabelStr);
+            panel.Add(label, readyLabelStr);
 
             return panel;
         }

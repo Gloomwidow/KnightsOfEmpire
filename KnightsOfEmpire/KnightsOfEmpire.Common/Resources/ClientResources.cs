@@ -13,7 +13,7 @@ namespace KnightsOfEmpire.Common.Resources
     {
         public ClientResources()
         {
-            Nickname = "";
+            Nickname = "PlayerTest";
         }
 
         public string Nickname { get; set; }
