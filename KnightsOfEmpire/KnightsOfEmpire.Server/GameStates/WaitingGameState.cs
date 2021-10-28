@@ -16,7 +16,7 @@ namespace KnightsOfEmpire.Server.GameStates
     {
         protected string[] Nicknames;
         protected bool[] ReadyStatus;
-        protected bool[] IsCheckNickname;
+        protected bool[] IsNicknameChecked;
 
         protected DateTime lastResponseTime;
 
@@ -26,7 +26,7 @@ namespace KnightsOfEmpire.Server.GameStates
         {
             Nicknames = new string[Server.TCPServer.MaxConnections];
             ReadyStatus = new bool[Server.TCPServer.MaxConnections];
-            IsCheckNickname = new bool[Server.TCPServer.MaxConnections];
+            IsNicknameChecked = new bool[Server.TCPServer.MaxConnections];
             lastResponseTime = DateTime.Now;
         }
 
@@ -59,14 +59,14 @@ namespace KnightsOfEmpire.Server.GameStates
                 if(request != null)
                 {
                     // Check nicknames one times
-                    if(!IsCheckNickname[packet.ClientID])
+                    if(!IsNicknameChecked[packet.ClientID])
                     {
-                        IsCheckNickname[packet.ClientID] = true;
+                        IsNicknameChecked[packet.ClientID] = true;
                         foreach (string nickname in Nicknames)
                         {
                             if (request.Nickname == nickname)
                             {
-                                IsCheckNickname[packet.ClientID] = false;
+                                IsNicknameChecked[packet.ClientID] = false;
 
                                 WaitingStateServerResponse ReadErrorResponse = new WaitingStateServerResponse
                                 {
@@ -81,7 +81,7 @@ namespace KnightsOfEmpire.Server.GameStates
                             }
                         }
                     }
-                    if(IsCheckNickname[packet.ClientID])
+                    if(IsNicknameChecked[packet.ClientID])
                     {
                         Nicknames[packet.ClientID] = request.Nickname;
                         ReadyStatus[packet.ClientID] = request.IsReady;
@@ -100,6 +100,7 @@ namespace KnightsOfEmpire.Server.GameStates
                 {
                     Nicknames[i] = string.Empty;
                     ReadyStatus[i] = false;
+                    IsNicknameChecked[i] = false;
                 }
             }
             if ((DateTime.Now-lastResponseTime).TotalSeconds>=SendInfoDelay)
