@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using SFML.Window;
@@ -13,14 +14,34 @@ using TGUI;
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Networking.TCP;
+using KnightsOfEmpire.Common.Resources;
+using KnightsOfEmpire.Common.Resources.Waiting;
 
 namespace KnightsOfEmpire.GameStates
 {
     class WaitingState : GameState
     {
+        // State to manage GameState
+        private enum State { First, Main, Uppdate, StartGame}
+        private State state = State.First;
+
+        // Players list
+        private bool clientReady = false;
+        private string[] playersNicknames = null;
+        private bool[] playersReadyStatus = null;
+
+        // Panel for waiting to server first response
+        private Panel connectPanel;
+
         // Panel for wait state
         private Panel waitingPanel;
+
+        private const int maxPlayers = 4;
         private ScrollablePanel playerListPanel;
+        private const string numLabelStr = "Num";
+        private const string nicknameLabelStr = "Nick";
+        private const string readyLabelStr = "Ready";
+
         private Button readyButton;
         private Button notReadyButton;
 
@@ -33,24 +54,166 @@ namespace KnightsOfEmpire.GameStates
             waitingPanel.Visible = true;
             Client.Gui.Add(waitingPanel);
 
-            // Exsample of player list
-            int numPl = 10;
-            for(int i=0; i<numPl; i++)
+            for(int i = 0; i<maxPlayers; i++)
             {
-                Panel panel = CreatePlayerPanel(i + 1, "Player" + (i + 1).ToString(), false, numPl);
+                Panel panel = CreatePlayerPanel(i + 1, "", false, maxPlayers);
                 panel.Position = new Vector2f(10, i * 40);
-                playerListPanel.Add(panel);
+                panel.Visible = false;
+                playerListPanel.Add(panel, "Player" + i.ToString());
             }
-            Group group = new Group();
-            group.Size = new Vector2f(10, 10);
-            group.Position = new Vector2f(10, numPl * 40 - 10);
-            playerListPanel.Add(group);
+
+            InitializeConnectPanle();
+            connectPanel.Visible = true;
+            Client.Gui.Add(connectPanel);
+
         }
 
-        //public override void HandleTCPPackets(List<ReceivedPacket> packets)
-        //{
-        //    // TODO: Get player list form server and add to list
-        //}
+        /// <summary>
+        /// Handle TCP request from server
+        /// </summary>
+        /// <param name="packets">List of recived packets</param>
+        public override void HandleTCPPackets(List<ReceivedPacket> packets)
+        {
+            foreach (ReceivedPacket packet in packets)
+            {
+                string received = packet.GetContent();
+                if (received.StartsWith("2001 OK"))
+                {
+                    continue;
+                }
+                WaitingStateServerResponse request = null;
+                try
+                {
+                    request = JsonSerializer.Deserialize<WaitingStateServerResponse>(received);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    SendInfoPacket();
+                }
+
+                if (request != null)
+                {
+                    switch (request.Message)
+                    {
+                        case WaitingMessage.ServerOk:
+                            {
+                                playersNicknames = request.PlayerNicknames;
+                                playersReadyStatus = request.PlayerReadyStatus;
+                                state = State.Uppdate;
+                            }
+                            break;
+                        case WaitingMessage.ServerRefuse:
+                            {
+                                Console.WriteLine("Stop TCP");
+                                Client.TCPClient.Stop();
+                                Console.WriteLine("Server is refuse you");
+                                GameStateManager.GameState = new MainState("Server refuse you");
+                            }
+                            break;
+                        case WaitingMessage.ServerFull:
+                            {
+                                Console.WriteLine("Server is full");
+                                GameStateManager.GameState = new MainState("Server was full");
+                                Console.WriteLine("Stop TCP");
+                                Client.TCPClient.Stop();
+                            }
+                            break;
+                        case WaitingMessage.ServerInGame:
+                            {
+                                playersNicknames = request.PlayerNicknames;
+                                playersReadyStatus = request.PlayerReadyStatus;
+                                state = State.StartGame;
+                            }
+                            break;
+                        case WaitingMessage.ServerChangeNick:
+                            {
+                                Console.WriteLine("Change your nickname");
+                                GameStateManager.GameState = new MainState("Change your nickname");
+                                Console.WriteLine("Stop TCP");
+                                Client.TCPClient.Stop();
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Uppdate state
+        /// </summary>
+        public override void Update()
+        {
+            switch (state)
+            {
+                case State.First:
+                    {
+                        connectPanel.Visible = true;
+                    }
+                    break;
+                case State.Main:
+                    {
+                        connectPanel.Visible = false;
+                    }
+                    break;
+                case State.Uppdate:
+                    {
+                        int playerNumber = 0;
+                        for (int i=0; i<playersNicknames.Length; i++)
+                        {
+                            if(playersNicknames[i] != string.Empty)
+                            {
+                                playerNumber++;
+
+                                if(playersNicknames[i] == Client.Resources.Nickname)
+                                {
+                                    // Uppdate buttons
+                                    if(playersReadyStatus[i])
+                                    {
+                                        readyButton.Enabled = false;
+                                        notReadyButton.Enabled = true;
+                                    }
+                                    else
+                                    {
+                                        readyButton.Enabled = true;
+                                        notReadyButton.Enabled = false;
+                                    }
+                                }
+                            }
+                        }
+                        if(playerNumber > maxPlayers)
+                        {
+                            throw new Exception("Too many player, change max player");
+                        }
+
+                        int j = 0;
+                        for (int i = 0; i < playersNicknames.Length; i++)
+                        {
+                            if (playersNicknames[i] != string.Empty)
+                            {
+                                Panel panel = (Panel)playerListPanel.Get("Player" + j.ToString());
+                                ((Label)panel.Get(nicknameLabelStr)).Text = playersNicknames[i];
+                                ((Label)panel.Get(readyLabelStr)).Text = playersReadyStatus[i] ? "Yes" : "No";
+                                panel.Visible = true;
+                                j++;
+                            }
+                        }
+                        for (; j < maxPlayers; j++)
+                        {
+                            Panel panel = (Panel)playerListPanel.Get("Player" + j.ToString());
+                            panel.Visible = false;
+                        }
+
+                        state = State.Main;
+                    }
+                    break;
+                case State.StartGame:
+                    {
+                        // TODO: Load resource and start game
+                    }
+                    break;
+            }
+        }
 
         /// <summary>
         /// Draw GUI
@@ -66,6 +229,18 @@ namespace KnightsOfEmpire.GameStates
         public override void Dispose()
         {
             Client.Gui.RemoveAllWidgets();
+        }
+
+        private void SendInfoPacket()
+        {
+            SentPacket infoPacket = new SentPacket();
+
+            WaitingStateClientRequest request = new WaitingStateClientRequest();
+            request.IsReady = clientReady;
+            request.Nickname = Client.Resources.Nickname;
+            infoPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
+
+            Client.TCPClient.SendToServer(infoPacket);
         }
 
         private void InitializeWaitingPanel()
@@ -184,16 +359,14 @@ namespace KnightsOfEmpire.GameStates
 
         private void ReadyButton(object sender, EventArgs e)
         {
-            // TODO: Send to server that player is ready
-
-            // TODO: Get player list from server
+            clientReady = true;
+            SendInfoPacket();
         }
 
         private void NotReadyButton(object sender, EventArgs e)
         {
-            // TODO: Send to server that player is not ready
-
-            // TODO: Get player list from server
+            clientReady = false;
+            SendInfoPacket();
         }
 
         private void DisconnectButton(object sender, EventArgs e)
@@ -218,7 +391,7 @@ namespace KnightsOfEmpire.GameStates
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label);
+            panel.Add(label, numLabelStr);
 
             label = new Label();
             label.Text = nickname;
@@ -228,7 +401,7 @@ namespace KnightsOfEmpire.GameStates
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label);
+            panel.Add(label, nicknameLabelStr);
 
             label = new Label();
             if (isReady)
@@ -241,9 +414,26 @@ namespace KnightsOfEmpire.GameStates
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label);
+            panel.Add(label, readyLabelStr);
 
             return panel;
+        }
+
+        void InitializeConnectPanle()
+        {
+            connectPanel = new Panel();
+            connectPanel.Position = new Vector2f(0, 0);
+            connectPanel.Size = new Vector2f(1280, 720);
+            connectPanel.Renderer.BackgroundColor = new Color(247, 247, 247);
+            connectPanel.Renderer.Opacity = 0.9f;
+
+            Label connectLabel = new Label();
+            connectLabel.Text = "Waiting for server response...";
+            connectLabel.Position = new Vector2f(0, 320);
+            connectLabel.Size = new Vector2f(1280, 70);
+            connectLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            connectLabel.TextSize = 50;
+            connectPanel.Add(connectLabel);
         }
     }
 }

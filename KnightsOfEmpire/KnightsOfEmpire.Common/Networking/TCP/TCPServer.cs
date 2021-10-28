@@ -192,8 +192,17 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
             byte[] byteData = Encoding.ASCII.GetBytes(packet.GetContent());
   
-            Connections[packet.ClientID].socket.BeginSend(byteData, 0, byteData.Length, 0,
+            try
+            {
+                Connections[packet.ClientID].socket.BeginSend(byteData, 0, byteData.Length, 0,
                 new AsyncCallback(SendCallback), packet.ClientID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                if (ex is SocketException) HandleSocketException((SocketException)ex, packet.ClientID);
+            }
+
         }
 
         public IPEndPoint GetClientAddress(int id)
@@ -279,7 +288,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
         public void DisconnectClient(int clientID)
         {
-            Connections[clientID].socket.Disconnect(true);
+            Connections[clientID].socket.Close();
             Connections[clientID].isEmpty = true;
             CurrentActiveConnections--;
         }

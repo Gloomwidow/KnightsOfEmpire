@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using SFML.Window;
@@ -14,6 +15,8 @@ using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
+using KnightsOfEmpire.Common.Resources;
+using KnightsOfEmpire.Common.Resources.Waiting;
 using System.Net;
 
 namespace KnightsOfEmpire.GameStates
@@ -119,7 +122,21 @@ namespace KnightsOfEmpire.GameStates
                     }
                     break;
                 case State.Connect:
-                    GameStateManager.GameState = new WaitingState();
+                    {
+                        SentPacket infoPacket = new SentPacket();
+
+                        WaitingStateClientRequest request = new WaitingStateClientRequest();
+                        request.IsReady = false;
+                        request.Nickname = Client.Resources.Nickname;
+                        infoPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
+
+                        Client.TCPClient.SendToServer(infoPacket);
+
+                        Console.WriteLine("First Packet Send");
+                        Console.WriteLine(JsonSerializer.Serialize(request));
+
+                        GameStateManager.GameState = new WaitingState();
+                    }
                     break;
             }
         }
@@ -232,6 +249,7 @@ namespace KnightsOfEmpire.GameStates
             EditBox editBoxIP = new EditBox();
             editBoxIP.Position = new Vector2f(490, 400);
             editBoxIP.Size = new Vector2f(300, 40);
+            editBoxIP.Text = "127.0.0.1";
             editBoxIP.TextSize = 18;
             editBoxIP.DefaultText = "0.0.0.0";
             editBoxIP.Alignment = HorizontalAlignment.Center;
@@ -255,6 +273,7 @@ namespace KnightsOfEmpire.GameStates
             EditBox editBoxPort = new EditBox();
             editBoxPort.Position = new Vector2f(490, 500);
             editBoxPort.Size = new Vector2f(300, 40);
+            editBoxPort.Text = "26969";
             editBoxPort.TextSize = 18;
             editBoxPort.DefaultText = "00000";
             editBoxPort.Alignment = HorizontalAlignment.Center;
