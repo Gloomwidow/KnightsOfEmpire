@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -17,7 +18,6 @@ using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
-using System.Net;
 
 namespace KnightsOfEmpire.GameStates
 {
