@@ -1,5 +1,6 @@
 ﻿using KnightsOfEmpire.Common.Networking;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,10 +50,30 @@ namespace KnightsOfEmpire.Common.Map
             return TileTypes[x, y] == TileType.Walkable;
         }
 
-        //TO-DO: constructor for loading map from file
         public Map(string mapFileName)
         {
+            string path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @".\Assets\Maps"));
+            Console.WriteLine(path);
+            path = Path.Combine(path, mapFileName);
+            string[] lines = File.ReadAllLines(path);
 
+            string[] sizes = lines[0].Split(' ');
+            TileCountY = Int32.Parse(sizes[0]);
+            TileCountX = Int32.Parse(sizes[1]);
+
+            TileTypes = new TileType[TileCountY,TileCountX];
+            TileTexture = new int[TileCountY,TileCountX];
+
+            for (int i = 0; i < TileCountY; i++) 
+            {
+                string[] tileTypeValues = lines[i + 2].Split(' ');
+                string[] tileTextureValues = lines[i + TileCountY + 3].Split(' ');
+                for(int j = 0; j < TileCountX; j++) 
+                {
+                    TileTypes[i, j] = (TileType)Int32.Parse(tileTypeValues[j]);
+                    TileTexture[i, j] = Int32.Parse(tileTextureValues[j]);
+                }
+            }
         }
 
         //TO-DO: constructor for loading map from packet sent by server
