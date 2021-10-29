@@ -52,7 +52,8 @@ namespace KnightsOfEmpire.Common.Map
 
         public Map(string mapFileName)
         {
-            string path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\Assets\Maps"));
+            string path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @".\Assets\Maps"));
+            Console.WriteLine(path);
             path = Path.Combine(path, mapFileName);
             string[] lines = File.ReadAllLines(path);
 

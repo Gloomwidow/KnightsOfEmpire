@@ -134,4 +134,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>XCOPY "$(SolutionDir)Assets" "$(TargetDir)\Assets\" /S /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

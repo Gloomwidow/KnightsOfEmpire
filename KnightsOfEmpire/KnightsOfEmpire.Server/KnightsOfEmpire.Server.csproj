@@ -107,4 +107,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>XCOPY "$(SolutionDir)Assets" "$(TargetDir)\Assets\" /S /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
