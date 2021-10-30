@@ -80,6 +80,5 @@ namespace KnightsOfEmpire.Common.Map
         {
 
         }
-
     }
 }
