@@ -82,7 +82,7 @@ namespace KnightsOfEmpire
             Resources = new ClientResources();
 
             // Add first GameState
-            GameStateManager.GameState = new MainState();
+            GameStateManager.GameState = new MapTestState();
 
             while (RenderWindow.IsOpen)
             {
