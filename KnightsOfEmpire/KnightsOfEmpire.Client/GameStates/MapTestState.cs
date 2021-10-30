@@ -21,7 +21,6 @@ namespace KnightsOfEmpire.GameStates
 {
     public class MapTestState : GameState
     {
-        public RectangleShape RectangleShape = new RectangleShape(new Vector2f (800, 800));
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
 
         public Vector2i MousePosition;
@@ -113,9 +112,6 @@ namespace KnightsOfEmpire.GameStates
                     View.Move(new Vector2f(0, ViewScrollSpeedPerFrame));
                 }
             }
-            RectangleShape.Position = new Vector2f(100, 100);
-            RectangleShape.FillColor = new Color(Color.Green);
-            //Client.RenderWindow.Draw(RectangleShape);
             DrawMap();
         }
     }
