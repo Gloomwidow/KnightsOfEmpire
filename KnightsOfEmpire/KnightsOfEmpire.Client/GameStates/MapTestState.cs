@@ -32,16 +32,16 @@ namespace KnightsOfEmpire.GameStates
         public float ViewScrollSpeed = 200;
 
         public Map map;
-        public Texture grass;
-        public Texture water;
+        public List<Texture> textures;
         public RectangleShape[,] mapRectangles;
 
 
         public override void Initialize()
         {
             map = new Map("TestMap.kmap");
-            grass = new Texture(@"./Assets/Textures/grass.png");
-            water = new Texture(@"./Assets/Textures/water.png");
+            textures = new List<Texture>();
+            textures.Add(new Texture(@"./Assets/Textures/grass.png"));
+            textures.Add(new Texture(@"./Assets/Textures/water.png"));
             mapRectangles = new RectangleShape[map.TileCountY, map.TileCountX];
             for(int i = 0; i < map.TileCountY; i++) 
             {
@@ -49,19 +49,7 @@ namespace KnightsOfEmpire.GameStates
                 {
                     mapRectangles[i,j] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
                     mapRectangles[i, j].Position = new Vector2f(i * Map.TilePixelSize, j * Map.TilePixelSize);
-                    switch (map.TileTexture[i,j]) 
-                    {
-                        case 1:
-                            mapRectangles[i, j].Texture = grass;
-                            break;
-                        case 2:
-                            mapRectangles[i, j].Texture = water;
-                            break;
-                        default:
-                            
-                            break;
-                    }
-                    
+                    mapRectangles[i, j].Texture = textures[map.TileTexture[i, j]];
                 }
             }
         }
