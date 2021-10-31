@@ -44,7 +44,7 @@ namespace KnightsOfEmpire.Common.Map
             return y >= 0 && y < TileCountY;
         }
 
-        public bool IsTileWalkalble(int x, int y)
+        public bool IsTileWalkable(int x, int y)
         {
             if (!IsTileInBounds(x, y)) return false;
             return TileTypes[x, y] == TileType.Walkable;
@@ -57,11 +57,11 @@ namespace KnightsOfEmpire.Common.Map
             string[] lines = File.ReadAllLines(path);
 
             string[] sizes = lines[0].Split(' ');
-            TileCountY = Int32.Parse(sizes[0]);
-            TileCountX = Int32.Parse(sizes[1]);
+            TileCountX = Int32.Parse(sizes[0]);
+            TileCountY = Int32.Parse(sizes[1]);
 
-            TileTypes = new TileType[TileCountY,TileCountX];
-            TileTexture = new int[TileCountY,TileCountX];
+            TileTypes = new TileType[TileCountX,TileCountY];
+            TileTexture = new int[TileCountX,TileCountY];
 
             for (int i = 0; i < TileCountY; i++) 
             {
@@ -69,8 +69,8 @@ namespace KnightsOfEmpire.Common.Map
                 string[] tileTextureValues = lines[i + TileCountY + 3].Split(' ');
                 for(int j = 0; j < TileCountX; j++) 
                 {
-                    TileTypes[i, j] = (TileType)Int32.Parse(tileTypeValues[j]);
-                    TileTexture[i, j] = Int32.Parse(tileTextureValues[j]);
+                    TileTypes[j, i] = (TileType)Int32.Parse(tileTypeValues[j]);
+                    TileTexture[j, i] = Int32.Parse(tileTextureValues[j]);
                 }
             }
         }

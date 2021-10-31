@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +54,18 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="SFML.Audio, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TGUI.Net.win-x64.0.8.8.17\lib\netstandard2.0\SFML.Audio.dll</HintPath>
+    </Reference>
+    <Reference Include="SFML.Graphics, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TGUI.Net.win-x64.0.8.8.17\lib\netstandard2.0\SFML.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="SFML.System, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TGUI.Net.win-x64.0.8.8.17\lib\netstandard2.0\SFML.System.dll</HintPath>
+    </Reference>
+    <Reference Include="SFML.Window, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TGUI.Net.win-x64.0.8.8.17\lib\netstandard2.0\SFML.Window.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -85,12 +99,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="tgui.net, Version=0.8.8.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TGUI.Net.win-x64.0.8.8.17\lib\netstandard2.0\tgui.net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\Vector2fExtension.cs" />
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\TileType.cs" />
+    <Compile Include="Navigation\FlowField.cs" />
     <Compile Include="Networking\Common\Packet.cs" />
     <Compile Include="Networking\Common\DataState.cs" />
     <Compile Include="Networking\TCP\TCPBase.cs" />
@@ -106,7 +125,6 @@
     <Compile Include="Units\Unit.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Buildings\" />
     <Compile Include="Resources\Waiting\WaitingMessage.cs" />
     <Compile Include="Resources\Waiting\WaitingStateClientRequest.cs" />
     <Compile Include="Resources\Waiting\WaitingStateServerResponse.cs" />
@@ -115,5 +133,16 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Buildings\" />
+    <Folder Include="Units\Groups\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets" Condition="Exists('..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets'))" />
+  </Target>
 </Project>

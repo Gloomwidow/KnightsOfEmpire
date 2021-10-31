@@ -16,6 +16,8 @@ using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
 using System.Net;
 using KnightsOfEmpire.Common.Map;
+using KnightsOfEmpire.Common.Navigation;
+using System.Runtime.InteropServices;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -29,36 +31,91 @@ namespace KnightsOfEmpire.GameStates
         public int ViewCenterRightBoundX = 700;
         public int ViewCenterTopBoundY = 300;
         public int ViewCenterBottomBoundY = 700;
-        public float ViewScrollSpeed = 200;
+        public float ViewScrollSpeed = 800;
 
         public Map map;
+
+        public FlowField[,] flowFields;
         public List<Texture> textures;
         public RectangleShape[,] mapRectangles;
 
 
         public override void Initialize()
         {
-            map = new Map("TestMap.kmap");
+            map = new Map("64x64test.kmap");
             textures = new List<Texture>();
             textures.Add(new Texture(@"./Assets/Textures/grass.png"));
             textures.Add(new Texture(@"./Assets/Textures/water.png"));
-            mapRectangles = new RectangleShape[map.TileCountY, map.TileCountX];
-            for(int i = 0; i < map.TileCountY; i++) 
+            mapRectangles = new RectangleShape[map.TileCountX, map.TileCountY];
+
+
+            Parallel.For(0, map.TileCountX, (x, stateOuter) =>
             {
-                for(int j = 0; j < map.TileCountX; j++) 
+                Parallel.For(0, map.TileCountY, (y, stateInner) =>
                 {
-                    mapRectangles[i,j] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
-                    mapRectangles[i, j].Position = new Vector2f(i * Map.TilePixelSize, j * Map.TilePixelSize);
-                    mapRectangles[i, j].Texture = textures[map.TileTexture[i, j]];
-                }
-            }
+                    CreateMapRectangle(x, y);
+                });
+            });
+            Console.WriteLine($"Map loaded!");
+
+            ViewCenterLeftBoundX = 0;
+            ViewCenterRightBoundX = map.TileCountX * Map.TilePixelSize;
+            ViewCenterTopBoundY = 0;
+            ViewCenterBottomBoundY = map.TileCountY * Map.TilePixelSize;
+        // WARNING!!! HIGH CPU USAGE
+        //flowFields = new FlowField[map.TileCountX, map.TileCountY];
+        //var watch = System.Diagnostics.Stopwatch.StartNew();
+
+        //Parallel.For(0, map.TileCountX, (x,stateOuter) =>
+        //{
+        //    Parallel.For(0, map.TileCountY, (y, stateInner) =>
+        //    {
+        //        if (!map.IsTileWalkable(x, y)) return;
+        //        FlowField field = new FlowField(map, x, y);
+        //        flowFields[x, y] = field;
+        //    }
+        //    );
+        //}
+        //);
+        //watch.Stop();
+        //long elapsedMs = watch.ElapsedMilliseconds;
+        //Console.WriteLine($"Flowfield batch execution time: {elapsedMs * 1.00 / 1000.00}s");
+
+        //int updateX = 5;
+        //int updateY = 5;
+        //map.TileTexture[updateX, updateX] = 1;
+        //map.TileTypes[updateX, updateX] = TileType.NonWalkable;
+        //CreateMapRectangle(updateX, updateY);
+
+        //Parallel.For(0, map.TileCountX, (x, stateOuter) =>
+        //{
+        //    Parallel.For(0, map.TileCountY, (y, stateInner) =>
+        //    {
+        //        if (flowFields[x, y] == null) return;
+        //        flowFields[x, y].UpdateBuildingFlowField(map, updateX, updateY);
+        //    }
+        //    );
+        //}
+        //);
+        //watch.Restart();
+
+        //watch.Stop();
+        //elapsedMs = watch.ElapsedMilliseconds;
+        //Console.WriteLine($"Flowfield batch update execution time: {elapsedMs * 1.00 / 1000.00}s");
+    }
+
+        public void CreateMapRectangle(int x,int y)
+        {
+            mapRectangles[x, y] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
+            mapRectangles[x, y].Position = new Vector2f(x * Map.TilePixelSize, y * Map.TilePixelSize);
+            mapRectangles[x, y].Texture = textures[map.TileTexture[x, y]];
         }
 
         void DrawMap() 
         {
-            for (int i = 0; i < map.TileCountY; i++)
+            for (int i = 0; i < map.TileCountX; i++)
             {
-                for (int j = 0; j < map.TileCountX; j++)
+                for (int j = 0; j < map.TileCountY; j++)
                 {
                     Client.RenderWindow.Draw(mapRectangles[i, j]);
                 }
@@ -68,6 +125,7 @@ namespace KnightsOfEmpire.GameStates
         public override void Render()
         {
             Client.RenderWindow.Clear(new Color(100, 50, 247));
+            View.Size = new Vector2f(Client.RenderWindow.Size.X, Client.RenderWindow.Size.Y);
             Client.RenderWindow.SetView(View);
             MousePosition = Mouse.GetPosition(Client.RenderWindow);
             float ViewScrollSpeedPerFrame = ViewScrollSpeed * Client.DeltaTime; 
