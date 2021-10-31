@@ -24,6 +24,8 @@ namespace KnightsOfEmpire.GameStates
     public class MapTestState : GameState
     {
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
+        static float gameZoom = 1;
+        float gameZoopSpeed = 0.05f;
 
         public Vector2i MousePosition;
         public int EdgeViewMoveOffset = 50;
@@ -38,6 +40,8 @@ namespace KnightsOfEmpire.GameStates
         public FlowField[,] flowFields;
         public List<Texture> textures;
         public RectangleShape[,] mapRectangles;
+
+        public RectangleShape selectionRectangle;
 
 
         public override void Initialize()
@@ -111,6 +115,45 @@ namespace KnightsOfEmpire.GameStates
             mapRectangles[x, y].Texture = textures[map.TileTexture[x, y]];
         }
 
+
+        public override void Update()
+        {
+            Vector2i clickPos = Mouse.GetPosition(Client.RenderWindow);
+            Vector2f worldPos = Client.RenderWindow.MapPixelToCoords(clickPos);
+            if (Mouse.IsButtonPressed(Mouse.Button.Left) && selectionRectangle==null)
+            {
+                selectionRectangle = new RectangleShape();
+                selectionRectangle.Position = worldPos;
+                selectionRectangle.FillColor = new Color(0, 0, 255, 50);
+            }
+            else if(Mouse.IsButtonPressed(Mouse.Button.Left) && selectionRectangle != null) 
+            {
+                selectionRectangle.Size = (worldPos - selectionRectangle.Position);
+            }
+            else if(!Mouse.IsButtonPressed(Mouse.Button.Left) && selectionRectangle != null) 
+            {
+                ChangleSelectionRectangleCoords(worldPos);
+                // TO-DO select units in rectangle 
+                selectionRectangle = null;
+            }
+            Client.RenderWindow.MouseWheelScrolled += new EventHandler<MouseWheelScrollEventArgs>(OnMouseScroll);
+        }
+
+        void OnMouseScroll(object sender, EventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+            MouseWheelScrollEventArgs mouseEvent = (MouseWheelScrollEventArgs)e;
+            //Console.WriteLine(mouseEvent.Delta);
+            if ((mouseEvent.Delta < 0 && gameZoom >= 5) || (mouseEvent.Delta > 0 && gameZoom <= 0.5)) return;
+            gameZoom -= gameZoopSpeed * mouseEvent.Delta * Client.DeltaTime;
+        }
+
+        void ChangleSelectionRectangleCoords(Vector2f endPosition) 
+        {
+            selectionRectangle.Size = new Vector2f(Math.Abs(endPosition.X - selectionRectangle.Position.X), Math.Abs(endPosition.Y - selectionRectangle.Position.Y));
+            selectionRectangle.Position = new Vector2f(Math.Min(endPosition.X, selectionRectangle.Position.X), Math.Min(endPosition.Y, selectionRectangle.Position.Y));
+        }
+
         void DrawMap() 
         {
             for (int i = 0; i < map.TileCountX; i++)
@@ -124,8 +167,9 @@ namespace KnightsOfEmpire.GameStates
 
         public override void Render()
         {
-            Client.RenderWindow.Clear(new Color(100, 50, 247));
+            Client.RenderWindow.Clear(new Color(0,0,0));
             View.Size = new Vector2f(Client.RenderWindow.Size.X, Client.RenderWindow.Size.Y);
+            View.Zoom(gameZoom);
             Client.RenderWindow.SetView(View);
             MousePosition = Mouse.GetPosition(Client.RenderWindow);
             float ViewScrollSpeedPerFrame = ViewScrollSpeed * Client.DeltaTime; 
@@ -159,6 +203,10 @@ namespace KnightsOfEmpire.GameStates
                 }
             }
             DrawMap();
+            if (selectionRectangle != null) 
+            {
+                Client.RenderWindow.Draw(selectionRectangle);
+            }
         }
     }
 }
