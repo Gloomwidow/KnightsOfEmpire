@@ -24,8 +24,8 @@ namespace KnightsOfEmpire.GameStates
     public class MapTestState : GameState
     {
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
-        static float gameZoom = 1;
-        float gameZoopSpeed = 0.05f;
+        private static float gameZoom = 1;
+        private float gameZoopSpeed = 0.05f;
 
         public Vector2i MousePosition;
         public int EdgeViewMoveOffset = 50;
@@ -37,7 +37,8 @@ namespace KnightsOfEmpire.GameStates
 
         public Map map;
 
-        public FlowField[,] flowFields;
+        public FlowFieldManager FlowFieldManager;
+
         public List<Texture> textures;
         public RectangleShape[,] mapRectangles;
 
@@ -51,6 +52,8 @@ namespace KnightsOfEmpire.GameStates
             textures.Add(new Texture(@"./Assets/Textures/grass.png"));
             textures.Add(new Texture(@"./Assets/Textures/water.png"));
             mapRectangles = new RectangleShape[map.TileCountX, map.TileCountY];
+
+            FlowFieldManager = new FlowFieldManager(map);
 
 
             Parallel.For(0, map.TileCountX, (x, stateOuter) =>
@@ -66,47 +69,8 @@ namespace KnightsOfEmpire.GameStates
             ViewCenterRightBoundX = map.TileCountX * Map.TilePixelSize;
             ViewCenterTopBoundY = 0;
             ViewCenterBottomBoundY = map.TileCountY * Map.TilePixelSize;
-        // WARNING!!! HIGH CPU USAGE
-        //flowFields = new FlowField[map.TileCountX, map.TileCountY];
-        //var watch = System.Diagnostics.Stopwatch.StartNew();
-
-        //Parallel.For(0, map.TileCountX, (x,stateOuter) =>
-        //{
-        //    Parallel.For(0, map.TileCountY, (y, stateInner) =>
-        //    {
-        //        if (!map.IsTileWalkable(x, y)) return;
-        //        FlowField field = new FlowField(map, x, y);
-        //        flowFields[x, y] = field;
-        //    }
-        //    );
-        //}
-        //);
-        //watch.Stop();
-        //long elapsedMs = watch.ElapsedMilliseconds;
-        //Console.WriteLine($"Flowfield batch execution time: {elapsedMs * 1.00 / 1000.00}s");
-
-        //int updateX = 5;
-        //int updateY = 5;
-        //map.TileTexture[updateX, updateX] = 1;
-        //map.TileTypes[updateX, updateX] = TileType.NonWalkable;
-        //CreateMapRectangle(updateX, updateY);
-
-        //Parallel.For(0, map.TileCountX, (x, stateOuter) =>
-        //{
-        //    Parallel.For(0, map.TileCountY, (y, stateInner) =>
-        //    {
-        //        if (flowFields[x, y] == null) return;
-        //        flowFields[x, y].UpdateBuildingFlowField(map, updateX, updateY);
-        //    }
-        //    );
-        //}
-        //);
-        //watch.Restart();
-
-        //watch.Stop();
-        //elapsedMs = watch.ElapsedMilliseconds;
-        //Console.WriteLine($"Flowfield batch update execution time: {elapsedMs * 1.00 / 1000.00}s");
-    }
+            Client.RenderWindow.MouseWheelScrolled += new EventHandler<MouseWheelScrollEventArgs>(OnMouseScroll);
+        }
 
         public void CreateMapRectangle(int x,int y)
         {
@@ -136,7 +100,6 @@ namespace KnightsOfEmpire.GameStates
                 // TO-DO select units in rectangle 
                 selectionRectangle = null;
             }
-            Client.RenderWindow.MouseWheelScrolled += new EventHandler<MouseWheelScrollEventArgs>(OnMouseScroll);
         }
 
         void OnMouseScroll(object sender, EventArgs e)
