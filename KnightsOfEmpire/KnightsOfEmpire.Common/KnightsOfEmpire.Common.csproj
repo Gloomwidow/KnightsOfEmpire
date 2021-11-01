@@ -110,6 +110,7 @@
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\TileType.cs" />
     <Compile Include="Navigation\FlowField.cs" />
+    <Compile Include="Navigation\FlowFieldManager.cs" />
     <Compile Include="Networking\Common\Packet.cs" />
     <Compile Include="Networking\Common\DataState.cs" />
     <Compile Include="Networking\TCP\TCPBase.cs" />
