@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,8 @@ namespace KnightsOfEmpire.Common.Units
 {
     public class Unit
     {
-        //TO-DO: uncomment those two fields once SFML.Net will be added to Common Class Library
-        //public Vector2f Position { get; protected set; }
-        //public Vector2f MoveDirection { get; protected set; }
-
-
+        public Vector2f Position { get; protected set; }
+        public Vector2f MoveDirection { get; protected set; }
         public UnitStats Stats { get; protected set; }
 
         /// <summary>
