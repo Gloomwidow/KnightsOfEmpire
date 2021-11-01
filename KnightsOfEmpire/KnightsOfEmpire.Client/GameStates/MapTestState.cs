@@ -25,7 +25,9 @@ namespace KnightsOfEmpire.GameStates
     {
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
         private static float gameZoom = 1;
-        private float gameZoopSpeed = 0.05f;
+        private float minimumZoom = 0.5f;
+        private float maximumZoom = 5.0f;
+        private float gameZoopSpeed = 25.0f;
 
         public Vector2i MousePosition;
         public int EdgeViewMoveOffset = 50;
@@ -107,8 +109,9 @@ namespace KnightsOfEmpire.GameStates
             RenderWindow window = (RenderWindow)sender;
             MouseWheelScrollEventArgs mouseEvent = (MouseWheelScrollEventArgs)e;
             //Console.WriteLine(mouseEvent.Delta);
-            if ((mouseEvent.Delta < 0 && gameZoom >= 5) || (mouseEvent.Delta > 0 && gameZoom <= 0.5)) return;
+            if ((mouseEvent.Delta < 0 && gameZoom >= maximumZoom) || (mouseEvent.Delta > 0 && gameZoom <= minimumZoom)) return;
             gameZoom -= gameZoopSpeed * mouseEvent.Delta * Client.DeltaTime;
+            gameZoom = Math.Max(minimumZoom, Math.Min(maximumZoom, gameZoom));
         }
 
         void ChangleSelectionRectangleCoords(Vector2f endPosition) 
