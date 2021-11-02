@@ -116,17 +116,6 @@ namespace KnightsOfEmpire.GameStates
             // TODO: Add functionality
         }
 
-        //private void ButtonFocuse(object sender, EventArgs e)
-        //{
-        //    infoLabel.Position = (Vector2f)Mouse.GetPosition(Client.RenderWindow) + new Vector2f(0, 18);
-        //    infoLabel.Visible = true;
-        //}
-
-        //private void ButtonUnfocuse(object sender, EventArgs e)
-        //{
-        //    infoLabel.Visible = false;
-        //}
-
         private void ButtonMouseEnter(object sender, EventArgs e)
         {
             isOnButton = true;
@@ -138,6 +127,16 @@ namespace KnightsOfEmpire.GameStates
             isOnButton = false;
             infoLabel.Visible = false;
             timeOnButton = 0;
+        }
+
+        private void MenuButtonClick(object sender, EventArgs e)
+        {
+            // TODO: Add functionality
+        }
+
+        private void LeaveButtonClick(object sender, EventArgs e)
+        {
+            // TODO: Add functionality
         }
 
 
@@ -302,13 +301,15 @@ namespace KnightsOfEmpire.GameStates
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
             button.Text = "Menu";
+            button.Clicked += MenuButtonClick;
             mainPanel.Add(button);
 
             button = new Button();
             button.Position = new Vector2f(1110, 62.5f);
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
-            button.Text = "Give up";
+            button.Text = "";
+            button.Enabled = false;
             mainPanel.Add(button);
 
             button = new Button();
@@ -324,6 +325,7 @@ namespace KnightsOfEmpire.GameStates
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
             button.Text = "Leave game";
+            button.Clicked += LeaveButtonClick;
             mainPanel.Add(button);
         }
 
