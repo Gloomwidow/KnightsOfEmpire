@@ -42,7 +42,16 @@ namespace KnightsOfEmpire.GameStates
 
         private BitmapButton[,] unitsButtons;
 
+        private Label infoLabel;
+
         private Color backColor = new Color(247, 247, 247);
+
+        // Info Label elements
+        bool isOnButton = false;
+        private Vector2i mouseLastPosition = new Vector2i(0, 0);
+        private float timeOnButton = 0f;
+        private const float timeToShowInfo = 0.5f;
+        (int, int) buttonPosition;
 
         /// <summary>
         /// Initialize Game State
@@ -52,6 +61,10 @@ namespace KnightsOfEmpire.GameStates
             InitializeGamePanel();
             mainPanel.Visible = true;
             Client.Gui.Add(mainPanel);
+
+            InitializeInfoLabel();
+            infoLabel.Visible = false;
+            Client.Gui.Add(infoLabel);
         }
 
         /// <summary>
@@ -59,7 +72,20 @@ namespace KnightsOfEmpire.GameStates
         /// </summary>
         public override void Update()
         {
-            
+            //Info Label
+            if(isOnButton && !infoLabel.Visible)
+            {
+                if(mouseLastPosition == Mouse.GetPosition(Client.RenderWindow))
+                {
+                    timeOnButton += Client.DeltaTime;
+                    if (timeOnButton >= timeToShowInfo)
+                    {
+                        infoLabel.Position = (Vector2f)Mouse.GetPosition(Client.RenderWindow) + new Vector2f(0, 18);
+                        infoLabel.Visible = true;
+                    }
+                }
+                mouseLastPosition = Mouse.GetPosition(Client.RenderWindow);
+            }
         }
 
         /// <summary>
@@ -77,6 +103,43 @@ namespace KnightsOfEmpire.GameStates
         {
             Client.Gui.RemoveAllWidgets();
         }
+
+
+
+        private void BuldingButtonClick(object sender, EventArgs e)
+        {
+            // TODO: Add functionality
+        }
+
+        private void UnitButtonClick(object sender, EventArgs e)
+        {
+            // TODO: Add functionality
+        }
+
+        //private void ButtonFocuse(object sender, EventArgs e)
+        //{
+        //    infoLabel.Position = (Vector2f)Mouse.GetPosition(Client.RenderWindow) + new Vector2f(0, 18);
+        //    infoLabel.Visible = true;
+        //}
+
+        //private void ButtonUnfocuse(object sender, EventArgs e)
+        //{
+        //    infoLabel.Visible = false;
+        //}
+
+        private void ButtonMouseEnter(object sender, EventArgs e)
+        {
+            isOnButton = true;
+            buttonPosition = ((int, int))((BitmapButton)sender).UserData;
+        }
+
+        private void ButtonMouseLeave(object sender, EventArgs e)
+        {
+            isOnButton = false;
+            infoLabel.Visible = false;
+            timeOnButton = 0;
+        }
+
 
         private void InitializeGamePanel()
         {
@@ -202,6 +265,11 @@ namespace KnightsOfEmpire.GameStates
                     bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
                     bitbutton.Size = new Vector2f(40, 40);
                     bitbutton.UserData = (i, j);
+                    bitbutton.Focusable = true;
+                    bitbutton.Clicked += BuldingButtonClick;
+                    bitbutton.MouseEntered += ButtonMouseEnter;
+                    bitbutton.MouseLeft += ButtonMouseLeave;
+                    
                     buldingsPanel.Add(bitbutton);
                 }
 
@@ -220,6 +288,11 @@ namespace KnightsOfEmpire.GameStates
                     bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
                     bitbutton.Size = new Vector2f(40, 40);
                     bitbutton.UserData = (i, j);
+                    bitbutton.Focusable = true;
+                    bitbutton.Clicked += UnitButtonClick;
+                    bitbutton.MouseEntered += ButtonMouseEnter;
+                    bitbutton.MouseLeft += ButtonMouseLeave;
+
                     unitsPanel.Add(bitbutton);
                 }
 
@@ -250,8 +323,21 @@ namespace KnightsOfEmpire.GameStates
             button.Position = new Vector2f(1110, 147.5f);
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
-            button.Text = "Exit";
+            button.Text = "Leave game";
             mainPanel.Add(button);
+        }
+
+        private void InitializeInfoLabel()
+        {
+            infoLabel = new Label();
+            infoLabel.Size = new Vector2f(100, 20);
+            infoLabel.Renderer.BackgroundColor = Color.White;
+            infoLabel.Renderer.BorderColor = Color.Black;
+            infoLabel.Renderer.Borders = new Outline(1f);
+            infoLabel.VerticalAlignmentAlignment = VerticalAlignment.Center;
+            infoLabel.TextSize = 14;
+            infoLabel.Text = "Info: Abc";
+
         }
     }
 }
