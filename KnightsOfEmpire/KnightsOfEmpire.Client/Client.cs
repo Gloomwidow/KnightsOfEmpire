@@ -18,6 +18,7 @@ using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.GameStates;
 using KnightsOfEmpire.Common.Networking.UDP;
 using KnightsOfEmpire.Common.Map;
+using KnightsOfEmpire.GameStates.Match;
 
 namespace KnightsOfEmpire
 {
@@ -82,7 +83,7 @@ namespace KnightsOfEmpire
             Resources = new ClientResources();
 
             // Add first GameState
-            GameStateManager.GameState = new GameGUIState();
+            GameStateManager.GameState = new MatchGameState();
 
             while (RenderWindow.IsOpen)
             {

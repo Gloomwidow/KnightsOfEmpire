@@ -112,8 +112,11 @@
     <Compile Include="GameStates\ConnectState.cs" />
     <Compile Include="GameStates\GameGUIState.cs" />
     <Compile Include="GameStates\MainState.cs" />
-    <Compile Include="GameStates\MapTestState.cs" />
+    <Compile Include="GameStates\MapRenderState.cs" />
+    <Compile Include="GameStates\Match\MatchGameState.cs" />
+    <Compile Include="GameStates\Match\ViewControlState.cs" />
     <Compile Include="GameStates\TestState.cs" />
+    <Compile Include="GameStates\Match\UnitsSelectionState.cs" />
     <Compile Include="GameStates\WaitingState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
