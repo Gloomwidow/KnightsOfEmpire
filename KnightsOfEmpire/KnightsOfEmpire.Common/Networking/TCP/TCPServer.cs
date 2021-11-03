@@ -121,7 +121,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                         {
                             Message = WaitingMessage.ServerFull,
                         };
-                        SentPacket serverFullPacket = new SentPacket(-1);
+                        SentPacket serverFullPacket = new SentPacket(PacketsHeaders.WaitingStateServerResponse);
                         serverFullPacket.stringBuilder.Append(JsonSerializer.Serialize(ServerFullResponse));
                         socket.Send(Encoding.ASCII.GetBytes(serverFullPacket.GetContent()));
                         socket.Close();

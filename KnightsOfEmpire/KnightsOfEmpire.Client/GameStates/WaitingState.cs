@@ -76,65 +76,14 @@ namespace KnightsOfEmpire.GameStates
         {
             foreach (ReceivedPacket packet in packets)
             {
-                string received = packet.GetContent();
-                if (received.StartsWith("2001 OK"))
+                switch(packet.GetHeader())
                 {
-                    continue;
-                }
-                WaitingStateServerResponse request = null;
-                try
-                {
-                    request = JsonSerializer.Deserialize<WaitingStateServerResponse>(received);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    SendInfoPacket();
-                }
+                    case PacketsHeaders.PING:
+                        break;
 
-                if (request != null)
-                {
-                    switch (request.Message)
-                    {
-                        case WaitingMessage.ServerOk:
-                            {
-                                playersNicknames = request.PlayerNicknames;
-                                playersReadyStatus = request.PlayerReadyStatus;
-                                state = State.Uppdate;
-                            }
-                            break;
-                        case WaitingMessage.ServerRefuse:
-                            {
-                                Console.WriteLine("Stop TCP");
-                                Client.TCPClient.Stop();
-                                Console.WriteLine("Server is refuse you");
-                                GameStateManager.GameState = new MainState("Server refuse you");
-                            }
-                            break;
-                        case WaitingMessage.ServerFull:
-                            {
-                                Console.WriteLine("Server is full");
-                                GameStateManager.GameState = new MainState("Server was full");
-                                Console.WriteLine("Stop TCP");
-                                Client.TCPClient.Stop();
-                            }
-                            break;
-                        case WaitingMessage.ServerInGame:
-                            {
-                                playersNicknames = request.PlayerNicknames;
-                                playersReadyStatus = request.PlayerReadyStatus;
-                                state = State.StartGame;
-                            }
-                            break;
-                        case WaitingMessage.ServerChangeNick:
-                            {
-                                Console.WriteLine("Change your nickname");
-                                GameStateManager.GameState = new MainState("Change your nickname");
-                                Console.WriteLine("Stop TCP");
-                                Client.TCPClient.Stop();
-                            }
-                            break;
-                    }
+                    case PacketsHeaders.WaitingStateServerResponse:
+                        HandleWaitingStateServerResponse(packet);
+                        break;
                 }
             }
         }
@@ -233,7 +182,7 @@ namespace KnightsOfEmpire.GameStates
 
         private void SendInfoPacket()
         {
-            SentPacket infoPacket = new SentPacket();
+            SentPacket infoPacket = new SentPacket(PacketsHeaders.WaitingStateClientRequest);
 
             WaitingStateClientRequest request = new WaitingStateClientRequest();
             request.IsReady = clientReady;
@@ -419,7 +368,7 @@ namespace KnightsOfEmpire.GameStates
             return panel;
         }
 
-        void InitializeConnectPanle()
+        private void InitializeConnectPanle()
         {
             connectPanel = new Panel();
             connectPanel.Position = new Vector2f(0, 0);
@@ -434,6 +383,69 @@ namespace KnightsOfEmpire.GameStates
             connectLabel.HorizontalAlignment = HorizontalAlignment.Center;
             connectLabel.TextSize = 50;
             connectPanel.Add(connectLabel);
+        }
+
+
+        // TCP Handler
+
+        private void HandleWaitingStateServerResponse(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+            WaitingStateServerResponse request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<WaitingStateServerResponse>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                SendInfoPacket();
+            }
+
+            if (request != null)
+            {
+                switch (request.Message)
+                {
+                    case WaitingMessage.ServerOk:
+                        {
+                            playersNicknames = request.PlayerNicknames;
+                            playersReadyStatus = request.PlayerReadyStatus;
+                            state = State.Uppdate;
+                        }
+                        break;
+                    case WaitingMessage.ServerRefuse:
+                        {
+                            Console.WriteLine("Stop TCP");
+                            Client.TCPClient.Stop();
+                            Console.WriteLine("Server is refuse you");
+                            GameStateManager.GameState = new MainState("Server refuse you");
+                        }
+                        break;
+                    case WaitingMessage.ServerFull:
+                        {
+                            Console.WriteLine("Server is full");
+                            GameStateManager.GameState = new MainState("Server was full");
+                            Console.WriteLine("Stop TCP");
+                            Client.TCPClient.Stop();
+                        }
+                        break;
+                    case WaitingMessage.ServerInGame:
+                        {
+                            playersNicknames = request.PlayerNicknames;
+                            playersReadyStatus = request.PlayerReadyStatus;
+                            state = State.StartGame;
+                        }
+                        break;
+                    case WaitingMessage.ServerChangeNick:
+                        {
+                            Console.WriteLine("Change your nickname");
+                            GameStateManager.GameState = new MainState("Change your nickname");
+                            Console.WriteLine("Stop TCP");
+                            Client.TCPClient.Stop();
+                        }
+                        break;
+                }
+            }
         }
     }
 }

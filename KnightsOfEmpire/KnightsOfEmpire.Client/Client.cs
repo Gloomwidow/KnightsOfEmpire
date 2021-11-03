@@ -90,7 +90,7 @@ namespace KnightsOfEmpire
             Resources = new ClientResources();
 
             // Add first GameState
-            GameStateManager.GameState = new MatchGameState();
+            GameStateManager.GameState = new MainState();
 
             while (RenderWindow.IsOpen)
             {
@@ -118,8 +118,8 @@ namespace KnightsOfEmpire
                 {
                     if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
                     {
-                        SentPacket pingPacket = new SentPacket();
-                        pingPacket.stringBuilder.Append("2001 PING");
+                        SentPacket pingPacket = new SentPacket(PacketsHeaders.PING);
+                        pingPacket.stringBuilder.Append("PING");
                         TCPClient.SendToServer(pingPacket);
                         MessageToServerClock.Restart();
                     }

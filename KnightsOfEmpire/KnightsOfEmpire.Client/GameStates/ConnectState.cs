@@ -123,7 +123,7 @@ namespace KnightsOfEmpire.GameStates
                     break;
                 case State.Connect:
                     {
-                        SentPacket infoPacket = new SentPacket();
+                        SentPacket infoPacket = new SentPacket(PacketsHeaders.WaitingStateClientRequest);
 
                         WaitingStateClientRequest request = new WaitingStateClientRequest();
                         request.IsReady = false;

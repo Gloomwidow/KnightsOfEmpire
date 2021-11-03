@@ -8,10 +8,20 @@ namespace KnightsOfEmpire.Common.Networking
         /// <summary>
         /// This tag will indicate the end of data in packet. This will help receiver to recognise when they can stop receive single packet.
         /// </summary>
-        public static readonly string EOFTag = "<EOF>"; 
+        public static readonly string EOFTag = "<EOF>";
 
         /// <summary>
-        /// ID of client who send this packet. This can also be used to send back packet to particular client.
+        /// This is header size value
+        /// </summary>
+        public static readonly int HeaderSize = 4;
+
+        /// <summary>
+        /// This is server ID, ClientId shoud be set this value if server send message
+        /// </summary>
+        public const int ServerID = -1;
+
+        /// <summary>
+        /// ID of client who send this packet. This can also be used to send back packet to particular client. If it equel ServerID means the server send packets.
         /// </summary>        
         public int ClientID { get; set; }
 
@@ -47,9 +57,14 @@ namespace KnightsOfEmpire.Common.Networking
             ReceiveTime = DateTime.Now;
         }
 
+        public string GetHeader()
+        {
+            return Content.Substring(0, HeaderSize);
+        }
+
         public override string GetContent()
         {
-            return Content.Substring(0, Content.Length - EOFTag.Length);
+            return Content.Substring(HeaderSize, Content.Length - EOFTag.Length - HeaderSize);
         }
     }
 
@@ -57,20 +72,22 @@ namespace KnightsOfEmpire.Common.Networking
     {
         public StringBuilder stringBuilder { get; protected set; }
 
-        public SentPacket(int clientID)
-        {
-            ClientID = clientID;
-            stringBuilder = new StringBuilder();
-        }
+        protected string header;
 
-        public SentPacket()
+        public SentPacket(string header, int clientID = ServerID)
         {
+            if(header.Length != HeaderSize)
+            {
+                throw new ArgumentException("The header size is not equel HeaderSize", "header");
+            }
+            this.header = header;
+            ClientID = clientID;
             stringBuilder = new StringBuilder();
         }
 
         public override string GetContent()
         {
-            return stringBuilder.ToString() + EOFTag;
+            return header + stringBuilder.ToString() + EOFTag;
         }
 
     }

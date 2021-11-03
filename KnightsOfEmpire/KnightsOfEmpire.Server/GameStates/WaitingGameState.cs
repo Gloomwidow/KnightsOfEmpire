@@ -34,59 +34,18 @@ namespace KnightsOfEmpire.Server.GameStates
         {
             foreach (ReceivedPacket packet in packets)
             {
-                string received = packet.GetContent();
-                if(received.StartsWith("2001 PING"))
+                string header = packet.GetHeader();
+                switch(header)
                 {
-                    continue;
-                }
-                WaitingStateClientRequest request = null;
-                try
-                {
-                    request = JsonSerializer.Deserialize<WaitingStateClientRequest>(received);
-                }
-                catch(Exception ex)
-                {
-                    WaitingStateServerResponse ReadErrorResponse = new WaitingStateServerResponse
-                    {
-                        Message = WaitingMessage.ServerRefuse,
-                    };
-                    SentPacket readErrorPacket = new SentPacket(packet.ClientID);
-                    readErrorPacket.stringBuilder.Append(JsonSerializer.Serialize(ReadErrorResponse));
-                    Server.TCPServer.SendToClient(readErrorPacket);
-                    Server.TCPServer.DisconnectClient(packet.ClientID);
+                    case PacketsHeaders.PING:
+                        break;
+
+                    case PacketsHeaders.WaitingStateClientRequest:
+                        HandleWaitnigClientRequest(packet);
+                        break;
                 }
 
-                if(request != null)
-                {
-                    // Check nicknames one times
-                    if(!IsNicknameChecked[packet.ClientID])
-                    {
-                        IsNicknameChecked[packet.ClientID] = true;
-                        foreach (string nickname in Nicknames)
-                        {
-                            if (request.Nickname == nickname)
-                            {
-                                IsNicknameChecked[packet.ClientID] = false;
-
-                                WaitingStateServerResponse ReadErrorResponse = new WaitingStateServerResponse
-                                {
-                                    Message = WaitingMessage.ServerChangeNick,
-                                };
-                                SentPacket readErrorPacket = new SentPacket(packet.ClientID);
-                                readErrorPacket.stringBuilder.Append(JsonSerializer.Serialize(ReadErrorResponse));
-                                Server.TCPServer.SendToClient(readErrorPacket);
-                                Server.TCPServer.DisconnectClient(packet.ClientID);
-
-                                break;
-                            }
-                        }
-                    }
-                    if(IsNicknameChecked[packet.ClientID])
-                    {
-                        Nicknames[packet.ClientID] = request.Nickname;
-                        ReadyStatus[packet.ClientID] = request.IsReady;
-                    }
-                } 
+                
             }
         }
 
@@ -111,7 +70,7 @@ namespace KnightsOfEmpire.Server.GameStates
                     PlayerNicknames = Nicknames,
                     PlayerReadyStatus = ReadyStatus
                 };
-                SentPacket waitingInfoPacket = new SentPacket();
+                SentPacket waitingInfoPacket = new SentPacket(PacketsHeaders.WaitingStateServerResponse);
 
                 waitingInfoPacket.stringBuilder.Append(JsonSerializer.Serialize(WaitingRoomStatus));
 
@@ -124,6 +83,60 @@ namespace KnightsOfEmpire.Server.GameStates
                     }
                 }
                 lastResponseTime = DateTime.Now;
+            }
+        }
+
+
+        private void HandleWaitnigClientRequest(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+            WaitingStateClientRequest request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<WaitingStateClientRequest>(received);
+            }
+            catch (Exception ex)
+            {
+                WaitingStateServerResponse ReadErrorResponse = new WaitingStateServerResponse
+                {
+                    Message = WaitingMessage.ServerRefuse,
+                };
+                SentPacket readErrorPacket = new SentPacket(PacketsHeaders.WaitingStateServerResponse, packet.ClientID);
+                readErrorPacket.stringBuilder.Append(JsonSerializer.Serialize(ReadErrorResponse));
+                Server.TCPServer.SendToClient(readErrorPacket);
+                Server.TCPServer.DisconnectClient(packet.ClientID);
+            }
+
+            if (request != null)
+            {
+                // Check nicknames one times
+                if (!IsNicknameChecked[packet.ClientID])
+                {
+                    IsNicknameChecked[packet.ClientID] = true;
+                    foreach (string nickname in Nicknames)
+                    {
+                        if (request.Nickname == nickname)
+                        {
+                            IsNicknameChecked[packet.ClientID] = false;
+
+                            WaitingStateServerResponse ReadErrorResponse = new WaitingStateServerResponse
+                            {
+                                Message = WaitingMessage.ServerChangeNick,
+                            };
+                            SentPacket readErrorPacket = new SentPacket(PacketsHeaders.WaitingStateServerResponse, packet.ClientID);
+                            readErrorPacket.stringBuilder.Append(JsonSerializer.Serialize(ReadErrorResponse));
+                            Server.TCPServer.SendToClient(readErrorPacket);
+                            Server.TCPServer.DisconnectClient(packet.ClientID);
+
+                            break;
+                        }
+                    }
+                }
+                if (IsNicknameChecked[packet.ClientID])
+                {
+                    Nicknames[packet.ClientID] = request.Nickname;
+                    ReadyStatus[packet.ClientID] = request.IsReady;
+                }
             }
         }
     }
