@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using KnightsOfEmpire.Common.Map;
+using KnightsOfEmpire.Common.Units;
+
 namespace KnightsOfEmpire.Common.Resources
 {
     /// <summary>
@@ -13,10 +16,15 @@ namespace KnightsOfEmpire.Common.Resources
     {
         public ClientResources()
         {
-            Nickname = "PlayerTest";
+            Nickname = string.Empty;
+            Map = null;
+            CustomUnits = new CustomUnits();
         }
 
         public string Nickname { get; set; }
 
+        public Map.Map Map { get; set; }
+
+        public CustomUnits CustomUnits { get; set; }
     }
 }

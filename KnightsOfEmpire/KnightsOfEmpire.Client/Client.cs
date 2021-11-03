@@ -88,6 +88,8 @@ namespace KnightsOfEmpire
 
             // Add client resource
             Resources = new ClientResources();
+            // Default nickname
+            Resources.Nickname = "Test";
 
             // Add first GameState
             GameStateManager.GameState = new MainState();

@@ -122,8 +122,10 @@
     <Compile Include="Networking\UDP\UDPServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ClientResources.cs" />
+    <Compile Include="Resources\ServerResources.cs" />
+    <Compile Include="Resources\Waiting\CustomUnitsServerResponse.cs" />
     <Compile Include="Resources\Waiting\MapClientRequest.cs" />
-    <Compile Include="Resources\Waiting\MapServerResponse.cs" />
+    <Compile Include="Units\CustomUnits.cs" />
     <Compile Include="Units\UnitStance.cs" />
     <Compile Include="Units\UnitStats.cs" />
     <Compile Include="Units\Unit.cs" />

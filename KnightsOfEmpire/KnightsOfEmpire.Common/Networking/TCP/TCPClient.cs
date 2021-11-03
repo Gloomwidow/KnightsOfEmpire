@@ -116,7 +116,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                     {
                         string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
                         bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
-                        Console.WriteLine($"Read {content.Length} bytes from server. \n Data : {content}");
+                        Console.WriteLine($"Read {content.Length} bytes from server. \n Content staarts with: { content.Substring(0,100) }");
 
                         ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, packetContent);
 

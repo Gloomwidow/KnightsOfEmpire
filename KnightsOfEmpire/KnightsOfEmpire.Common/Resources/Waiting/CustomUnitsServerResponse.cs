@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace KnightsOfEmpire.Common.Resources.Waiting
 {
     [Serializable]
-    public class MapClientRequest
+    public class CustomUnitsServerResponse
     {
-        public bool MapRecived { get; set; }
+        public bool IsUnitsRecived { get; set; }
 
-        public MapClientRequest()
+        public CustomUnitsServerResponse()
         {
-            MapRecived = false;
+            IsUnitsRecived = false;
         }
     }
 }

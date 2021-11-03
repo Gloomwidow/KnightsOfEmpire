@@ -64,7 +64,7 @@ namespace KnightsOfEmpire.GameStates
         {
             mapRectangles[x, y] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
             mapRectangles[x, y].Position = new Vector2f(x * Map.TilePixelSize, y * Map.TilePixelSize);
-            mapRectangles[x, y].Texture = textures[GameMap.TileTexture[x, y]];
+            mapRectangles[x, y].Texture = textures[GameMap.TileTexture[x][y]];
         }
 
 

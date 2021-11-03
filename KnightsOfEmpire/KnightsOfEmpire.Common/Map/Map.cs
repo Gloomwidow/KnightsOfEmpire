@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace KnightsOfEmpire.Common.Map
 {
+    [Serializable]
     public class Map
     {
         /* 
@@ -33,10 +34,10 @@ namespace KnightsOfEmpire.Common.Map
          */
 
         public static int TilePixelSize = 64;
-        public int TileCountX { get; protected set; }
-        public int TileCountY { get; protected set; }
-        public TileType[,] TileTypes { get; protected set; }
-        public int[,] TileTexture { get; protected set; }
+        public int TileCountX { get; set; }
+        public int TileCountY { get; set; }
+        public TileType[][] TileTypes { get; set; }
+        public int[][] TileTexture { get; set; }
 
         public bool IsTileInBounds(int x, int y)
         {
@@ -47,8 +48,10 @@ namespace KnightsOfEmpire.Common.Map
         public bool IsTileWalkable(int x, int y)
         {
             if (!IsTileInBounds(x, y)) return false;
-            return TileTypes[x, y] == TileType.Walkable;
+            return TileTypes[x][y] == TileType.Walkable;
         }
+
+        public Map() { }
 
         public Map(string mapFileName)
         {
@@ -60,8 +63,16 @@ namespace KnightsOfEmpire.Common.Map
             TileCountX = Int32.Parse(sizes[0]);
             TileCountY = Int32.Parse(sizes[1]);
 
-            TileTypes = new TileType[TileCountX,TileCountY];
-            TileTexture = new int[TileCountX,TileCountY];
+            TileTypes = new TileType[TileCountX][];
+            for (int i = 0; i < TileCountX; i++)
+            {
+                TileTypes[i] = new TileType[TileCountY];
+            }
+            TileTexture = new int[TileCountX][];
+            for (int i = 0; i < TileCountX; i++)
+            {
+                TileTexture[i] = new int[TileCountY];
+            }
 
             for (int i = 0; i < TileCountY; i++) 
             {
@@ -69,16 +80,11 @@ namespace KnightsOfEmpire.Common.Map
                 string[] tileTextureValues = lines[i + TileCountY + 3].Split(' ');
                 for(int j = 0; j < TileCountX; j++) 
                 {
-                    TileTypes[j, i] = (TileType)Int32.Parse(tileTypeValues[j]);
-                    TileTexture[j, i] = Int32.Parse(tileTextureValues[j]);
+                    TileTypes[j][i] = (TileType)Int32.Parse(tileTypeValues[j]);
+                    TileTexture[j][i] = Int32.Parse(tileTextureValues[j]);
                 }
             }
         }
 
-        //TO-DO: constructor for loading map from packet sent by server
-        public Map(ReceivedPacket mapPacket)
-        {
-
-        }
     }
 }

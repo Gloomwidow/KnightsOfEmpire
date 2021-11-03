@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
+using KnightsOfEmpire.Common.Units;
+
 namespace KnightsOfEmpire.Server.GameStates
 {
     public class WaitingGameState : GameState
@@ -17,6 +19,8 @@ namespace KnightsOfEmpire.Server.GameStates
         protected string[] Nicknames;
         protected bool[] ReadyStatus;
         protected bool[] IsNicknameChecked;
+        protected bool[] IsMapSend;
+        protected bool[] IsUnitsRecived;
 
         protected DateTime lastResponseTime;
 
@@ -27,6 +31,8 @@ namespace KnightsOfEmpire.Server.GameStates
             Nicknames = new string[Server.TCPServer.MaxConnections];
             ReadyStatus = new bool[Server.TCPServer.MaxConnections];
             IsNicknameChecked = new bool[Server.TCPServer.MaxConnections];
+            IsMapSend = new bool[Server.TCPServer.MaxConnections];
+            IsUnitsRecived = new bool[Server.TCPServer.MaxConnections];
             lastResponseTime = DateTime.Now;
         }
 
@@ -43,9 +49,15 @@ namespace KnightsOfEmpire.Server.GameStates
                     case PacketsHeaders.WaitingStateClientRequest:
                         HandleWaitnigClientRequest(packet);
                         break;
-                }
 
-                
+                    case PacketsHeaders.MapClientRequest:
+                        HandleMapClientRequest(packet);
+                        break;
+
+                    case PacketsHeaders.CustomUnitsClientRequest:
+                        HandleCustomUnitsClientRequest(packet);
+                        break;
+                }
             }
         }
 
@@ -60,6 +72,8 @@ namespace KnightsOfEmpire.Server.GameStates
                     Nicknames[i] = string.Empty;
                     ReadyStatus[i] = false;
                     IsNicknameChecked[i] = false;
+                    IsMapSend[i] = false;
+                    IsUnitsRecived[i] = false;
                 }
             }
             if ((DateTime.Now-lastResponseTime).TotalSeconds>=SendInfoDelay)
@@ -80,12 +94,45 @@ namespace KnightsOfEmpire.Server.GameStates
                     {
                         waitingInfoPacket.ClientID = i;
                         TCPServer.SendToClient(waitingInfoPacket);
+
+                        //Send map packet
+                        if(IsMapSend[i] == false)
+                        {
+                            SendMapPacket(i);
+
+                            Console.WriteLine("Map was send");
+                        }
+
+                        if(IsUnitsRecived[i] == false)
+                        {
+                            SendCustomUnitsResponse(i, false);
+                        }
                     }
                 }
                 lastResponseTime = DateTime.Now;
             }
         }
 
+        // Send packets
+
+        private void SendMapPacket(int clientID)
+        {
+            SentPacket mapPacket = new SentPacket(PacketsHeaders.MapServerResponse, clientID);
+            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(Server.Resources.Map));
+            Server.TCPServer.SendToClient(mapPacket);
+        }
+
+        private void SendCustomUnitsResponse(int clientID, bool isRecived)
+        {
+            SentPacket packet = new SentPacket(PacketsHeaders.CustomUnitsServerResponse, clientID);
+            CustomUnitsServerResponse data = new CustomUnitsServerResponse();
+            data.IsUnitsRecived = isRecived;
+
+            packet.stringBuilder.Append(JsonSerializer.Serialize(data));
+            Server.TCPServer.SendToClient(packet);
+        }
+
+        // Handle request
 
         private void HandleWaitnigClientRequest(ReceivedPacket packet)
         {
@@ -137,6 +184,61 @@ namespace KnightsOfEmpire.Server.GameStates
                     Nicknames[packet.ClientID] = request.Nickname;
                     ReadyStatus[packet.ClientID] = request.IsReady;
                 }
+            }
+        }
+
+
+        private void HandleMapClientRequest(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+            MapClientRequest request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<MapClientRequest>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                IsMapSend[packet.ClientID] = false;
+            }
+
+            if(request != null)
+            {
+                IsMapSend[packet.ClientID] = request.MapRecived;
+            }
+            else
+            {
+                IsMapSend[packet.ClientID] = false;
+            }
+        }
+
+        private void HandleCustomUnitsClientRequest(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+            CustomUnits request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<CustomUnits>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                IsUnitsRecived[packet.ClientID] = false;
+
+                SendCustomUnitsResponse(packet.ClientID, false);
+            }
+
+            if (request != null)
+            {
+                IsUnitsRecived[packet.ClientID] = true;
+                Server.Resources.CustomUnits[packet.ClientID] = request;
+
+                Console.WriteLine("Custom units save succesfully");
+                SendCustomUnitsResponse(packet.ClientID, true);
+            }
+            else
+            {
+                SendCustomUnitsResponse(packet.ClientID, false);
             }
         }
     }
