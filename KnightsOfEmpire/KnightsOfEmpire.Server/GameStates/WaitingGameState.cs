@@ -100,7 +100,7 @@ namespace KnightsOfEmpire.Server.GameStates
                         {
                             SendMapPacket(i);
 
-                            Console.WriteLine("Map was send");
+                            Console.WriteLine("Server: Map was send to client " + i.ToString());
                         }
 
                         if(IsUnitsRecived[i] == false)
@@ -126,7 +126,7 @@ namespace KnightsOfEmpire.Server.GameStates
         {
             SentPacket packet = new SentPacket(PacketsHeaders.CustomUnitsServerResponse, clientID);
             CustomUnitsServerResponse data = new CustomUnitsServerResponse();
-            data.IsUnitsRecived = isRecived;
+            data.IsUnitsReceived = isRecived;
 
             packet.stringBuilder.Append(JsonSerializer.Serialize(data));
             Server.TCPServer.SendToClient(packet);
@@ -204,7 +204,7 @@ namespace KnightsOfEmpire.Server.GameStates
 
             if(request != null)
             {
-                IsMapSend[packet.ClientID] = request.MapRecived;
+                IsMapSend[packet.ClientID] = request.MapReceived;
             }
             else
             {

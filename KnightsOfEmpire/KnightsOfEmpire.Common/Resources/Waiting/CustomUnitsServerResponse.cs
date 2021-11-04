@@ -9,11 +9,11 @@ namespace KnightsOfEmpire.Common.Resources.Waiting
     [Serializable]
     public class CustomUnitsServerResponse
     {
-        public bool IsUnitsRecived { get; set; }
+        public bool IsUnitsReceived { get; set; }
 
         public CustomUnitsServerResponse()
         {
-            IsUnitsRecived = false;
+            IsUnitsReceived = false;
         }
     }
 }

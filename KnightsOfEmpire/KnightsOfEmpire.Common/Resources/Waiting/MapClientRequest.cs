@@ -9,11 +9,11 @@ namespace KnightsOfEmpire.Common.Resources.Waiting
     [Serializable]
     public class MapClientRequest
     {
-        public bool MapRecived { get; set; }
+        public bool MapReceived { get; set; }
 
         public MapClientRequest()
         {
-            MapRecived = false;
+            MapReceived = false;
         }
     }
 }

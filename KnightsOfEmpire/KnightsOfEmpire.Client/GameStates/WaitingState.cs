@@ -401,13 +401,13 @@ namespace KnightsOfEmpire.GameStates
             SentPacket mapPacket = new SentPacket(PacketsHeaders.MapClientRequest);
 
             MapClientRequest request = new MapClientRequest();
-            request.MapRecived = isMapRecved;
+            request.MapReceived = isMapRecved;
 
             mapPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
 
             Client.TCPClient.SendToServer(mapPacket);
 
-            Console.WriteLine("Send map request " + isMapRecved);
+            Console.WriteLine("Client: Send map request to server. Map status: " + isMapRecved);
         }
 
         private void SendCustomUnitsRequest()
@@ -533,7 +533,7 @@ namespace KnightsOfEmpire.GameStates
                 return;
             }
 
-            if (request.IsUnitsRecived == false)
+            if (request.IsUnitsReceived == false)
             {
                 SendCustomUnitsRequest();
             }
