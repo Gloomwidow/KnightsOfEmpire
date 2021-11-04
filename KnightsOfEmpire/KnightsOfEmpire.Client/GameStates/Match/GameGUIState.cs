@@ -71,7 +71,6 @@ namespace KnightsOfEmpire.GameStates
         {
             get
             {
-                Console.WriteLine((int)mainPanel.InnerSize.Y);
                 return (int)mainPanel.InnerSize.Y;
             }
         }
