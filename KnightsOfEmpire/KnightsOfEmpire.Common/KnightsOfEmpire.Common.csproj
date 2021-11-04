@@ -125,6 +125,7 @@
     <Compile Include="Resources\ServerResources.cs" />
     <Compile Include="Resources\Waiting\CustomUnitsServerResponse.cs" />
     <Compile Include="Resources\Waiting\MapClientRequest.cs" />
+    <Compile Include="Resources\Waiting\StartGameServerRequest.cs" />
     <Compile Include="Units\CustomUnits.cs" />
     <Compile Include="Units\UnitStance.cs" />
     <Compile Include="Units\UnitStats.cs" />

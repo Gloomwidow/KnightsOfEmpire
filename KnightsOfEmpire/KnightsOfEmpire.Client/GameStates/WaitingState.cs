@@ -18,6 +18,8 @@ using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
 
+using KnightsOfEmpire.GameStates.Match;
+
 namespace KnightsOfEmpire.GameStates
 {
     class WaitingState : GameState
@@ -92,6 +94,10 @@ namespace KnightsOfEmpire.GameStates
 
                     case PacketsHeaders.CustomUnitsServerResponse:
                         HandleCustomUnitsServerResponse(packet);
+                        break;
+
+                    case PacketsHeaders.StartGameServerRequest:
+                        HandleStartGameServerRequest(packet);
                         break;
                 }
             }
@@ -536,6 +542,38 @@ namespace KnightsOfEmpire.GameStates
             if (request.IsUnitsReceived == false)
             {
                 SendCustomUnitsRequest();
+            }
+        }
+
+        private void HandleStartGameServerRequest(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+
+            StartGameServerRequest request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<StartGameServerRequest>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                // TODO: Inform Server
+                return;
+            }
+
+            if (request == null)
+            {
+                // TODO: Inform Server
+                return;
+            }
+
+            if (request.StartGame == true)
+            {
+                GameStateManager.GameState = new MatchGameState();
+            }
+            else
+            {
+                // TODO: Inform Server
             }
         }
     }
