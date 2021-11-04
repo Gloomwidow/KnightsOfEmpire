@@ -5,10 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
+
+
 using KnightsOfEmpire.Server.GameStates;
 
 namespace KnightsOfEmpire.Server
@@ -16,9 +21,12 @@ namespace KnightsOfEmpire.Server
     public class Server
     {
         protected static bool isRunning = true;
+
         public static TCPServer TCPServer { get; protected set; }
 
         public static UDPServer UDPServer { get; protected set; }
+
+        public static ServerResources Resources { get; protected set; }
 
         private static Task TestUDPBroadcast;
 
@@ -51,6 +59,13 @@ namespace KnightsOfEmpire.Server
                 return;
             }
 
+            // Server resources
+            Resources = new ServerResources(TCPServer.MaxConnections);
+            // Load default map
+            Resources.Map = new Map("64x64test.kmap");
+
+
+            // First game state
             GameStateManager.GameState = new WaitingGameState();
 
             while (isRunning)

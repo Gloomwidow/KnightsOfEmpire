@@ -38,7 +38,7 @@ namespace KnightsOfEmpire.Common.Navigation
         public void AddBuildingOnMap(int buildX, int buildY)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            gameMap.TileTypes[buildX, buildY] = TileType.NonWalkable;
+            gameMap.TileTypes[buildX][buildY] = TileType.NonWalkable;
             Parallel.For(0, gameMap.TileCountX, (x, stateOuter) =>
             {
                 Parallel.For(0, gameMap.TileCountY, (y, stateInner) =>

@@ -56,6 +56,7 @@ namespace KnightsOfEmpire
 
         public static UDPClient UDPClient { get; set; }
 
+
         static void Main(string[] args)
         {
             DeltaTimeClock = new Clock();
@@ -65,6 +66,12 @@ namespace KnightsOfEmpire
             RenderWindow = new RenderWindow(mode, "Knights Of Empire");
 
             Gui = new Gui(RenderWindow);
+
+            RenderWindow.Resized += (sender, e) =>
+            {
+                Gui.View = new View(new FloatRect(new Vector2f(0, 0), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y)));
+            };
+
 
             RenderWindow.Closed += (obj, e) => 
             {
@@ -81,9 +88,11 @@ namespace KnightsOfEmpire
 
             // Add client resource
             Resources = new ClientResources();
+            // Default nickname
+            Resources.Nickname = "Test";
 
             // Add first GameState
-            GameStateManager.GameState = new MatchGameState();
+            GameStateManager.GameState = new MainState();
 
             while (RenderWindow.IsOpen)
             {
@@ -91,6 +100,7 @@ namespace KnightsOfEmpire
 
                 RenderWindow.DispatchEvents();
                 RenderWindow.Clear();
+               
 
                 //UDPClient works as a additional connection client for TCPClient
                 //Since UDP is connectionless, we won't know, if it successfully connected to the server.
@@ -110,8 +120,8 @@ namespace KnightsOfEmpire
                 {
                     if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
                     {
-                        SentPacket pingPacket = new SentPacket();
-                        pingPacket.stringBuilder.Append("2001 PING");
+                        SentPacket pingPacket = new SentPacket(PacketsHeaders.PING);
+                        pingPacket.stringBuilder.Append("PING");
                         TCPClient.SendToServer(pingPacket);
                         MessageToServerClock.Restart();
                     }

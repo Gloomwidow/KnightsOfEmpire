@@ -13,18 +13,20 @@ namespace KnightsOfEmpire.GameStates.Match
         public UnitsSelectionState UnitsSelectionState;
         public ViewControlState ViewControlState;
         public MapRenderState MapRenderState;
+        public GameGUIState GameGUIState;
 
 
         public override void LoadResources()
         {
+            UnitsSelectionState = new UnitsSelectionState();
+            ViewControlState = new ViewControlState();
             MapRenderState = new MapRenderState();
+            GameGUIState = new GameGUIState();
             MapRenderState.LoadResources();
         }
 
         public override void Initialize()
         {
-            UnitsSelectionState = new UnitsSelectionState();
-            ViewControlState = new ViewControlState();
             MapRenderState.GameMap = new Map("64x64test.kmap");
             MapRenderState.Initialize();
 
@@ -32,19 +34,24 @@ namespace KnightsOfEmpire.GameStates.Match
 
             ViewControlState.Initialize();
             UnitsSelectionState.Initialize();
+
+            GameGUIState.Initialize();
         }
 
         public override void Update()
         {
+            ViewControlState.ViewBottomBoundGuiHeight = GameGUIState.MainPanelHeight;
             ViewControlState.Update();
             UnitsSelectionState.Update();
+            GameGUIState.Update();
         }
 
         public override void Render()
         {
             MapRenderState.RenderView = ViewControlState.View;
             MapRenderState.Render();
-            UnitsSelectionState.Render(); 
+            UnitsSelectionState.Render();
+            GameGUIState.Render();
         }
 
         public override void Dispose()
@@ -52,6 +59,7 @@ namespace KnightsOfEmpire.GameStates.Match
             ViewControlState.Dispose();
             UnitsSelectionState.Dispose();
             MapRenderState.Dispose();
+            GameGUIState.Dispose();
         }
     }
 }

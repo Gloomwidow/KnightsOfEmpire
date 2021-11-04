@@ -13,6 +13,7 @@ using TGUI;
 
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
@@ -76,65 +77,22 @@ namespace KnightsOfEmpire.GameStates
         {
             foreach (ReceivedPacket packet in packets)
             {
-                string received = packet.GetContent();
-                if (received.StartsWith("2001 OK"))
+                switch(packet.GetHeader())
                 {
-                    continue;
-                }
-                WaitingStateServerResponse request = null;
-                try
-                {
-                    request = JsonSerializer.Deserialize<WaitingStateServerResponse>(received);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    SendInfoPacket();
-                }
+                    case PacketsHeaders.PING:
+                        break;
 
-                if (request != null)
-                {
-                    switch (request.Message)
-                    {
-                        case WaitingMessage.ServerOk:
-                            {
-                                playersNicknames = request.PlayerNicknames;
-                                playersReadyStatus = request.PlayerReadyStatus;
-                                state = State.Uppdate;
-                            }
-                            break;
-                        case WaitingMessage.ServerRefuse:
-                            {
-                                Console.WriteLine("Stop TCP");
-                                Client.TCPClient.Stop();
-                                Console.WriteLine("Server is refuse you");
-                                GameStateManager.GameState = new MainState("Server refuse you");
-                            }
-                            break;
-                        case WaitingMessage.ServerFull:
-                            {
-                                Console.WriteLine("Server is full");
-                                GameStateManager.GameState = new MainState("Server was full");
-                                Console.WriteLine("Stop TCP");
-                                Client.TCPClient.Stop();
-                            }
-                            break;
-                        case WaitingMessage.ServerInGame:
-                            {
-                                playersNicknames = request.PlayerNicknames;
-                                playersReadyStatus = request.PlayerReadyStatus;
-                                state = State.StartGame;
-                            }
-                            break;
-                        case WaitingMessage.ServerChangeNick:
-                            {
-                                Console.WriteLine("Change your nickname");
-                                GameStateManager.GameState = new MainState("Change your nickname");
-                                Console.WriteLine("Stop TCP");
-                                Client.TCPClient.Stop();
-                            }
-                            break;
-                    }
+                    case PacketsHeaders.WaitingStateServerResponse:
+                        HandleWaitingStateServerResponse(packet);
+                        break;
+
+                    case PacketsHeaders.MapServerResponse:
+                        HandleMapServerResponse(packet);
+                        break;
+
+                    case PacketsHeaders.CustomUnitsServerResponse:
+                        HandleCustomUnitsServerResponse(packet);
+                        break;
                 }
             }
         }
@@ -229,18 +187,6 @@ namespace KnightsOfEmpire.GameStates
         public override void Dispose()
         {
             Client.Gui.RemoveAllWidgets();
-        }
-
-        private void SendInfoPacket()
-        {
-            SentPacket infoPacket = new SentPacket();
-
-            WaitingStateClientRequest request = new WaitingStateClientRequest();
-            request.IsReady = clientReady;
-            request.Nickname = Client.Resources.Nickname;
-            infoPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
-
-            Client.TCPClient.SendToServer(infoPacket);
         }
 
         private void InitializeWaitingPanel()
@@ -419,7 +365,7 @@ namespace KnightsOfEmpire.GameStates
             return panel;
         }
 
-        void InitializeConnectPanle()
+        private void InitializeConnectPanle()
         {
             connectPanel = new Panel();
             connectPanel.Position = new Vector2f(0, 0);
@@ -434,6 +380,163 @@ namespace KnightsOfEmpire.GameStates
             connectLabel.HorizontalAlignment = HorizontalAlignment.Center;
             connectLabel.TextSize = 50;
             connectPanel.Add(connectLabel);
+        }
+
+        // TCP Send message
+
+        private void SendInfoPacket()
+        {
+            SentPacket infoPacket = new SentPacket(PacketsHeaders.WaitingStateClientRequest);
+
+            WaitingStateClientRequest request = new WaitingStateClientRequest();
+            request.IsReady = clientReady;
+            request.Nickname = Client.Resources.Nickname;
+            infoPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
+
+            Client.TCPClient.SendToServer(infoPacket);
+        }
+
+        private void SendMapRequest(bool isMapRecved)
+        {
+            SentPacket mapPacket = new SentPacket(PacketsHeaders.MapClientRequest);
+
+            MapClientRequest request = new MapClientRequest();
+            request.MapReceived = isMapRecved;
+
+            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
+
+            Client.TCPClient.SendToServer(mapPacket);
+
+            Console.WriteLine("Client: Send map request to server. Map status: " + isMapRecved);
+        }
+
+        private void SendCustomUnitsRequest()
+        {
+            SentPacket mapPacket = new SentPacket(PacketsHeaders.CustomUnitsClientRequest);
+
+            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(Client.Resources.CustomUnits));
+
+            Client.TCPClient.SendToServer(mapPacket);
+
+            Console.WriteLine("Send custom units request");
+        }
+
+        // TCP Handler
+
+        private void HandleWaitingStateServerResponse(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+            WaitingStateServerResponse request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<WaitingStateServerResponse>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                SendInfoPacket();
+            }
+
+            if (request != null)
+            {
+                switch (request.Message)
+                {
+                    case WaitingMessage.ServerOk:
+                        {
+                            playersNicknames = request.PlayerNicknames;
+                            playersReadyStatus = request.PlayerReadyStatus;
+                            state = State.Uppdate;
+                        }
+                        break;
+                    case WaitingMessage.ServerRefuse:
+                        {
+                            Console.WriteLine("Stop TCP");
+                            Client.TCPClient.Stop();
+                            Console.WriteLine("Server is refuse you");
+                            GameStateManager.GameState = new MainState("Server refuse you");
+                        }
+                        break;
+                    case WaitingMessage.ServerFull:
+                        {
+                            Console.WriteLine("Server is full");
+                            GameStateManager.GameState = new MainState("Server was full");
+                            Console.WriteLine("Stop TCP");
+                            Client.TCPClient.Stop();
+                        }
+                        break;
+                    case WaitingMessage.ServerInGame:
+                        {
+                            playersNicknames = request.PlayerNicknames;
+                            playersReadyStatus = request.PlayerReadyStatus;
+                            state = State.StartGame;
+                        }
+                        break;
+                    case WaitingMessage.ServerChangeNick:
+                        {
+                            Console.WriteLine("Change your nickname");
+                            GameStateManager.GameState = new MainState("Change your nickname");
+                            Console.WriteLine("Stop TCP");
+                            Client.TCPClient.Stop();
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void HandleMapServerResponse(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+
+            Map request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<Map>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                SendMapRequest(false);
+                return;
+            }
+
+            if(request == null)
+            {
+                SendMapRequest(false);
+                return;
+            }
+
+            Client.Resources.Map = request;
+            SendMapRequest(true);
+
+            Console.WriteLine("Map recived");
+        }
+
+        private void HandleCustomUnitsServerResponse(ReceivedPacket packet)
+        {
+            string received = packet.GetContent();
+
+            CustomUnitsServerResponse request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<CustomUnitsServerResponse>(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                SendCustomUnitsRequest();
+                return;
+            }
+
+            if (request == null)
+            {
+                SendCustomUnitsRequest();
+                return;
+            }
+
+            if (request.IsUnitsReceived == false)
+            {
+                SendCustomUnitsRequest();
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ using KnightsOfEmpire.Common.Resources.Waiting;
 
 namespace KnightsOfEmpire.GameStates
 {
-    class GameGUIState : GameState
+    public class GameGUIState : GameState
     {
         //Main panel for manage units and buldings
         private Panel mainPanel;
@@ -66,6 +66,16 @@ namespace KnightsOfEmpire.GameStates
             infoLabel.Visible = false;
             Client.Gui.Add(infoLabel);
         }
+
+        public int MainPanelHeight
+        {
+            get
+            {
+                Console.WriteLine((int)mainPanel.InnerSize.Y);
+                return (int)mainPanel.InnerSize.Y;
+            }
+        }
+
 
         /// <summary>
         /// Uppdate state

@@ -37,6 +37,7 @@ namespace KnightsOfEmpire.GameStates
         public int ViewCenterTopBoundY = 300;
         public int ViewCenterBottomBoundY = 700;
         public float ViewScrollSpeed = 800;
+        public int ViewBottomBoundGuiHeight = 0;
 
         protected EventHandler<MouseWheelScrollEventArgs> mouseScrollZoomHandler;
 
@@ -91,7 +92,7 @@ namespace KnightsOfEmpire.GameStates
                     View.Move(new Vector2f(0, -ViewScrollSpeedPerFrame));
                 }
             }
-            else if (MousePosition.Y >= (Client.RenderWindow.Size.Y - EdgeViewMoveOffset) && MousePosition.Y <= Client.RenderWindow.Size.Y)
+            else if (MousePosition.Y >= (Client.RenderWindow.Size.Y - EdgeViewMoveOffset) - ViewBottomBoundGuiHeight && MousePosition.Y <= Client.RenderWindow.Size.Y - ViewBottomBoundGuiHeight)
             {
                 if (View.Center.Y <= ViewCenterBottomBoundY)
                 {
