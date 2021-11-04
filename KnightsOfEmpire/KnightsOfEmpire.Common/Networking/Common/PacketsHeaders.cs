@@ -18,5 +18,7 @@ namespace KnightsOfEmpire.Common.Networking
 
         public const string CustomUnitsClientRequest = "3201";
         public const string CustomUnitsServerResponse = "3202";
+
+        public const string StartGameServerRequest = "3300";
     }
 }

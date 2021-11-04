@@ -27,7 +27,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void Initialize()
         {
-            MapRenderState.GameMap = new Map("64x64test.kmap");
+            MapRenderState.GameMap = Client.Resources.Map;
             MapRenderState.Initialize();
 
             ViewControlState.SetCameraBounds(MapRenderState.GetMapBounds());

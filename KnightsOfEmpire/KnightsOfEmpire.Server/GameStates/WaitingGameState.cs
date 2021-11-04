@@ -65,6 +65,7 @@ namespace KnightsOfEmpire.Server.GameStates
         public override void Update()
         {
             var TCPServer = Server.TCPServer;
+
             for (int i = 0; i < TCPServer.MaxConnections; i++)
             {
                 if (!TCPServer.IsClientConnected(i))
@@ -76,6 +77,7 @@ namespace KnightsOfEmpire.Server.GameStates
                     IsUnitsRecived[i] = false;
                 }
             }
+
             if ((DateTime.Now-lastResponseTime).TotalSeconds>=SendInfoDelay)
             {
                 WaitingStateServerResponse WaitingRoomStatus = new WaitingStateServerResponse
@@ -111,6 +113,56 @@ namespace KnightsOfEmpire.Server.GameStates
                 }
                 lastResponseTime = DateTime.Now;
             }
+
+            // Check start game conditions
+            if(CheckStartGameCondition())
+            {
+                Server.Resources.Nicknames = Nicknames;
+
+                for (int i = 0; i < Server.TCPServer.MaxConnections; i++)
+                {
+                    if (Server.TCPServer.IsClientConnected(i))
+                    {
+                        SendStartGameRequest(i);
+                    }
+                }
+
+                GameStateManager.GameState = new MatchGameState();
+            }
+
+        }
+
+        bool CheckStartGameCondition()
+        {
+            if(Server.TCPServer.CurrentActiveConnections < 2)
+            {
+                return false;
+            }
+
+            for(int i = 0; i < Server.TCPServer.MaxConnections; i++)
+            {
+                if(Server.TCPServer.IsClientConnected(i))
+                {
+                    if(IsNicknameChecked[i] == false)
+                    {
+                        return false;
+                    }
+                    if(IsMapSend[i] == false)
+                    {
+                        return false;
+                    }
+                    if(IsUnitsRecived[i] == false)
+                    {
+                        return false;
+                    }
+                    if(ReadyStatus[i] == false)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         // Send packets
@@ -127,6 +179,16 @@ namespace KnightsOfEmpire.Server.GameStates
             SentPacket packet = new SentPacket(PacketsHeaders.CustomUnitsServerResponse, clientID);
             CustomUnitsServerResponse data = new CustomUnitsServerResponse();
             data.IsUnitsReceived = isRecived;
+
+            packet.stringBuilder.Append(JsonSerializer.Serialize(data));
+            Server.TCPServer.SendToClient(packet);
+        }
+
+        private void SendStartGameRequest(int clientID)
+        {
+            SentPacket packet = new SentPacket(PacketsHeaders.StartGameServerRequest, clientID);
+            StartGameServerRequest data = new StartGameServerRequest();
+            data.StartGame = true;
 
             packet.stringBuilder.Append(JsonSerializer.Serialize(data));
             Server.TCPServer.SendToClient(packet);
