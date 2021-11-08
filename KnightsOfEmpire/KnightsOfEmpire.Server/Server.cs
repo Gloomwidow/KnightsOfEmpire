@@ -9,6 +9,7 @@ using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
+using KnightsOfEmpire.Common.Units;
 using KnightsOfEmpire.Server.GameStates;
 
 namespace KnightsOfEmpire.Server
@@ -20,8 +21,6 @@ namespace KnightsOfEmpire.Server
 
         public static UDPServer UDPServer { get; protected set; }
 
-        private static Task TestUDPBroadcast;
-
         /// <summary>
         /// Time for server to do one gamestate loop
         /// </summary>
@@ -31,7 +30,7 @@ namespace KnightsOfEmpire.Server
 
         static void Main(string[] args)
         {
-            
+            UnitIdManager.SetupIds(2);
             Console.WriteLine("Server starting up!");
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnExit);
@@ -55,7 +54,7 @@ namespace KnightsOfEmpire.Server
 
             while (isRunning)
             {
-                TickTimer.Start();
+                TickTimer.Restart();
                 GameStateManager.UpdateState();
                 if (GameStateManager.GameState != null)
                 {
@@ -87,7 +86,6 @@ namespace KnightsOfEmpire.Server
         protected static void OnExit(object sender, EventArgs e)
         {
             isRunning = false;
-            TestUDPBroadcast.Wait();
             UDPServer.Stop();
             TCPServer.Stop();
         }

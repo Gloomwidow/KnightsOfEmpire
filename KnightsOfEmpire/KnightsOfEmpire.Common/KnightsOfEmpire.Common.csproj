@@ -121,8 +121,12 @@
     <Compile Include="Networking\UDP\UDPServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ClientResources.cs" />
+    <Compile Include="Resources\Units\TrainUnitRequest.cs" />
     <Compile Include="Resources\Units\UnregisterUnitResponse.cs" />
     <Compile Include="Resources\Units\RegisterUnitResponse.cs" />
+    <Compile Include="Resources\Units\UpdateUnitData.cs" />
+    <Compile Include="Resources\Units\UpdateUnitsResponse.cs" />
+    <Compile Include="Units\UnitIdManager.cs" />
     <Compile Include="Units\UnitStance.cs" />
     <Compile Include="Units\UnitStats.cs" />
     <Compile Include="Units\Unit.cs" />

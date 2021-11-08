@@ -17,10 +17,6 @@ namespace KnightsOfEmpire.Common.Resources.Units
         /// </summary>
         public int PlayerId { get; set; }
         /// <summary>
-        /// ID from player used units
-        /// </summary>
-        public int PlayerUnitId { get; set; }
-        /// <summary>
         /// Unique id to identify which unit is deleted
         /// </summary>
         public char[] ID { get; set; }

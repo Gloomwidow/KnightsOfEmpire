@@ -17,9 +17,9 @@ namespace KnightsOfEmpire.Common.Resources.Units
         /// </summary>
         public int PlayerId { get; set; }
         /// <summary>
-        /// ID from player used units
+        /// Which unit is it from player roster
         /// </summary>
-        public int PlayerUnitId { get; set; }
+        public int UnitTypeId { get; set; }
         /// <summary>
         /// Unique id to identify unit during updates
         /// </summary>
