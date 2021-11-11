@@ -107,6 +107,7 @@
     <Compile Include="Extensions\Vector2fExtension.cs" />
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
+    <Compile Include="GameStates\UnitState.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\TileType.cs" />
     <Compile Include="Navigation\FlowField.cs" />
@@ -128,8 +129,8 @@
     <Compile Include="Resources\Waiting\StartGameServerRequest.cs" />
     <Compile Include="Units\CustomUnits.cs" />
     <Compile Include="Resources\Units\TrainUnitRequest.cs" />
-    <Compile Include="Resources\Units\UnregisterUnitResponse.cs" />
-    <Compile Include="Resources\Units\RegisterUnitResponse.cs" />
+    <Compile Include="Resources\Units\UnregisterUnitRequest.cs" />
+    <Compile Include="Resources\Units\RegisterUnitRequest.cs" />
     <Compile Include="Resources\Units\UpdateUnitData.cs" />
     <Compile Include="Resources\Units\UpdateUnitsResponse.cs" />
     <Compile Include="Units\UnitIdManager.cs" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Buildings\" />
+    <Folder Include="Helper\" />
     <Folder Include="Units\Groups\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

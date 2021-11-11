@@ -9,15 +9,18 @@ namespace KnightsOfEmpire.Common.Units
 {
     public class Unit
     {
+        public const int UnitSize = 32;
+
+
         /// <summary>
         /// Unique 2 chars to identify units
         /// </summary>
 
         public char[] ID { get; set; }
 
-        public Vector2f Position { get; protected set; }
-        public Vector2f MoveDirection { get; protected set; }
-        public UnitStats Stats { get; protected set; }
+        public Vector2f Position { get; set; }
+        public Vector2f MoveDirection { get; set; }
+        public UnitStats Stats { get; set; }
 
         /// <summary>
         /// Texture Id which is used to render unit on map 
@@ -27,6 +30,16 @@ namespace KnightsOfEmpire.Common.Units
         /// Unit stance indicates what unit is doing. It can be used to play certain animations.
         /// </summary>
         public UnitStance Stance { get; set; }
+
+        public bool EqualID(char[] otherID)
+        {
+            if (ID.Length != otherID.Length) return false;
+            for(int i=0;i<ID.Length;i++)
+            {
+                if (ID[i] != otherID[i]) return false;
+            }
+            return true;
+        }
 
         
     }

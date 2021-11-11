@@ -452,6 +452,7 @@ namespace KnightsOfEmpire.GameStates
                             playersNicknames = request.PlayerNicknames;
                             playersReadyStatus = request.PlayerReadyStatus;
                             state = State.Uppdate;
+                            Client.Resources.PlayerGameId = request.PlayerGameId;
                         }
                         break;
                     case WaitingMessage.ServerRefuse:

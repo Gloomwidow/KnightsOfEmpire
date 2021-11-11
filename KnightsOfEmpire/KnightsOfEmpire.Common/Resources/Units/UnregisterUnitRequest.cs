@@ -10,7 +10,7 @@ namespace KnightsOfEmpire.Common.Resources.Units
     /// A response from server informing client to unregister (delete) unit in case of its death for instance
     /// </summary>
     [Serializable]
-    public class UnregisterUnitResponse
+    public class UnregisterUnitRequest
     {
         /// <summary>
         /// To which player belongs that unit

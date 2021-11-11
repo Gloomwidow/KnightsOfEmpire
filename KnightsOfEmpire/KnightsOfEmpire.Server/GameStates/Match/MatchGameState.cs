@@ -6,25 +6,34 @@ using System.Threading.Tasks;
 
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Server.GameStates.Match;
 
 namespace KnightsOfEmpire.Server.GameStates
 {
     public class MatchGameState : GameState
     {
+
+        protected UnitUpdateState unitState = new UnitUpdateState();
         public override void Initialize()
         {
-            // TODO: Fill
             Console.WriteLine("Start MatchGameState on server");
+            unitState.Initialize();
         }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
         {
-            // TODO: Fill
+            foreach(ReceivedPacket packet in packets)
+            {
+                if (packet.GetHeader().StartsWith(PacketsHeaders.GameUnitHeaderStart))
+                {
+                    unitState.HandleTCPPacket(packet);
+                }
+            }
         }
 
         public override void Update()
         {
-            // TODO: Fill
+            unitState.Update();
         }
     }
 }

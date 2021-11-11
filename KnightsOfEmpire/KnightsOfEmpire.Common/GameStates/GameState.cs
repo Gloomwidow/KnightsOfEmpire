@@ -11,7 +11,15 @@ namespace KnightsOfEmpire.Common.GameStates
     {
         public virtual void LoadResources() { }
         public virtual void Initialize() { }
-        public virtual void HandleTCPPackets(List<ReceivedPacket> packets) { }
+
+        public virtual void HandleTCPPacket(ReceivedPacket packets) { }
+        public virtual void HandleTCPPackets(List<ReceivedPacket> packets) 
+        {
+            foreach(ReceivedPacket packet in packets)
+            {
+                HandleTCPPacket(packet);
+            }
+        }
         public virtual void HandleUDPPackets(List<ReceivedPacket> packets) { }
         public virtual void Update() { }
         public virtual void Render() { }

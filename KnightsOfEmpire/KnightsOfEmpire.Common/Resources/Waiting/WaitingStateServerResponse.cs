@@ -9,6 +9,7 @@ namespace KnightsOfEmpire.Common.Resources.Waiting
     [Serializable]
     public class WaitingStateServerResponse
     {
+        public int PlayerGameId { get; set; }
         public WaitingMessage Message { get; set; }
 
         public string[] PlayerNicknames { get; set; }
