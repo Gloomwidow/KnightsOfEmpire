@@ -127,6 +127,12 @@
     <Compile Include="Resources\Waiting\MapClientRequest.cs" />
     <Compile Include="Resources\Waiting\StartGameServerRequest.cs" />
     <Compile Include="Units\CustomUnits.cs" />
+    <Compile Include="Resources\Units\TrainUnitRequest.cs" />
+    <Compile Include="Resources\Units\UnregisterUnitResponse.cs" />
+    <Compile Include="Resources\Units\RegisterUnitResponse.cs" />
+    <Compile Include="Resources\Units\UpdateUnitData.cs" />
+    <Compile Include="Resources\Units\UpdateUnitsResponse.cs" />
+    <Compile Include="Units\UnitIdManager.cs" />
     <Compile Include="Units\UnitStance.cs" />
     <Compile Include="Units\UnitStats.cs" />
     <Compile Include="Units\Unit.cs" />

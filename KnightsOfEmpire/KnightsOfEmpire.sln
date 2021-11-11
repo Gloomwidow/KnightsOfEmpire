@@ -11,34 +11,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightsOfEmpire.Common", "K
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Debug|x64.ActiveCfg = Debug|x64
 		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Debug|x64.Build.0 = Debug|x64
-		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Release|x64.ActiveCfg = Release|x64
 		{F4C7EDD1-5791-4C48-9A3F-C644A2228183}.Release|x64.Build.0 = Release|x64
-		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Debug|x64.ActiveCfg = Debug|x64
 		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Debug|x64.Build.0 = Debug|x64
-		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Release|x64.ActiveCfg = Release|x64
 		{1DCF2AE6-FDB6-463B-8FBA-B07987A7284B}.Release|x64.Build.0 = Release|x64
-		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Debug|x64.ActiveCfg = Debug|x64
 		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Debug|x64.Build.0 = Debug|x64
-		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Release|x64.ActiveCfg = Release|x64
 		{189DC325-08C4-4559-9AA3-5BF131A6923C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
