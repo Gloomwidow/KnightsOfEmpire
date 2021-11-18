@@ -66,6 +66,15 @@ namespace KnightsOfEmpire.Common.Map
             if (pos.X < 0 || pos.X >= TileCountX * TilePixelSize) return false;
             return pos.Y >= 0 && pos.Y < TileCountY * TilePixelSize;
         }
+        public bool IsPositionInBounds(float x, float y)
+        {
+            return IsPositionInBounds(new Vector2f(x, y));
+        }
+
+        public bool CanUnitBeSpawnedOnPos(float x, float y)
+        {
+            return CanUnitBeSpawnedOnPos(new Vector2f(x, y));
+        }
 
         public Map() { }
 
