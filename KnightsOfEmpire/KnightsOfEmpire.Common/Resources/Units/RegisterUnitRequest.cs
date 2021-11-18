@@ -10,7 +10,7 @@ namespace KnightsOfEmpire.Common.Resources.Units
     /// A response from server informing client to register new unit on their side
     /// </summary>
     [Serializable]
-    public class RegisterUnitResponse
+    public class RegisterUnitRequest
     {
         /// <summary>
         /// To which player belongs that unit

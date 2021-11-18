@@ -14,6 +14,7 @@ namespace KnightsOfEmpire.Common.Resources
     /// </summary>
     public class ClientResources
     {
+        public int PlayerGameId { get; set; }
         public ClientResources()
         {
             Nickname = string.Empty;

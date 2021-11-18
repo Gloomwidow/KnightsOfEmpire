@@ -86,14 +86,15 @@ namespace KnightsOfEmpire.Server.GameStates
                     PlayerNicknames = Nicknames,
                     PlayerReadyStatus = ReadyStatus
                 };
-                SentPacket waitingInfoPacket = new SentPacket(PacketsHeaders.WaitingStateServerResponse);
-
-                waitingInfoPacket.stringBuilder.Append(JsonSerializer.Serialize(WaitingRoomStatus));
+                
 
                 for (int i = 0; i < TCPServer.MaxConnections; i++)
                 {
                     if (TCPServer.IsClientConnected(i))
                     {
+                        SentPacket waitingInfoPacket = new SentPacket(PacketsHeaders.WaitingStateServerResponse);
+                        WaitingRoomStatus.PlayerGameId = i;
+                        waitingInfoPacket.stringBuilder.Append(JsonSerializer.Serialize(WaitingRoomStatus));
                         waitingInfoPacket.ClientID = i;
                         TCPServer.SendToClient(waitingInfoPacket);
 
@@ -134,7 +135,7 @@ namespace KnightsOfEmpire.Server.GameStates
 
         bool CheckStartGameCondition()
         {
-            if(Server.TCPServer.CurrentActiveConnections < 2)
+            if(Server.TCPServer.CurrentActiveConnections < 1)
             {
                 return false;
             }

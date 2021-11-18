@@ -114,6 +114,7 @@
     <Compile Include="GameStates\MainState.cs" />
     <Compile Include="GameStates\Match\MapRenderState.cs" />
     <Compile Include="GameStates\Match\MatchGameState.cs" />
+    <Compile Include="GameStates\Match\UnitUpdateState.cs" />
     <Compile Include="GameStates\Match\ViewControlState.cs" />
     <Compile Include="GameStates\TestState.cs" />
     <Compile Include="GameStates\Match\UnitsSelectionState.cs" />

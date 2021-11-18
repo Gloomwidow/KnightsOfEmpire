@@ -1,9 +1,14 @@
 ﻿using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Map;
+using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Common.Resources.Units;
+using SFML.System;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace KnightsOfEmpire.GameStates.Match
@@ -14,6 +19,9 @@ namespace KnightsOfEmpire.GameStates.Match
         public ViewControlState ViewControlState;
         public MapRenderState MapRenderState;
         public GameGUIState GameGUIState;
+        public UnitUpdateState UnitUpdateState;
+
+        bool isMousePressed = false;
 
 
         public override void LoadResources()
@@ -22,6 +30,7 @@ namespace KnightsOfEmpire.GameStates.Match
             ViewControlState = new ViewControlState();
             MapRenderState = new MapRenderState();
             GameGUIState = new GameGUIState();
+            UnitUpdateState = new UnitUpdateState();
             MapRenderState.LoadResources();
         }
 
@@ -29,6 +38,7 @@ namespace KnightsOfEmpire.GameStates.Match
         {
             MapRenderState.GameMap = Client.Resources.Map;
             MapRenderState.Initialize();
+            UnitUpdateState.Initialize();
 
             ViewControlState.SetCameraBounds(MapRenderState.GetMapBounds());
 
@@ -38,9 +48,52 @@ namespace KnightsOfEmpire.GameStates.Match
             GameGUIState.Initialize();
         }
 
+        public override void HandleTCPPackets(List<ReceivedPacket> packets)
+        {
+            foreach(ReceivedPacket packet in packets)
+            {
+                if(packet.GetHeader().StartsWith(PacketsHeaders.GameUnitHeaderStart))
+                {
+                    UnitUpdateState.HandleTCPPacket(packet);
+                }
+            }
+        }
+
         public override void Update()
         {
             ViewControlState.ViewBottomBoundGuiHeight = GameGUIState.MainPanelHeight;
+
+            //TO-DO: convert this behavior to button press on MainState GUI
+
+            if (!isMousePressed && Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                isMousePressed = true;
+                Vector2i clickPos = Mouse.GetPosition(Client.RenderWindow);
+                if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
+                {
+                    Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
+                    if(MapRenderState.GameMap.CanUnitBeSpawnedOnPos(spawnPos))
+                    {
+                        TrainUnitRequest request = new TrainUnitRequest
+                        {
+                            UnitTypeId = 0,
+                            BuildingPosX = (int)spawnPos.X,
+                            BuildingPosY = (int)spawnPos.Y,
+                        };
+
+                        SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest, -1);
+                        packet.stringBuilder.Append(JsonSerializer.Serialize(request));
+                        Client.TCPClient.SendToServer(packet);
+                    }
+                }
+            }
+            else if(!Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                isMousePressed = false;
+            }
+
+
+
             ViewControlState.Update();
             UnitsSelectionState.Update();
             GameGUIState.Update();
@@ -50,6 +103,7 @@ namespace KnightsOfEmpire.GameStates.Match
         {
             MapRenderState.RenderView = ViewControlState.View;
             MapRenderState.Render();
+            UnitUpdateState.Render();
             UnitsSelectionState.Render();
             GameGUIState.Render();
         }
@@ -60,6 +114,7 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitsSelectionState.Dispose();
             MapRenderState.Dispose();
             GameGUIState.Dispose();
+            UnitUpdateState.Dispose();
         }
     }
 }

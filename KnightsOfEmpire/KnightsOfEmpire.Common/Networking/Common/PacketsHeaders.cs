@@ -20,5 +20,16 @@ namespace KnightsOfEmpire.Common.Networking
         public const string CustomUnitsServerResponse = "3202";
 
         public const string StartGameServerRequest = "3300";
+
+
+        // Everything for units will have header starting with 50
+        public const string GameUnitHeaderStart = "50";
+
+        public const string GameUnitRegisterRequest = "5010";
+        public const string GameUnitUnregisterRequest = "5011";
+
+        public const string GameUnitUpdateRequest = "5050";
+
+        public const string GameUnitTrainRequest = "5055";
     }
 }
