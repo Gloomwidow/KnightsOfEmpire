@@ -157,7 +157,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 unregisterPacket.ClientID = i;
                 Server.TCPServer.SendToClient(unregisterPacket);
             }
-            GameUnits[playerId][index].UnitGroup.Leave(GameUnits[playerId][index]);
+            if(GameUnits[playerId][index].UnitGroup!=null) GameUnits[playerId][index].UnitGroup.Leave(GameUnits[playerId][index]);
             GameUnits[playerId].RemoveAt(index);
         }
     }
