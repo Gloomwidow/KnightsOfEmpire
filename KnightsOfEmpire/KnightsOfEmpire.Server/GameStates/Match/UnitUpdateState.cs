@@ -1,5 +1,6 @@
 ﻿using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
@@ -54,25 +55,29 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             }
             for(int i=0;i<MaxPlayerCount;i++)
             {
-                for(int j=0;j<GameUnits[i].Count;j++)
+                for (int j = 0; j < GameUnits[i].Count; j++)
                 {
                     Unit u = GameUnits[i][j];
-                    if(u.Stats.HealthPercentage<=0)
+                    // delete death units
+                    if (u.Stats.HealthPercentage <= 0)
                     {
                         DeleteUnit(i, j);
                         j--;
                         continue;
                     }
-                    if(u.UnitGroup != null)
+
+                    Vector2f flowVector = new Vector2f(0, 0);
+
+                    // if unit is in moving group, get its movement direction
+                    if (u.UnitGroup != null)
                     {
-                        Vector2f flowVector = Server.Resources.NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
-                        u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
+                        flowVector = Server.Resources.NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
                     }
+
+                    u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
                     u.Move(Server.DeltaTime);
-                    if(u.UnitGroup.Target.Equals(Server.Resources.Map.ToTilePos(u.Position)))
-                    {
-                        u.UnitGroup.Leave(u);
-                    } 
+
+                    if (u.UnitGroup != null) u.UnitGroup.UpdateUnitComplete(u);
                 }
             }
         }
@@ -152,7 +157,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 unregisterPacket.ClientID = i;
                 Server.TCPServer.SendToClient(unregisterPacket);
             }
-
+            GameUnits[playerId][index].UnitGroup.Leave(GameUnits[playerId][index]);
             GameUnits[playerId].RemoveAt(index);
         }
     }

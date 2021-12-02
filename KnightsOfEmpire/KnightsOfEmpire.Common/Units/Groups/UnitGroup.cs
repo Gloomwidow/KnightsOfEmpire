@@ -44,6 +44,14 @@ namespace KnightsOfEmpire.Common.Units.Groups
 
         }
 
+        public virtual void UpdateUnitComplete(Unit u)
+        {
+            if (u.UnitGroup.Target.Equals(GameMap.ToTilePos(u.Position)))
+            {
+                u.UnitGroup.Leave(u);
+            }
+        }
+
         public virtual bool HasGroupBeenCompleted()
         {
             return UnitCount <= 0;

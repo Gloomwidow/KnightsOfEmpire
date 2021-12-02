@@ -60,7 +60,7 @@ namespace KnightsOfEmpire.Common.Map
             return IsTileWalkable(tileX, tileY);
         }
 
-        public Vector2i ToTilePos(Vector2f pos)
+        public static Vector2i ToTilePos(Vector2f pos)
         {
             int tileX = (int)(pos.X / TilePixelSize);
             int tileY = (int)(pos.Y / TilePixelSize);
