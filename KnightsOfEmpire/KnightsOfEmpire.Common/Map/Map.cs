@@ -35,6 +35,8 @@ namespace KnightsOfEmpire.Common.Map
          */
 
         public static int TilePixelSize = 64;
+
+        public const float WallPushBackBias = 0.01f;
         public int TileCountX { get; set; }
         public int TileCountY { get; set; }
         public TileType[][] TileTypes { get; set; }
@@ -80,6 +82,55 @@ namespace KnightsOfEmpire.Common.Map
         public bool CanUnitBeSpawnedOnPos(float x, float y)
         {
             return CanUnitBeSpawnedOnPos(new Vector2f(x, y));
+        }
+
+        /// <summary>
+        /// Snaps unit position to tile's wall. If unit would move on non-walkable tile, it will be stopped at tile's edge.
+        /// </summary>
+        /// <param name="oldPos"> Previous unit position </param>
+        /// <param name="newPos"> Unit's position after movement</param>
+        /// <returns> Unit's position after movement with wall compensation</returns>
+        public Vector2f SnapToWall(Vector2f oldPos, Vector2f newPos)
+        {
+            Vector2i obstaclePos = ToTilePos(newPos);
+            if (IsTileWalkable(obstaclePos.X, obstaclePos.Y)) return newPos;
+            Vector2f result = new Vector2f(0, 0);
+            Vector2f dimensionX = new Vector2f(obstaclePos.X * TilePixelSize, (obstaclePos.X + 1) * TilePixelSize);
+            Vector2f dimensionY = new Vector2f(obstaclePos.Y * TilePixelSize, (obstaclePos.Y + 1) * TilePixelSize);
+
+            if (newPos.X >= dimensionX.X && newPos.X <= dimensionX.Y)
+            {
+                if (Math.Abs(oldPos.X - dimensionX.X) <= Math.Abs(oldPos.X - dimensionX.Y))
+                {
+                    result.X = dimensionX.X - WallPushBackBias;
+                }
+                else
+                {
+                    result.X = dimensionX.Y + WallPushBackBias;
+                }
+            }
+            else
+            {
+                result.X = newPos.X;
+            }
+
+            if (newPos.Y >= dimensionY.X && newPos.Y <= dimensionY.Y)
+            {
+                if (Math.Abs(oldPos.Y - dimensionY.X) <= Math.Abs(oldPos.Y - dimensionY.Y))
+                {
+                    result.Y = dimensionY.X - WallPushBackBias;
+                }
+                else
+                {
+                    result.Y = dimensionY.Y + WallPushBackBias;
+                }
+            }
+            else
+            {
+                result.Y = newPos.Y;
+            }
+
+            return result;
         }
 
         public Map() { }

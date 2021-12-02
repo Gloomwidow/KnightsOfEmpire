@@ -77,6 +77,8 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
                     u.Move(Server.DeltaTime);
 
+                    u.Position = Server.Resources.Map.SnapToWall(u.PreviousPosition, u.Position);
+
                     if (u.UnitGroup != null) u.UnitGroup.UpdateUnitComplete(u);
                 }
             }
