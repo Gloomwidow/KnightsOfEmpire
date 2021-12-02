@@ -18,12 +18,14 @@ using System.Net;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
+using KnightsOfEmpire.Common.Units;
 
 namespace KnightsOfEmpire.GameStates
 {
     public class UnitsSelectionState : GameState
     {
         public RectangleShape selectionRectangle;
+        public List<Unit>[] GameUnits;
 
         public override void Initialize() 
         {
@@ -47,7 +49,13 @@ namespace KnightsOfEmpire.GameStates
             else if (!Mouse.IsButtonPressed(Mouse.Button.Left) && selectionRectangle != null)
             {
                 ChangleSelectionRectangleCoords(worldPos);
-                // TO-DO select units in rectangle 
+                FloatRect selectionRect = selectionRectangle.GetGlobalBounds();
+                for (int i=0;i< GameUnits[Client.Resources.PlayerGameId].Count; i++) 
+                {
+                    Unit unit = GameUnits[Client.Resources.PlayerGameId][i];
+                    FloatRect unitRect = new FloatRect(unit.Position - new Vector2f(Unit.UnitSize / 2, Unit.UnitSize / 2), new Vector2f(Unit.UnitSize, Unit.UnitSize));
+                    unit.IsSelected = selectionRect.Intersects(unitRect);
+                }
                 selectionRectangle = null;
             }
         }
