@@ -57,8 +57,14 @@ namespace KnightsOfEmpire.Common.Map
             if (!IsPositionInBounds(pos)) return false;
             int tileX = (int)(pos.X / TilePixelSize);
             int tileY = (int)(pos.Y / TilePixelSize);
-            Console.WriteLine($"{tileX} {tileY}");
             return IsTileWalkable(tileX, tileY);
+        }
+
+        public Vector2i ToTilePos(Vector2f pos)
+        {
+            int tileX = (int)(pos.X / TilePixelSize);
+            int tileY = (int)(pos.Y / TilePixelSize);
+            return new Vector2i(tileX, tileY);
         }
 
         public bool IsPositionInBounds(Vector2f pos)

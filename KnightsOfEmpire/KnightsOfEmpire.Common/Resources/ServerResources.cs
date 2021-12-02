@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using KnightsOfEmpire.Common.Navigation;
 using KnightsOfEmpire.Common.Units;
 
 namespace KnightsOfEmpire.Common.Resources
@@ -11,6 +11,8 @@ namespace KnightsOfEmpire.Common.Resources
     public class ServerResources
     {
         public Map.Map Map { get; set; }
+
+        public FlowFieldManager NavigationManager;
 
         public string[] Nicknames { get; set; }
 

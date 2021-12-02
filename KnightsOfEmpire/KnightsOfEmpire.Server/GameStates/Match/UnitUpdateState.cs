@@ -1,7 +1,10 @@
-﻿using KnightsOfEmpire.Common.GameStates;
+﻿using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Navigation;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
 using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.Common.Units.Groups;
 using SFML.System;
 using System;
 using System.Collections.Generic;
@@ -15,8 +18,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
-
-        private static Stopwatch UnregisterTestTimer;
+        public List<UnitGroup> UnitGroups;
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch (packet.GetHeader())
@@ -24,47 +26,82 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 case PacketsHeaders.GameUnitTrainRequest:
                     TrainUnit(packet);
                     break;
-               
+                case PacketsHeaders.GameUnitsMoveToTileRequest:
+                    CreateMoveUnitsGroup(packet);
+                    break;
+
             }
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            UnregisterTestTimer = new Stopwatch();
-            UnregisterTestTimer.Restart();
+            UnitGroups = new List<UnitGroup>();
+            Server.Resources.NavigationManager = new FlowFieldManager(Server.Resources.Map);
         }
 
         public override void Update()
         {
-            // this code fragment will first unit in list of each player every 10 seconds to check if unregistering is working 
-            // TO-DO: remove this fragment once units will be more 'active'
-            if (UnregisterTestTimer.ElapsedMilliseconds/1000.0f>=10.0f)
+            for (int i = 0; i < UnitGroups.Count; i++)
             {
-                for(int i=0;i<MaxPlayerCount;i++)
+                UnitGroup ug = UnitGroups[i];
+                if (ug.HasGroupBeenCompleted())
                 {
-                    if(GameUnits[i].Count>0)
-                    {
-                        DeleteUnit(i, 0);
-                    }
+                    UnitGroups.RemoveAt(i);
+                    i--;
                 }
-                UnregisterTestTimer.Restart();
+                else ug.Update();
             }
-            
+            for(int i=0;i<MaxPlayerCount;i++)
+            {
+                for(int j=0;j<GameUnits[i].Count;j++)
+                {
+                    Unit u = GameUnits[i][j];
+                    if(u.Stats.HealthPercentage<=0)
+                    {
+                        DeleteUnit(i, j);
+                        j--;
+                        continue;
+                    }
+                    if(u.UnitGroup != null)
+                    {
+                        Vector2f flowVector = Server.Resources.NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
+                        u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
+                    }
+                    u.Move(Server.DeltaTime);
+                    if(u.UnitGroup.Target.Equals(Server.Resources.Map.ToTilePos(u.Position)))
+                    {
+                        u.UnitGroup.Leave(u);
+                    } 
+                }
+            }
+        }
+
+        protected void CreateMoveUnitsGroup(ReceivedPacket packet)
+        {
+            MoveUnitsToPositionRequest request = packet.GetRequestOrDefault<MoveUnitsToPositionRequest>();
+            if (request == null) return;
+
+            UnitGroup group = new UnitGroup();
+            group.TargetX = request.GoalX;
+            group.TargetY = request.GoalY;
+
+            foreach(string ID in request.UnitIDs)
+            {
+                Unit u = GameUnits[packet.ClientID].Find(x => x.EqualID(ID.ToCharArray()));
+                if(u!=null)
+                {
+                    group.Join(u);
+                }
+            }
+
+            UnitGroups.Add(group);
         }
 
         protected void TrainUnit(ReceivedPacket packet)
         {
-            TrainUnitRequest request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<TrainUnitRequest>(packet.GetContent());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
+            TrainUnitRequest request = packet.GetRequestOrDefault<TrainUnitRequest>();
+            if (request == null) return;
 
             //TO-DO: once we will have gold, check if player has enough of it to train
             //TO-DO: check if player has building to trait this unit (check Building Pos)
@@ -72,6 +109,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             Unit unit = new Unit()
             {
                 ID = UnitIdManager.GetNewId(),
+                PlayerId = packet.ClientID,
                 Position = new Vector2f(request.BuildingPosX, request.BuildingPosY),
                 TextureId = 0,
                 Stats = new UnitStats()

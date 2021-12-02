@@ -108,6 +108,7 @@ namespace KnightsOfEmpire.GameStates.Match
             Unit unit = new Unit()
             {
                 ID = request.ID,
+                PlayerId = request.PlayerId,
                 Position = new Vector2f(request.StartPositionX, request.StartPositionY),
                 TextureId = 0,
                 Stats = new UnitStats()

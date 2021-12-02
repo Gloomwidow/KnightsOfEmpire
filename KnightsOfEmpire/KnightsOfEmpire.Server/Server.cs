@@ -36,6 +36,13 @@ namespace KnightsOfEmpire.Server
 
         private static Stopwatch TickTimer;
 
+        /// <summary>
+        /// Time between each frame render. Use it to synchronize rendering with real-time, so frames per second won't have impact on graphic execution speed.
+        /// </summary>
+        public static float DeltaTime { get; private set; }
+
+        private static Stopwatch DeltaTimer;
+
         static void Main(string[] args)
         {
             UnitIdManager.SetupIds(2);
@@ -43,6 +50,7 @@ namespace KnightsOfEmpire.Server
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnExit);
             TickTimer = new Stopwatch();
+            DeltaTimer = new Stopwatch();
 
             TCPServer = new TCPServer("127.0.0.1", 26969, 4, 30);
 
@@ -70,6 +78,7 @@ namespace KnightsOfEmpire.Server
             while (isRunning)
             {
                 TickTimer.Restart();
+                DeltaTimer.Restart();
                 GameStateManager.UpdateState();
                 if (GameStateManager.GameState != null)
                 {
@@ -88,6 +97,8 @@ namespace KnightsOfEmpire.Server
                     float Difference = TickRate - elapsedTime;
                     Thread.Sleep((int)(Difference * 1000));
                 }
+                DeltaTimer.Stop();
+                DeltaTime = DeltaTimer.ElapsedMilliseconds / 1000.0f;
             }
 
             UDPServer.Stop();
