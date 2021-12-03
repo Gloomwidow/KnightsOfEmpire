@@ -15,7 +15,6 @@ namespace KnightsOfEmpire.GameStates.Match
 {
     public class MatchGameState : GameState
     {
-        public UnitsSelectionState UnitsSelectionState;
         public ViewControlState ViewControlState;
         public MapRenderState MapRenderState;
         public GameGUIState GameGUIState;
@@ -26,7 +25,6 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void LoadResources()
         {
-            UnitsSelectionState = new UnitsSelectionState();
             ViewControlState = new ViewControlState();
             MapRenderState = new MapRenderState();
             GameGUIState = new GameGUIState();
@@ -43,7 +41,6 @@ namespace KnightsOfEmpire.GameStates.Match
             ViewControlState.SetCameraBounds(MapRenderState.GetMapBounds());
 
             ViewControlState.Initialize();
-            UnitsSelectionState.Initialize();
 
             GameGUIState.Initialize();
         }
@@ -65,7 +62,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
             //TO-DO: convert this behavior to button press on MainState GUI
 
-            if (!isMousePressed && Mouse.IsButtonPressed(Mouse.Button.Left))
+            if (!isMousePressed && Mouse.IsButtonPressed(Mouse.Button.Left) && Keyboard.IsKeyPressed(Keyboard.Key.LControl))
             {
                 isMousePressed = true;
                 Vector2i clickPos = Mouse.GetPosition(Client.RenderWindow);
@@ -93,9 +90,8 @@ namespace KnightsOfEmpire.GameStates.Match
             }
 
 
-
+            UnitUpdateState.Update();
             ViewControlState.Update();
-            UnitsSelectionState.Update();
             GameGUIState.Update();
         }
 
@@ -104,14 +100,12 @@ namespace KnightsOfEmpire.GameStates.Match
             MapRenderState.RenderView = ViewControlState.View;
             MapRenderState.Render();
             UnitUpdateState.Render();
-            UnitsSelectionState.Render();
             GameGUIState.Render();
         }
 
         public override void Dispose()
         {
             ViewControlState.Dispose();
-            UnitsSelectionState.Dispose();
             MapRenderState.Dispose();
             GameGUIState.Dispose();
             UnitUpdateState.Dispose();

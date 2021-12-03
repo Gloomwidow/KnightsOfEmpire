@@ -21,6 +21,7 @@ namespace KnightsOfEmpire.Common.Units
         public Vector2f Position { get; set; }
         public Vector2f MoveDirection { get; set; }
         public UnitStats Stats { get; set; }
+        public bool IsSelected { get; set; }
 
         /// <summary>
         /// Texture Id which is used to render unit on map 

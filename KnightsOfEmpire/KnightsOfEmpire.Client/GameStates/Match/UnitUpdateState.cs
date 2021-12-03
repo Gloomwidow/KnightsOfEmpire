@@ -15,6 +15,7 @@ namespace KnightsOfEmpire.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
+        public UnitsSelectionState selectionState;
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch(packet.GetHeader())
@@ -33,10 +34,16 @@ namespace KnightsOfEmpire.GameStates.Match
         {
             // TO-DO: handle units update from UDP packets 
         }
+        public override void Initialize()
+        {
+            base.Initialize();
+            selectionState = new UnitsSelectionState();
+            selectionState.GameUnits = this.GameUnits;
+        }
 
         public override void Update()
         {
-            
+            selectionState.Update();
         }
 
         public override void Render()
@@ -62,12 +69,25 @@ namespace KnightsOfEmpire.GameStates.Match
                 {
                     RectangleShape unitShape = new RectangleShape(new Vector2f(Unit.UnitSize, Unit.UnitSize));
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
-                    unitShape.FillColor = playerColors[i];
-                    unitShape.OutlineColor = Color.Black;
-                    unitShape.OutlineThickness = 2;
+                    unitShape.Texture = new Texture(@"./Assets/Textures/cavalry - light.png",new IntRect(0,0,16,16));
+                    //unitShape.FillColor = playerColors[i];
+                    
+                    if (unit.IsSelected) 
+                    {
+                        unitShape.OutlineColor = Color.Blue;
+                        unitShape.OutlineThickness = 1;
+                    }
+
+                    RectangleShape hpBar = new RectangleShape(new Vector2f(Unit.UnitSize, 5));
+                    hpBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2));
+                    hpBar.FillColor = playerColors[i];
+
+
                     Client.RenderWindow.Draw(unitShape);
+                    Client.RenderWindow.Draw(hpBar);
                 }
             }
+            selectionState.Render();
         }
 
 
