@@ -59,6 +59,11 @@ namespace KnightsOfEmpire.GameStates.Match
             }
         }
 
+        public override void HandleUDPPackets(List<ReceivedPacket> packets)
+        {
+            UnitUpdateState.HandleUDPPackets(packets);
+        }
+
         public override void Update()
         {
             ViewControlState.ViewBottomBoundGuiHeight = GameGUIState.MainPanelHeight;
@@ -96,6 +101,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
             ViewControlState.Update();
             UnitsSelectionState.Update();
+            UnitUpdateState.Update();
             GameGUIState.Update();
         }
 

@@ -10,13 +10,18 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace KnightsOfEmpire.Server.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
+        private const int unitPacketSize = 10;
+
 
         private static Stopwatch UnregisterTestTimer;
+        private static Stopwatch UnregisterTestTimer2;
+
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch (packet.GetHeader())
@@ -33,6 +38,8 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             base.Initialize();
             UnregisterTestTimer = new Stopwatch();
             UnregisterTestTimer.Restart();
+            UnregisterTestTimer2 = new Stopwatch();
+            UnregisterTestTimer2.Restart();
         }
 
         public override void Update()
@@ -50,7 +57,31 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 }
                 UnregisterTestTimer.Restart();
             }
-            
+
+            // this code move first units 1 px per one second
+            // TODO: remove this fragment once units will be more 'active'
+            if (UnregisterTestTimer2.ElapsedMilliseconds / 1000.0f >= 1.0f)
+            {
+                for (int i = 0; i < MaxPlayerCount; i++)
+                {
+                    if (GameUnits[i].Count > 0)
+                    {
+                        GameUnits[i][0].Position += new Vector2f(1, 1);
+                    }
+                }
+                UnregisterTestTimer2.Restart();
+            }
+
+
+            // Send Uppdate about all units
+            // TODO: consider to send only units that was uppdated
+            for (int i=0; i<GameUnits.Length; i++)
+            {
+                if(GameUnits[i].Count > 0)
+                {
+                    CreateAndSendUnitsUpdate(GameUnits[i], i);
+                }
+            }
         }
 
         protected void TrainUnit(ReceivedPacket packet)
@@ -116,6 +147,49 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             }
 
             GameUnits[playerId].RemoveAt(index);
+        }
+
+
+        private void CreateAndSendUnitsUpdate(List<Unit> units, int ownerPlayerID)
+        {
+            UpdateUnitData[] updateUnitDatas = new UpdateUnitData[unitPacketSize];
+            int i = 0;
+            foreach(Unit unit in units)
+            {
+                if(i >= unitPacketSize)
+                {
+                    SendUnitsResponse(updateUnitDatas);
+                    updateUnitDatas = new UpdateUnitData[unitPacketSize];
+                    i = 0;
+                }
+                updateUnitDatas[i] = new UpdateUnitData(unit, ownerPlayerID);
+                i += 1;
+            }
+            if(updateUnitDatas[0] != null)
+            {
+                SendUnitsResponse(updateUnitDatas);
+            }
+
+            //Console.WriteLine("Send Units data");
+        }
+
+        private void SendUnitsResponse(UpdateUnitData[] updateUnitDatas)
+        {
+            UpdateUnitsResponse updateUnitsResponse = new UpdateUnitsResponse();
+            updateUnitsResponse.TimeStamp = DateTime.Now.Ticks;
+            updateUnitsResponse.UnitData = updateUnitDatas;
+
+            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitUpdateRequest);
+            packet.stringBuilder.Append(JsonSerializer.Serialize(updateUnitsResponse));
+
+            for(int i=0; i<Server.TCPServer.MaxConnections; i++)
+            {
+                if(Server.TCPServer.IsClientConnected(i))
+                {
+                    packet.ClientID = i;
+                    Server.UDPServer.SentTo(packet, Server.TCPServer.GetClientAddress(i), i);
+                }
+            }
         }
     }
 }

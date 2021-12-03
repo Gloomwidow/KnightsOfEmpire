@@ -59,14 +59,14 @@ namespace KnightsOfEmpire.Common.Networking.UDP
             byte[] data = Encoding.ASCII.GetBytes(packet.GetContent());
             Socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, address, new AsyncCallback(SendCallback), new DataState(clientID));
         }
-
+          
         protected void SendCallback(IAsyncResult ar)
         {
             try
             {
                 DataState so = (DataState)ar.AsyncState;
                 int bytes = Socket.EndSendTo(ar);
-                Console.WriteLine($"Sent {bytes} bytes to client {so.ConnectionID}!");
+                //Console.WriteLine($"Sent {bytes} bytes to client {so.ConnectionID}!");
             }
             catch(Exception ex)
             {

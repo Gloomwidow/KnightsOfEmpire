@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using KnightsOfEmpire.Common.Resources.Units;
+
 namespace KnightsOfEmpire.Common.Units
 {
     public class Unit
@@ -41,6 +43,18 @@ namespace KnightsOfEmpire.Common.Units
             return true;
         }
 
+        public void UppdateData(UpdateUnitData data)
+        {
+            if(!EqualID(data.UnitId))
+            {
+                throw new ArgumentException("Error unit data");
+            }
+
+            Position = new Vector2f(data.PositionX, data.PositionY);
+            MoveDirection = new Vector2f(data.MoveDirectionX, data.MoveDirectionY);
+            Stats.Health = data.Health;
+            Stance = data.Stance;
+        }
         
     }
 }

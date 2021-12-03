@@ -15,6 +15,8 @@ namespace KnightsOfEmpire.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
+        List<UpdateUnitData> updateUnitDatas;
+
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch(packet.GetHeader())
@@ -31,12 +33,49 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void HandleUDPPackets(List<ReceivedPacket> packets)
         {
-            // TO-DO: handle units update from UDP packets 
+            List<UpdateUnitsResponse> updateUnitResponses = new List<UpdateUnitsResponse>();
+            foreach(ReceivedPacket packet in packets)
+            {
+                if(packet.GetHeader() == PacketsHeaders.GameUnitUpdateRequest)
+                {
+                    UpdateUnitsResponse updateUnitsResponse = (UpdateUnitsResponse)JsonSerializer.Deserialize<UpdateUnitsResponse>(packet.GetContent());
+                    updateUnitResponses.Add(updateUnitsResponse);
+                }
+            }
+            updateUnitResponses.Sort((UpdateUnitsResponse r1, UpdateUnitsResponse r2) =>
+            {
+                return r2.TimeStamp.CompareTo(r1.TimeStamp);
+            });
+
+            updateUnitDatas = new List<UpdateUnitData>();
+            foreach(UpdateUnitsResponse response in updateUnitResponses)
+            {
+                foreach(UpdateUnitData data in response.UnitData)
+                {
+                    if(data != null)
+                    {
+                        updateUnitDatas.Add(data);
+                    }
+                }
+            }
+
+            //Console.WriteLine("Recive UDP: Units count: " + updateUnitDatas.Count);
         }
 
         public override void Update()
         {
-            
+            // Update Units Data
+
+            foreach(UpdateUnitData data in updateUnitDatas)
+            {
+                Unit unit = GameUnits[data.PlayerId].Find((Unit u) => { return u.EqualID(data.UnitId); });
+                if(unit != null)
+                {
+                    unit.UppdateData(data);
+                }
+            }
+
+            //Console.WriteLine("Uppdate units!");
         }
 
         public override void Render()
