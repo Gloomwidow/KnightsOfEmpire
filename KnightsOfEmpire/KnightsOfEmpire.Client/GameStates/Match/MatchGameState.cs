@@ -19,6 +19,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public MapRenderState MapRenderState;
         public GameGUIState GameGUIState;
         public UnitUpdateState UnitUpdateState;
+        public UnitOrdersState UnitsOrdersState;
 
         bool isMousePressed = false;
 
@@ -29,6 +30,7 @@ namespace KnightsOfEmpire.GameStates.Match
             MapRenderState = new MapRenderState();
             GameGUIState = new GameGUIState();
             UnitUpdateState = new UnitUpdateState();
+            UnitsOrdersState = new UnitOrdersState();
             MapRenderState.LoadResources();
         }
 
@@ -43,6 +45,8 @@ namespace KnightsOfEmpire.GameStates.Match
             ViewControlState.Initialize();
 
             GameGUIState.Initialize();
+
+            UnitsOrdersState.GameUnits = UnitUpdateState.GameUnits;
         }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
@@ -59,38 +63,42 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void Update()
         {
             ViewControlState.ViewBottomBoundGuiHeight = GameGUIState.MainPanelHeight;
+            UnitsOrdersState.MainPanelHeight = GameGUIState.MainPanelHeight;
 
             //TO-DO: convert this behavior to button press on MainState GUI
-
-            if (!isMousePressed && Mouse.IsButtonPressed(Mouse.Button.Left) && Keyboard.IsKeyPressed(Keyboard.Key.LControl))
+            if (Client.RenderWindow.HasFocus())
             {
-                isMousePressed = true;
-                Vector2i clickPos = Mouse.GetPosition(Client.RenderWindow);
-                if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
+                if (!isMousePressed && Mouse.IsButtonPressed(Mouse.Button.Left) && Keyboard.IsKeyPressed(Keyboard.Key.LControl))
                 {
-                    Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
-                    if(MapRenderState.GameMap.CanUnitBeSpawnedOnPos(spawnPos))
+                    isMousePressed = true;
+                    Vector2i clickPos = Mouse.GetPosition(Client.RenderWindow);
+                    if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
                     {
-                        TrainUnitRequest request = new TrainUnitRequest
+                        Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
+                        if (MapRenderState.GameMap.CanUnitBeSpawnedOnPos(spawnPos))
                         {
-                            UnitTypeId = 0,
-                            BuildingPosX = (int)spawnPos.X,
-                            BuildingPosY = (int)spawnPos.Y,
-                        };
+                            TrainUnitRequest request = new TrainUnitRequest
+                            {
+                                UnitTypeId = 0,
+                                BuildingPosX = (int)spawnPos.X,
+                                BuildingPosY = (int)spawnPos.Y,
+                            };
 
-                        SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest, -1);
-                        packet.stringBuilder.Append(JsonSerializer.Serialize(request));
-                        Client.TCPClient.SendToServer(packet);
+                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest, -1);
+                            packet.stringBuilder.Append(JsonSerializer.Serialize(request));
+                            Client.TCPClient.SendToServer(packet);
+                        }
                     }
                 }
-            }
-            else if(!Mouse.IsButtonPressed(Mouse.Button.Left))
-            {
-                isMousePressed = false;
+                else if (!Mouse.IsButtonPressed(Mouse.Button.Left))
+                {
+                    isMousePressed = false;
+                }
             }
 
 
             UnitUpdateState.Update();
+            UnitsOrdersState.Update();
             ViewControlState.Update();
             GameGUIState.Update();
         }

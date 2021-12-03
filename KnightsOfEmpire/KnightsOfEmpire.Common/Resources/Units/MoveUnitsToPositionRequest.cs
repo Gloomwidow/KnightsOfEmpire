@@ -16,6 +16,6 @@ namespace KnightsOfEmpire.Common.Resources.Units
         public bool IgnoreAttack { get; set; }
 
         // IDs of units that are in group
-        public string[] UnitIDs;
+        public string[] UnitIDs { get; set; }
     }
 }

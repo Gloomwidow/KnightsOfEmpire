@@ -23,7 +23,7 @@ namespace KnightsOfEmpire.Common.Navigation
         public Vector2f GetFlowVector(Vector2f currentPosition, Vector2i destination)
         {
             Vector2i pos = new Vector2i((int)(currentPosition.X / GameMap.TilePixelSize), (int)(currentPosition.Y / GameMap.TilePixelSize));
-            return flowFields[destination.X, destination.Y].GetFlowVector(pos.X, pos.Y);
+            return GetFlowVector(pos, destination);
         }
 
         public Vector2f GetFlowVector(Vector2i currentPosition, Vector2i destination)

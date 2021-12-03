@@ -70,7 +70,7 @@ namespace KnightsOfEmpire.GameStates.Match
                     RectangleShape unitShape = new RectangleShape(new Vector2f(Unit.UnitSize, Unit.UnitSize));
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
                     unitShape.Texture = new Texture(@"./Assets/Textures/cavalry - light.png",new IntRect(0,0,16,16));
-                    //unitShape.FillColor = playerColors[i];
+                    unitShape.FillColor = playerColors[i];
                     
                     if (unit.IsSelected) 
                     {
