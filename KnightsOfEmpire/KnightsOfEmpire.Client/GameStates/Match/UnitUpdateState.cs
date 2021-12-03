@@ -114,7 +114,7 @@ namespace KnightsOfEmpire.GameStates.Match
                     RectangleShape unitShape = new RectangleShape(new Vector2f(Unit.UnitSize, Unit.UnitSize));
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
                     unitShape.Texture = new Texture(@"./Assets/Textures/cavalry - light.png",new IntRect(0,0,16,16));
-                    //unitShape.FillColor = playerColors[i];
+                    unitShape.FillColor = playerColors[i];
                     
                     if (unit.IsSelected) 
                     {
@@ -152,6 +152,7 @@ namespace KnightsOfEmpire.GameStates.Match
             Unit unit = new Unit()
             {
                 ID = request.ID,
+                PlayerId = request.PlayerId,
                 Position = new Vector2f(request.StartPositionX, request.StartPositionY),
                 TextureId = 0,
                 Stats = new UnitStats()

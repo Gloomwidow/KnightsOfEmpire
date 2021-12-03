@@ -25,6 +25,16 @@ namespace KnightsOfEmpire.Common.Units
         public float AttackSpeed { get; set; }
         public float AttackDistance { get; set; }
 
+        public UnitStats()
+        {
+            Health = 100;
+            MaxHealth = 100;
+            MovementSpeed = 64;
+            AttackDamage = 25;
+            AttackSpeed = 1;
+            AttackDistance = 64;
+        }
+
         //TO-DO: Add any other parameters that will be needed for troops or upgrades system.
     }
 }

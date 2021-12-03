@@ -30,6 +30,8 @@ namespace KnightsOfEmpire.Common.Networking
 
         public const string GameUnitUpdateRequest = "5050";
 
+        public const string GameUnitsMoveToTileRequest = "5051";
+
         public const string GameUnitTrainRequest = "5055";
     }
 }

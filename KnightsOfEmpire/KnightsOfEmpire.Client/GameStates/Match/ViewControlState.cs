@@ -66,8 +66,11 @@ namespace KnightsOfEmpire.GameStates
 
         public override void Update()
         {
+           
             View.Size = new Vector2f(Client.RenderWindow.Size.X, Client.RenderWindow.Size.Y);
             View.Zoom(gameZoom);
+
+            if (!Client.RenderWindow.HasFocus()) return;
             MousePosition = Mouse.GetPosition(Client.RenderWindow);
             float ViewScrollSpeedPerFrame = ViewScrollSpeed * Client.DeltaTime;
 

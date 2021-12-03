@@ -1,7 +1,11 @@
-﻿using KnightsOfEmpire.Common.GameStates;
+﻿using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Map;
+using KnightsOfEmpire.Common.Navigation;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
 using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.Common.Units.Groups;
 using SFML.System;
 using System;
 using System.Collections.Generic;
@@ -20,7 +24,10 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
 
         private static Stopwatch UnregisterTestTimer;
+        
         private static Stopwatch UnregisterTestTimer2;
+
+        public List<UnitGroup> UnitGroups;
 
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
@@ -29,7 +36,10 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 case PacketsHeaders.GameUnitTrainRequest:
                     TrainUnit(packet);
                     break;
-               
+                case PacketsHeaders.GameUnitsMoveToTileRequest:
+                    CreateMoveUnitsGroup(packet);
+                    break;
+
             }
         }
 
@@ -40,37 +50,52 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             UnregisterTestTimer.Restart();
             UnregisterTestTimer2 = new Stopwatch();
             UnregisterTestTimer2.Restart();
+            UnitGroups = new List<UnitGroup>();
+            Server.Resources.NavigationManager = new FlowFieldManager(Server.Resources.Map);
         }
 
         public override void Update()
         {
-            // this code fragment will first unit in list of each player every 10 seconds to check if unregistering is working 
-            // TO-DO: remove this fragment once units will be more 'active'
-            if (UnregisterTestTimer.ElapsedMilliseconds/1000.0f>=10.0f)
+            for (int i = 0; i < UnitGroups.Count; i++)
             {
-                for(int i=0;i<MaxPlayerCount;i++)
+                UnitGroup ug = UnitGroups[i];
+                if (ug.HasGroupBeenCompleted())
                 {
-                    if(GameUnits[i].Count>0)
-                    {
-                        DeleteUnit(i, 0);
-                    }
+                    UnitGroups.RemoveAt(i);
+                    i--;
                 }
-                UnregisterTestTimer.Restart();
+                else ug.Update();
+            }
+            for(int i=0;i<MaxPlayerCount;i++)
+            {
+                for (int j = 0; j < GameUnits[i].Count; j++)
+                {
+                    Unit u = GameUnits[i][j];
+                    // delete death units
+                    if (u.Stats.HealthPercentage <= 0)
+                    {
+                        DeleteUnit(i, j);
+                        j--;
+                        continue;
+                    }
+
+                    Vector2f flowVector = new Vector2f(0, 0);
+
+                    // if unit is in moving group, get its movement direction
+                    if (u.UnitGroup != null)
+                    {
+                        flowVector = Server.Resources.NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
+                    }
+
+                    u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
+                    u.Move(Server.DeltaTime);
+
+                    u.Position = Server.Resources.Map.SnapToWall(u.PreviousPosition, u.Position);
+
+                    if (u.UnitGroup != null) u.UnitGroup.UpdateUnitComplete(u);
+                }
             }
 
-            // this code move first units 1 px per one second
-            // TODO: remove this fragment once units will be more 'active'
-            if (UnregisterTestTimer2.ElapsedMilliseconds / 1000.0f >= 1.0f)
-            {
-                for (int i = 0; i < MaxPlayerCount; i++)
-                {
-                    if (GameUnits[i].Count > 0)
-                    {
-                        GameUnits[i][0].Position += new Vector2f(1, 1);
-                    }
-                }
-                UnregisterTestTimer2.Restart();
-            }
 
 
             // Send Uppdate about all units
@@ -84,18 +109,32 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             }
         }
 
+
+        protected void CreateMoveUnitsGroup(ReceivedPacket packet)
+        {
+            MoveUnitsToPositionRequest request = packet.GetRequestOrDefault<MoveUnitsToPositionRequest>();
+            if (request == null) return;
+
+            UnitGroup group = new UnitGroup();
+            group.TargetX = request.GoalX;
+            group.TargetY = request.GoalY;
+
+            foreach(string ID in request.UnitIDs)
+            {
+                Unit u = GameUnits[packet.ClientID].Find(x => x.EqualID(ID.ToCharArray()));
+                if(u!=null)
+                {
+                    group.Join(u);
+                }
+            }
+
+            UnitGroups.Add(group);
+        }
+
         protected void TrainUnit(ReceivedPacket packet)
         {
-            TrainUnitRequest request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<TrainUnitRequest>(packet.GetContent());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
+            TrainUnitRequest request = packet.GetRequestOrDefault<TrainUnitRequest>();
+            if (request == null) return;
 
             //TO-DO: once we will have gold, check if player has enough of it to train
             //TO-DO: check if player has building to trait this unit (check Building Pos)
@@ -103,6 +142,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             Unit unit = new Unit()
             {
                 ID = UnitIdManager.GetNewId(),
+                PlayerId = packet.ClientID,
                 Position = new Vector2f(request.BuildingPosX, request.BuildingPosY),
                 TextureId = 0,
                 Stats = new UnitStats()
@@ -145,7 +185,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 unregisterPacket.ClientID = i;
                 Server.TCPServer.SendToClient(unregisterPacket);
             }
-
+            if(GameUnits[playerId][index].UnitGroup!=null) GameUnits[playerId][index].UnitGroup.Leave(GameUnits[playerId][index]);
             GameUnits[playerId].RemoveAt(index);
         }
 

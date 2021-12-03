@@ -20,6 +20,12 @@ namespace KnightsOfEmpire.Common.Navigation
             flowFields = new FlowField[gameMap.TileCountX, gameMap.TileCountY];
         }
 
+        public Vector2f GetFlowVector(Vector2f currentPosition, Vector2i destination)
+        {
+            Vector2i pos = new Vector2i((int)(currentPosition.X / GameMap.TilePixelSize), (int)(currentPosition.Y / GameMap.TilePixelSize));
+            return GetFlowVector(pos, destination);
+        }
+
         public Vector2f GetFlowVector(Vector2i currentPosition, Vector2i destination)
         {
             if (flowFields[destination.X,destination.Y]==null)
