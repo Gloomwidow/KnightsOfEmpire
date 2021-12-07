@@ -43,8 +43,7 @@ namespace KnightsOfEmpire.GameStates.Match
                         List<string> candidates = new List<string>();
                         foreach (Unit u in GameUnits[Client.Resources.PlayerGameId])
                         {
-                            if (u.IsSelected) continue;
-                            candidates.Add(new string(u.ID));
+                            if (u.IsSelected) candidates.Add(new string(u.ID));
                         }
                         if(candidates.Count>0)
                         {

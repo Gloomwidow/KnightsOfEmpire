@@ -14,6 +14,7 @@ namespace KnightsOfEmpire.Common.Units.Groups
         public float TargetY;
 
         public int UnitCount { get; protected set; }
+        public int Completed { get; protected set; }
 
         public Vector2i Target
         {
@@ -26,16 +27,24 @@ namespace KnightsOfEmpire.Common.Units.Groups
         public void Join(Unit unit)
         {
             UnitCount++;
-            if(unit.UnitGroup!=null)
+            if (unit.UnitGroup!=null)
             {
                 unit.UnitGroup.Leave(unit);
             }
+            unit.IsGroupCompleted = false;
             unit.UnitGroup = this;
+        }
+
+        public void CompleteGroup(Unit unit)
+        {
+            unit.IsGroupCompleted = true;
+            Completed++;
         }
 
         public void Leave(Unit unit)
         {
             UnitCount--;
+            unit.IsGroupCompleted = false;
             unit.UnitGroup = null;
         }
 
@@ -48,13 +57,13 @@ namespace KnightsOfEmpire.Common.Units.Groups
         {
             if (u.UnitGroup.Target.Equals(GameMap.ToTilePos(u.Position)))
             {
-                u.UnitGroup.Leave(u);
+                u.UnitGroup.CompleteGroup(u);
             }
         }
 
         public virtual bool HasGroupBeenCompleted()
         {
-            return UnitCount <= 0;
+            return UnitCount <= 0 || Completed>=UnitCount;
         }
     }
 }

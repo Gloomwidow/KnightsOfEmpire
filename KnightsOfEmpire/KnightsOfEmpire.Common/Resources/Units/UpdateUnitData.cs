@@ -25,6 +25,8 @@ namespace KnightsOfEmpire.Common.Resources.Units
 
         public float PositionY { get; set; }
 
+        public float AttackProgress { get; set; }
+
         public UnitStance Stance { get; set; }
 
         public UpdateUnitData() { }
@@ -35,10 +37,11 @@ namespace KnightsOfEmpire.Common.Resources.Units
 
             UnitId = unit.ID;
             Health = unit.Stats.Health;
-            MoveDirectionX = unit.MoveDirection.X;
-            MoveDirectionY = unit.MoveDirection.Y;
-            PositionX = unit.Position.X;
-            PositionY = unit.Position.Y;
+            MoveDirectionX = (float)Math.Round(unit.MoveDirection.X, 3, MidpointRounding.AwayFromZero);
+            MoveDirectionY = (float)Math.Round(unit.MoveDirection.Y, 3, MidpointRounding.AwayFromZero);
+            PositionX = (float)Math.Round(unit.Position.X, 3, MidpointRounding.AwayFromZero);
+            PositionY = (float)Math.Round(unit.Position.Y, 3, MidpointRounding.AwayFromZero);
+            AttackProgress = (float)Math.Round(unit.AttackProgress, 2, MidpointRounding.AwayFromZero);
             Stance = unit.Stance;
         }
     }

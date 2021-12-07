@@ -89,7 +89,8 @@ namespace KnightsOfEmpire
             // Add client resource
             Resources = new ClientResources();
             // Default nickname
-            Resources.Nickname = "Test";
+            Random rand = new Random();
+            Resources.Nickname = "Test"+rand.Next(10000).ToString();
 
             // Add first GameState
             GameStateManager.GameState = new MainState();

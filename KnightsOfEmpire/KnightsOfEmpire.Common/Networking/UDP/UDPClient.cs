@@ -65,9 +65,21 @@ namespace KnightsOfEmpire.Common.Networking.UDP
             {
                 DataState so = (DataState)ar.AsyncState;
                 int bytes = Socket.EndReceiveFrom(ar, ref SenderEndpoint);
+                int bufferPacketStart = 0;
+                int lastEofPos = 0;
+                string content = Encoding.ASCII.GetString(so.buffer, 0, bytes);
+
+                while (bufferPacketStart < content.Length && (lastEofPos = content.IndexOf(Packet.EOFTag, bufferPacketStart)) > -1)
+                {
+                    string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
+                    bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
+
+                    ReceivedPacket packet = new ReceivedPacket(-1, packetContent);
+
+                    ReceivedPackets.Enqueue(packet);
+
+                }
                 Socket.BeginReceiveFrom(so.buffer, 0, DataState.BufferSize, SocketFlags.None, ref SenderEndpoint, new AsyncCallback(ReceiveCallback), so);
-                ReceivedPacket r = new ReceivedPacket(-1, Encoding.ASCII.GetString(so.buffer, 0, bytes));
-                ReceivedPackets.Enqueue(r);
                 //Console.WriteLine($"Received {bytes} bytes from server.\n {r.GetContent()}");
             }
             catch(Exception ex)

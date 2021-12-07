@@ -10,14 +10,17 @@ namespace KnightsOfEmpire.Common.Units
     {
         private static bool isSet = false;
         private static int[] Symbols;
-        private static int SymbolStart = 32; // We are skipping ASCII control chars in case JSON will do sth strange with them.
-        private static readonly int MaxChars = 127; // We can only send basic ASCII through the net, so we need to use only 128 first chars.
+        private static int SymbolStart = 0; 
+        private static int MaxChars = 1; 
 
         private static readonly char[] SkippedSymbols = { '"', '\'', '\\' }; // We are skipping special symbols that JSON might not handle.  
-        
+
+        private static char[] UsedSymbols;
 
         public static void SetupIds(int chars)
         {
+            UsedSymbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToCharArray();
+            MaxChars = UsedSymbols.Length - 1;
             if (isSet) return;
             Symbols = new int[chars];
             isSet = true;
@@ -29,16 +32,16 @@ namespace KnightsOfEmpire.Common.Units
             char[] id = new char[Symbols.Length];
             for(int i=0;i<Symbols.Length;i++)
             {
-                id[i] = (char)Symbols[i];
+                id[i] = UsedSymbols[Symbols[i]];
             }
 
             Symbols[0]++;
             for (int i = 0; i < Symbols.Length - 1; i++)
             {
-                foreach(char c in SkippedSymbols)
-                {
-                    if (Symbols[i] == (int)c) Symbols[i]++;
-                }
+                //foreach(char c in SkippedSymbols)
+                //{
+                //    if (Symbols[i] == (int)c) Symbols[i]++;
+                //}
                 if (Symbols[i] > MaxChars)
                 {
                     Symbols[i] = SymbolStart;

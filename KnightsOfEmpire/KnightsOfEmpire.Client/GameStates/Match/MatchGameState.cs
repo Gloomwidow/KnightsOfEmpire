@@ -105,7 +105,6 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitUpdateState.Update();
             UnitsOrdersState.Update();
             ViewControlState.Update();
-            UnitUpdateState.Update();
 
             GameGUIState.Update();
         }

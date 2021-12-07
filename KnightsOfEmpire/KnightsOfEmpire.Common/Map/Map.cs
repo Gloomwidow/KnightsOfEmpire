@@ -90,6 +90,7 @@ namespace KnightsOfEmpire.Common.Map
         /// <param name="oldPos"> Previous unit position </param>
         /// <param name="newPos"> Unit's position after movement</param>
         /// <returns> Unit's position after movement with wall compensation</returns>
+        ///    
         public Vector2f SnapToWall(Vector2f oldPos, Vector2f newPos)
         {
             Vector2i obstaclePos = ToTilePos(newPos);
@@ -131,6 +132,13 @@ namespace KnightsOfEmpire.Common.Map
             }
 
             return result;
+        }
+
+        public Vector2f SnapToBounds(Vector2f newPos)
+        {
+            newPos.X = Math.Max(Math.Min(newPos.X, TileCountX * TilePixelSize - 1), 0);
+            newPos.Y = Math.Max(Math.Min(newPos.Y, TileCountY * TilePixelSize - 1), 0);
+            return newPos;
         }
 
         public Map() { }
