@@ -20,7 +20,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
-        private const int unitPacketSize = 10;
+        private const int unitPacketSize = 50;
 
 
         private static Stopwatch UnregisterTestTimer;
@@ -78,19 +78,27 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                         j--;
                         continue;
                     }
-
                     Vector2f flowVector = new Vector2f(0, 0);
 
+                    List<Unit> enemyInRange = GetEnemyUnitsInRange(u, u.Stats.AttackDistance);
+
+
                     // if unit is in moving group, get its movement direction
-                    if (u.UnitGroup != null)
+                    if (u.UnitGroup != null && !u.IsGroupCompleted)
                     {
                         flowVector = Server.Resources.NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
                     }
 
+                    if (enemyInRange.Count > 0)
+                    {
+                        if (u.UnitGroup != null) u.UnitGroup.Leave(u);
+                    }
+                    u.Attack(Server.DeltaTime, enemyInRange);
                     u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
                     u.Move(Server.DeltaTime);
 
                     u.Position = Server.Resources.Map.SnapToWall(u.PreviousPosition, u.Position);
+                    u.Position = Server.Resources.Map.SnapToBounds(u.Position);
 
                     if (u.UnitGroup != null) u.UnitGroup.UpdateUnitComplete(u);
                 }
@@ -99,7 +107,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
 
             // Send Uppdate about all units
-            // TODO: consider to send only units that was uppdated
             for (int i=0; i<GameUnits.Length; i++)
             {
                 if(GameUnits[i].Count > 0)
@@ -144,6 +151,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 ID = UnitIdManager.GetNewId(),
                 PlayerId = packet.ClientID,
                 Position = new Vector2f(request.BuildingPosX, request.BuildingPosY),
+                MoveDirection = new Vector2f(0, 0),
                 TextureId = 0,
                 Stats = new UnitStats()
             };

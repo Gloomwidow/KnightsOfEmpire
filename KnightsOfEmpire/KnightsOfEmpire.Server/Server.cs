@@ -32,7 +32,7 @@ namespace KnightsOfEmpire.Server
         /// <summary>
         /// Time for server to do one gamestate loop
         /// </summary>
-        private static float TickRate = 1.0f / 60.0f;
+        private static float TickRate = 1.0f / 32.0f;
 
         private static Stopwatch TickTimer;
 

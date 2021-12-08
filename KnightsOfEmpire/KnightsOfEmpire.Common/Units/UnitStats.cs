@@ -23,6 +23,8 @@ namespace KnightsOfEmpire.Common.Units
         public float MovementSpeed { get; set; }
         public int AttackDamage { get; set; }
         public float AttackSpeed { get; set; }
+
+        public float AttackExecuteTime { get; set; }
         public float AttackDistance { get; set; }
 
         public UnitStats()
@@ -32,6 +34,7 @@ namespace KnightsOfEmpire.Common.Units
             MovementSpeed = 64;
             AttackDamage = 25;
             AttackSpeed = 1;
+            AttackExecuteTime = 0.5f;
             AttackDistance = 64;
         }
 

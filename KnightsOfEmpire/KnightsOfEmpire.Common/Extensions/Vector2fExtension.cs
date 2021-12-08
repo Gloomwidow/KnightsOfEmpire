@@ -18,6 +18,16 @@ namespace KnightsOfEmpire.Common.Extensions
         {
             return (float)Math.Sqrt((v.X * v.X) + (v.Y * v.Y));
         }
+
+        /// <summary>
+        /// Calculates square length of the vector.
+        /// </summary>
+        /// <param name="v">Vector</param>
+        /// <returns>Lenght of the vector counted from (0,0) point</returns>
+        public static float Length2(this Vector2f v)
+        {
+            return (v.X * v.X) + (v.Y * v.Y);
+        }
         /// <summary>
         /// Normalizes vector, so its length is equal to 1. Useful for phisics calculation, when you want to move object in direction with defined speed.
         /// </summary>
@@ -71,6 +81,14 @@ namespace KnightsOfEmpire.Common.Extensions
         public static float Distance(this Vector2f a, Vector2f b)
         {
             return (float)Math.Sqrt(a.Distance2(b));
+        }
+
+        public static Vector2f LerpTimeStep(this Vector2f start, Vector2f end, float rotationSpeed, float timeStep)
+        {
+            Vector2f delta = end - start;
+            float rotation = rotationSpeed * timeStep;
+            rotation = Math.Max(Math.Min(rotation, 1.0f), 0.0f);
+            return start + (delta * rotation);
         }
     }
 }

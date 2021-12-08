@@ -42,8 +42,17 @@ namespace KnightsOfEmpire.GameStates.Match
             {
                 if(packet.GetHeader() == PacketsHeaders.GameUnitUpdateRequest)
                 {
-                    UpdateUnitsResponse updateUnitsResponse = (UpdateUnitsResponse)JsonSerializer.Deserialize<UpdateUnitsResponse>(packet.GetContent());
-                    updateUnitResponses.Add(updateUnitsResponse);
+
+                    UpdateUnitsResponse updateUnitsResponse = null;
+                    try
+                    {
+                        updateUnitsResponse = (UpdateUnitsResponse)JsonSerializer.Deserialize<UpdateUnitsResponse>(packet.GetContent());
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    if(updateUnitsResponse!=null) updateUnitResponses.Add(updateUnitsResponse);
                 }
             }
             updateUnitResponses.Sort((UpdateUnitsResponse r1, UpdateUnitsResponse r2) =>
@@ -83,7 +92,7 @@ namespace KnightsOfEmpire.GameStates.Match
                 Unit unit = GameUnits[data.PlayerId].Find((Unit u) => { return u.EqualID(data.UnitId); });
                 if(unit != null)
                 {
-                    unit.UppdateData(data);
+                    unit.UpdateData(data);
                 }
             }
 
@@ -121,8 +130,7 @@ namespace KnightsOfEmpire.GameStates.Match
                         unitShape.OutlineColor = Color.Blue;
                         unitShape.OutlineThickness = 1;
                     }
-
-                    RectangleShape hpBar = new RectangleShape(new Vector2f(Unit.UnitSize, 5));
+                    RectangleShape hpBar = new RectangleShape(new Vector2f(Unit.UnitSize*unit.Stats.HealthPercentage, 5));
                     hpBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2));
                     hpBar.FillColor = playerColors[i];
 
