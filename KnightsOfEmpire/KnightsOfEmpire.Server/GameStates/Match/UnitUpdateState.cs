@@ -22,11 +22,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
     {
         private const int unitPacketSize = 50;
 
-
-        private static Stopwatch UnregisterTestTimer;
-        
-        private static Stopwatch UnregisterTestTimer2;
-
         public List<UnitGroup> UnitGroups;
 
         public override void HandleTCPPacket(ReceivedPacket packet)
@@ -46,10 +41,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
         public override void Initialize()
         {
             base.Initialize();
-            UnregisterTestTimer = new Stopwatch();
-            UnregisterTestTimer.Restart();
-            UnregisterTestTimer2 = new Stopwatch();
-            UnregisterTestTimer2.Restart();
             UnitGroups = new List<UnitGroup>();
             Server.Resources.NavigationManager = new FlowFieldManager(Server.Resources.Map);
         }

@@ -33,7 +33,17 @@ namespace KnightsOfEmpire.Server.GameStates
 
         public override void Update()
         {
+            if(Server.TCPServer.CurrentActiveConnections<=0)
+            {
+                Console.WriteLine("No one is connected. Resetting to WaitingState");
+                GameStateManager.GameState = new WaitingGameState();
+            }
             unitState.Update();
+        }
+
+        public override void Dispose()
+        {
+            
         }
     }
 }
