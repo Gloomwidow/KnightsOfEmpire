@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="GameStates\ConnectState.cs" />
+    <Compile Include="GameStates\Match\FogOfWarState.cs" />
     <Compile Include="GameStates\Match\GameGUIState.cs" />
     <Compile Include="GameStates\MainState.cs" />
     <Compile Include="GameStates\Match\MapRenderState.cs" />

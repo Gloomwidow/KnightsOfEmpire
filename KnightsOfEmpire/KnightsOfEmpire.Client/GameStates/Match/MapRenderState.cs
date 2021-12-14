@@ -26,7 +26,7 @@ namespace KnightsOfEmpire.GameStates
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
 
         public Map GameMap;
-
+        public float[,] VisibilityLevel;
         public List<Texture> textures;
         public RectangleShape[,] mapRectangles;
 
@@ -43,6 +43,7 @@ namespace KnightsOfEmpire.GameStates
             textures = new List<Texture>();
             textures.Add(new Texture(@"./Assets/Textures/grass.png"));
             textures.Add(new Texture(@"./Assets/Textures/water.png"));
+            textures.Add(new Texture(@"./Assets/Textures/wall.png"));
         }
         
 
@@ -76,6 +77,8 @@ namespace KnightsOfEmpire.GameStates
             {
                 for (int j = 0; j < GameMap.TileCountY; j++)
                 {
+                    float visionCoef = VisibilityLevel[i, j];
+                    mapRectangles[i, j].FillColor = new Color((byte)(255 * visionCoef), (byte)(255 * visionCoef), (byte)(255 * visionCoef));
                     Client.RenderWindow.Draw(mapRectangles[i, j]);
                 }
             }

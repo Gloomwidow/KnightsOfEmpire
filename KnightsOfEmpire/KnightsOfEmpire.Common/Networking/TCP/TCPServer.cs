@@ -261,7 +261,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                     {
                         string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
                         bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
-                        Console.WriteLine($"Read {content.Length} bytes from {sender.RemoteEndPoint}. \n Data : { packetContent.Substring(0,Math.Min(packetContent.Length, 100)) }");
+                        //Console.WriteLine($"Read {content.Length} bytes from {sender.RemoteEndPoint}. \n Data : { packetContent.Substring(0,Math.Min(packetContent.Length, 100)) }");
 
                         ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, packetContent);
 

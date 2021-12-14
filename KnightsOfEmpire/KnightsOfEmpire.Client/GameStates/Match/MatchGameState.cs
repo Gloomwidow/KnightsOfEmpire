@@ -20,6 +20,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public GameGUIState GameGUIState;
         public UnitUpdateState UnitUpdateState;
         public UnitOrdersState UnitsOrdersState;
+        public FogOfWarState FogOfWarState;
 
         bool isMousePressed = false;
 
@@ -31,6 +32,7 @@ namespace KnightsOfEmpire.GameStates.Match
             GameGUIState = new GameGUIState();
             UnitUpdateState = new UnitUpdateState();
             UnitsOrdersState = new UnitOrdersState();
+            FogOfWarState = new FogOfWarState();
             MapRenderState.LoadResources();
         }
 
@@ -45,8 +47,12 @@ namespace KnightsOfEmpire.GameStates.Match
             ViewControlState.Initialize();
 
             GameGUIState.Initialize();
+            FogOfWarState.Initialize();
 
+            FogOfWarState.PlayerUnits = UnitUpdateState.GameUnits[Client.Resources.PlayerGameId];
             UnitsOrdersState.GameUnits = UnitUpdateState.GameUnits;
+            MapRenderState.VisibilityLevel = FogOfWarState.VisibilityLevel;
+            UnitUpdateState.VisibilityLevel = FogOfWarState.VisibilityLevel;
         }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
@@ -105,7 +111,7 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitUpdateState.Update();
             UnitsOrdersState.Update();
             ViewControlState.Update();
-
+            FogOfWarState.Update();
             GameGUIState.Update();
         }
 
@@ -123,6 +129,7 @@ namespace KnightsOfEmpire.GameStates.Match
             MapRenderState.Dispose();
             GameGUIState.Dispose();
             UnitUpdateState.Dispose();
+            FogOfWarState.Dispose();
         }
     }
 }

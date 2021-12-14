@@ -104,6 +104,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildings\Building.cs" />
     <Compile Include="Extensions\ReceivedPacketExtension.cs" />
     <Compile Include="Extensions\Vector2fExtension.cs" />
     <Compile Include="GameStates\GameState.cs" />
@@ -151,7 +152,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Buildings\" />
     <Folder Include="Helper\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

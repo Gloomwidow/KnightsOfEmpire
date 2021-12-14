@@ -1,4 +1,5 @@
 ﻿using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
 using KnightsOfEmpire.Common.Units;
@@ -17,6 +18,7 @@ namespace KnightsOfEmpire.GameStates.Match
     {
 
         public UnitsSelectionState selectionState;
+        public float[,] VisibilityLevel;
 
         List<UpdateUnitData> updateUnitDatas;
 
@@ -120,10 +122,18 @@ namespace KnightsOfEmpire.GameStates.Match
             {
                 foreach(Unit unit in GameUnits[i])
                 {
+                    Vector2i pos = Map.ToTilePos(unit.Position);
+                    float visionCoef = VisibilityLevel[pos.X, pos.Y];
+
+                    if(i!=Client.Resources.PlayerGameId)
+                    {
+                        if (visionCoef == FogOfWarState.VisibilityMinLevel) continue;
+                    }
+
                     RectangleShape unitShape = new RectangleShape(new Vector2f(Unit.UnitSize, Unit.UnitSize));
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
                     unitShape.Texture = new Texture(@"./Assets/Textures/cavalry - light.png",new IntRect(0,0,16,16));
-                    unitShape.FillColor = playerColors[i];
+                    unitShape.FillColor = new Color((byte)(playerColors[i].R*visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
                     
                     if (unit.IsSelected) 
                     {

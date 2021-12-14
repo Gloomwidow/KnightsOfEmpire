@@ -54,6 +54,12 @@ namespace KnightsOfEmpire.Common.Map
             return TileTypes[x][y] == TileType.Walkable;
         }
 
+        public bool IsTileVisionObstructed(int x, int y)
+        {
+            if (!IsTileInBounds(x, y)) return true;
+            return TileTypes[x][y] == TileType.Wall;
+        }
+
         public bool CanUnitBeSpawnedOnPos(Vector2f pos)
         {
             if (!IsPositionInBounds(pos)) return false;

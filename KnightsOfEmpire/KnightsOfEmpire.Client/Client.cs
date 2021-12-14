@@ -119,7 +119,7 @@ namespace KnightsOfEmpire
 
                 if (TCPClient != null && TCPClient.isRunning)
                 {
-                    if (MessageToServerClock.ElapsedTime.AsSeconds() >= 2)
+                    if (MessageToServerClock.ElapsedTime.AsSeconds() >= 5)
                     {
                         SentPacket pingPacket = new SentPacket(PacketsHeaders.PING);
                         pingPacket.stringBuilder.Append("PING");
