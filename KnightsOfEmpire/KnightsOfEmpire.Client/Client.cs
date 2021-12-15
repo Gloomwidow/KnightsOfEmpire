@@ -28,7 +28,8 @@ namespace KnightsOfEmpire
         /// Render Window for rendering graphics with SFML.
         /// </summary>
         public static RenderWindow RenderWindow { get; private set; }
-        
+        static uint WindowWidth = 1280;
+        static uint WindowHeight = 720;
 
         /// <summary>
         /// GUI for interact with user.
@@ -62,7 +63,7 @@ namespace KnightsOfEmpire
             DeltaTimeClock = new Clock();
             MessageToServerClock = new Clock();
 
-            VideoMode mode = new VideoMode(1280, 720);
+            VideoMode mode = new VideoMode(WindowWidth, WindowHeight);
             RenderWindow = new RenderWindow(mode, "Knights Of Empire");
 
             Gui = new Gui(RenderWindow);
@@ -70,6 +71,7 @@ namespace KnightsOfEmpire
             RenderWindow.Resized += (sender, e) =>
             {
                 Gui.View = new View(new FloatRect(new Vector2f(0, 0), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y)));
+                
             };
 
 

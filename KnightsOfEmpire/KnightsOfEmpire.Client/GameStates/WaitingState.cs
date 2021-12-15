@@ -69,6 +69,7 @@ namespace KnightsOfEmpire.GameStates
             connectPanel.Visible = true;
             Client.Gui.Add(connectPanel);
 
+
         }
 
         /// <summary>
@@ -184,6 +185,7 @@ namespace KnightsOfEmpire.GameStates
         /// </summary>
         public override void Render()
         {
+            Client.RenderWindow.Clear(new Color(247, 247, 247));
             Client.Gui.Draw();
         }
 

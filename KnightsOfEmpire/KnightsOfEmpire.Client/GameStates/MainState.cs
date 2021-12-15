@@ -98,6 +98,7 @@ namespace KnightsOfEmpire.GameStates
         /// </summary>
         public override void Render()
         {
+            Client.RenderWindow.Clear(new Color(247, 247, 247));
             Client.Gui.Draw();
         }
 

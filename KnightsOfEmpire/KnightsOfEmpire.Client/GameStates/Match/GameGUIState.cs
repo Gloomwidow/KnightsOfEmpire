@@ -51,7 +51,7 @@ namespace KnightsOfEmpire.GameStates
         private Vector2i mouseLastPosition = new Vector2i(0, 0);
         private float timeOnButton = 0f;
         private const float timeToShowInfo = 0.5f;
-        (int, int) buttonPosition;
+        (int, int, int) buttonPosition;
 
         /// <summary>
         /// Initialize Game State
@@ -91,10 +91,13 @@ namespace KnightsOfEmpire.GameStates
                     {
                         infoLabel.Position = (Vector2f)Mouse.GetPosition(Client.RenderWindow) + new Vector2f(0, 18);
                         infoLabel.Visible = true;
+                        infoLabel.Text = "Info Label\n" + buttonPosition.ToString();
                     }
                 }
                 mouseLastPosition = Mouse.GetPosition(Client.RenderWindow);
             }
+
+            
         }
 
         /// <summary>
@@ -128,7 +131,7 @@ namespace KnightsOfEmpire.GameStates
         private void ButtonMouseEnter(object sender, EventArgs e)
         {
             isOnButton = true;
-            buttonPosition = ((int, int))((BitmapButton)sender).UserData;
+            buttonPosition = ((int, int, int))((BitmapButton)sender).UserData;
         }
 
         private void ButtonMouseLeave(object sender, EventArgs e)
@@ -225,6 +228,7 @@ namespace KnightsOfEmpire.GameStates
                 label.Text = "100";
                 statsPanel.Add(label);
                 goldLabel = label;
+                goldLabel.Text = "101";
 
                 label = new Label();
                 label.Position = new Vector2f(115, 45);
@@ -235,6 +239,7 @@ namespace KnightsOfEmpire.GameStates
                 label.Text = "387 / 500";
                 statsPanel.Add(label);
                 mainBaseLabel = label;
+                mainBaseLabel.Text = "388 / 500";
 
                 label = new Label();
                 label.Position = new Vector2f(115, 80);
@@ -245,6 +250,7 @@ namespace KnightsOfEmpire.GameStates
                 label.Text = "32 / 40";
                 statsPanel.Add(label);
                 unitsLabel = label;
+                unitsLabel.Text = "32 / 40";
 
                 label = new Label();
                 label.Position = new Vector2f(115, 115);
@@ -255,6 +261,7 @@ namespace KnightsOfEmpire.GameStates
                 label.Text = "3";
                 statsPanel.Add(label);
                 playerLabel = label;
+                playerLabel.Text = "4";
             }
 
 
@@ -272,13 +279,15 @@ namespace KnightsOfEmpire.GameStates
                     BitmapButton bitbutton = new BitmapButton();
                     bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
                     bitbutton.Size = new Vector2f(40, 40);
-                    bitbutton.UserData = (i, j);
+                    bitbutton.UserData = (i, j, 1);
                     bitbutton.Focusable = true;
                     bitbutton.Clicked += BuldingButtonClick;
                     bitbutton.MouseEntered += ButtonMouseEnter;
                     bitbutton.MouseLeft += ButtonMouseLeave;
                     
                     buldingsPanel.Add(bitbutton);
+
+                    buldingsButtons[i, j] = bitbutton;
                 }
 
             //Units Panel
@@ -295,13 +304,15 @@ namespace KnightsOfEmpire.GameStates
                     BitmapButton bitbutton = new BitmapButton();
                     bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
                     bitbutton.Size = new Vector2f(40, 40);
-                    bitbutton.UserData = (i, j);
+                    bitbutton.UserData = (i, j, 2);
                     bitbutton.Focusable = true;
                     bitbutton.Clicked += UnitButtonClick;
                     bitbutton.MouseEntered += ButtonMouseEnter;
                     bitbutton.MouseLeft += ButtonMouseLeave;
 
                     unitsPanel.Add(bitbutton);
+
+                    unitsButtons[i, j] = bitbutton;
                 }
 
             //Buttons
@@ -341,7 +352,7 @@ namespace KnightsOfEmpire.GameStates
         private void InitializeInfoLabel()
         {
             infoLabel = new Label();
-            infoLabel.Size = new Vector2f(100, 20);
+            infoLabel.Size = new Vector2f(100, 40);
             infoLabel.Renderer.BackgroundColor = Color.White;
             infoLabel.Renderer.BorderColor = Color.Black;
             infoLabel.Renderer.Borders = new Outline(1f);
