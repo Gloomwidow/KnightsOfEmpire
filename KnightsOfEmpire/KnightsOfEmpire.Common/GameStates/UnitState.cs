@@ -10,8 +10,6 @@ namespace KnightsOfEmpire.Common.GameStates
 {
     public class UnitState : GameState
     {
-        public const int MaxPlayerCount = 4;
-
         public List<Unit>[] GameUnits;
         public override void Initialize()
         {

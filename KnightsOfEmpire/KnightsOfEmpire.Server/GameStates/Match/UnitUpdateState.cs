@@ -135,7 +135,12 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             if (request == null) return;
 
             //TO-DO: once we will have gold, check if player has enough of it to train
+            if (!Server.Resources.AddUnitToCapacity(packet.ClientID, 1)) return;
+            if (Server.Resources.GoldAmount[packet.ClientID] < 5) return;
+            Server.Resources.GoldAmount[packet.ClientID] -= 5;
+            Server.Resources.HasChanged[packet.ClientID] = true;
             //TO-DO: check if player has building to trait this unit (check Building Pos)
+
 
             Unit unit = new Unit()
             {
@@ -169,6 +174,9 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         protected void DeleteUnit(int playerId, int index)
         {
+            if (!Server.Resources.RemoveUnitFromCapacity(playerId, 1)) return;
+            Server.Resources.HasChanged[playerId] = true;
+
             Unit unitDeletion = GameUnits[playerId][index];
             UnregisterUnitRequest request = new UnregisterUnitRequest
             {

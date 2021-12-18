@@ -18,6 +18,7 @@ using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
+using KnightsOfEmpire.Common.Resources.Player;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -37,6 +38,10 @@ namespace KnightsOfEmpire.GameStates
         private Label mainBaseLabel;
         private Label unitsLabel;
         private Label playerLabel;
+
+        private string gold = "gold value";
+        private string capacity = "currect/max";
+
 
         private BitmapButton[,] buldingsButtons;
 
@@ -75,14 +80,39 @@ namespace KnightsOfEmpire.GameStates
             }
         }
 
-
+        public override void HandleTCPPacket(ReceivedPacket packet)
+        {
+            switch (packet.GetHeader())
+            {
+                case PacketsHeaders.ChangePlayerInfoRequest:
+                    ChangePlayerInfo(packet);
+                    break;
+            }
+        }
+        public void ChangePlayerInfo(ReceivedPacket packet) 
+        {
+            ChangePlayerInfoRequest request = null;
+            try
+            {
+                request = JsonSerializer.Deserialize<ChangePlayerInfoRequest>(packet.GetContent());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;
+            }
+            gold = request.GoldAmount.ToString();
+            capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();
+            
+        }
         /// <summary>
         /// Uppdate state
         /// </summary>
         public override void Update()
         {
+            Initialize();
             //Info Label
-            if(isOnButton && !infoLabel.Visible)
+            if (isOnButton && !infoLabel.Visible)
             {
                 if(mouseLastPosition == Mouse.GetPosition(Client.RenderWindow))
                 {
@@ -95,6 +125,7 @@ namespace KnightsOfEmpire.GameStates
                 }
                 mouseLastPosition = Mouse.GetPosition(Client.RenderWindow);
             }
+            
         }
 
         /// <summary>
@@ -185,6 +216,7 @@ namespace KnightsOfEmpire.GameStates
                 label.TextSize = 16;
                 label.Text = "Gold";
                 statsPanel.Add(label);
+                
 
                 label = new Label();
                 label.Position = new Vector2f(15, 45);
@@ -222,7 +254,7 @@ namespace KnightsOfEmpire.GameStates
                 label.HorizontalAlignment = HorizontalAlignment.Right;
                 label.VerticalAlignmentAlignment = VerticalAlignment.Center;
                 label.TextSize = 16;
-                label.Text = "100";
+                label.Text = gold;
                 statsPanel.Add(label);
                 goldLabel = label;
 
@@ -242,7 +274,7 @@ namespace KnightsOfEmpire.GameStates
                 label.HorizontalAlignment = HorizontalAlignment.Right;
                 label.VerticalAlignmentAlignment = VerticalAlignment.Center;
                 label.TextSize = 16;
-                label.Text = "32 / 40";
+                label.Text = capacity;
                 statsPanel.Add(label);
                 unitsLabel = label;
 
