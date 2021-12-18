@@ -108,6 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameStates\Match\BuildingUpdateState.cs" />
     <Compile Include="GameStates\Match\MatchGameState.cs" />
     <Compile Include="GameStates\Match\UnitUpdateState.cs" />
     <Compile Include="GameStates\WaitingGameState.cs" />

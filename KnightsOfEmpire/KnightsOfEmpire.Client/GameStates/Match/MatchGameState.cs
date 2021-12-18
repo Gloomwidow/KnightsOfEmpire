@@ -63,6 +63,10 @@ namespace KnightsOfEmpire.GameStates.Match
                 {
                     UnitUpdateState.HandleTCPPacket(packet);
                 }
+                if (packet.GetHeader().StartsWith(PacketsHeaders.ChangePlayerInfoRequest)) 
+                {
+                    GameGUIState.HandleTCPPacket(packet);
+                }
             }
         }
 

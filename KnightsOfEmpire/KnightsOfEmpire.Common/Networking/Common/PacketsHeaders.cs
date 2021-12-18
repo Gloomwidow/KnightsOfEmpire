@@ -33,5 +33,13 @@ namespace KnightsOfEmpire.Common.Networking
         public const string GameUnitsMoveToTileRequest = "5051";
 
         public const string GameUnitTrainRequest = "5055";
+
+        // Everything for building will have header starting with 60
+        public const string BuildingHeaderStart = "60";
+
+        public const string BuildingCreateRequest = "6010";
+
+        // Update player info such as gold, capacity etc.
+        public const string ChangePlayerInfoRequest = "7010";
     }
 }

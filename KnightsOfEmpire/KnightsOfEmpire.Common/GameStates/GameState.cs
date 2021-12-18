@@ -9,6 +9,7 @@ namespace KnightsOfEmpire.Common.GameStates
 {
     public abstract class GameState
     {
+        public const int MaxPlayerCount = 4;
         public virtual void LoadResources() { }
         public virtual void Initialize() { }
 
