@@ -101,42 +101,28 @@ namespace KnightsOfEmpire.Common.Map
         {
             Vector2i obstaclePos = ToTilePos(newPos);
             if (IsTileWalkable(obstaclePos.X, obstaclePos.Y)) return newPos;
-            Vector2f result = new Vector2f(0, 0);
-            Vector2f dimensionX = new Vector2f(obstaclePos.X * TilePixelSize, (obstaclePos.X + 1) * TilePixelSize);
-            Vector2f dimensionY = new Vector2f(obstaclePos.Y * TilePixelSize, (obstaclePos.Y + 1) * TilePixelSize);
-
-            if (newPos.X >= dimensionX.X && newPos.X <= dimensionX.Y)
+            Vector2f result = new Vector2f(newPos.X, newPos.Y);
+            float leftSide = obstaclePos.X * TilePixelSize;
+            float rightSide = (obstaclePos.X + 1) * TilePixelSize;
+            float upSide = obstaclePos.Y * TilePixelSize;
+            float downSide = (obstaclePos.Y + 1) * TilePixelSize;
+            if(oldPos.X<leftSide)
             {
-                if (Math.Abs(oldPos.X - dimensionX.X) <= Math.Abs(oldPos.X - dimensionX.Y))
-                {
-                    result.X = dimensionX.X - WallPushBackBias;
-                }
-                else
-                {
-                    result.X = dimensionX.Y + WallPushBackBias;
-                }
+                result.X = leftSide - WallPushBackBias;
+                if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
+                else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
+            }
+            else if(oldPos.X>rightSide)
+            {
+                result.X = rightSide + WallPushBackBias;
+                if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
+                else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
             }
             else
             {
-                result.X = newPos.X;
+                if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
+                else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
             }
-
-            if (newPos.Y >= dimensionY.X && newPos.Y <= dimensionY.Y)
-            {
-                if (Math.Abs(oldPos.Y - dimensionY.X) <= Math.Abs(oldPos.Y - dimensionY.Y))
-                {
-                    result.Y = dimensionY.X - WallPushBackBias;
-                }
-                else
-                {
-                    result.Y = dimensionY.Y + WallPushBackBias;
-                }
-            }
-            else
-            {
-                result.Y = newPos.Y;
-            }
-
             return result;
         }
 

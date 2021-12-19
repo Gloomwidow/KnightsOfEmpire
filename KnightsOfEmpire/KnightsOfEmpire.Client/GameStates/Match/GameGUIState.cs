@@ -19,6 +19,7 @@ using KnightsOfEmpire.Common.Networking.UDP;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
 using KnightsOfEmpire.Common.Resources.Player;
+using KnightsOfEmpire.Common.Extensions;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -89,28 +90,22 @@ namespace KnightsOfEmpire.GameStates
                     break;
             }
         }
+
         public void ChangePlayerInfo(ReceivedPacket packet) 
         {
-            ChangePlayerInfoRequest request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<ChangePlayerInfoRequest>(packet.GetContent());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
+            ChangePlayerInfoRequest request = packet.GetDeserializedClassOrDefault<ChangePlayerInfoRequest>();
+            if (request == null) return;
             gold = request.GoldAmount.ToString();
-            capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();
-            
+            capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();  
         }
+
         /// <summary>
         /// Uppdate state
         /// </summary>
         public override void Update()
         {
-            Initialize();
+            goldLabel.Text = gold;
+            unitsLabel.Text = capacity;
             //Info Label
             if (isOnButton && !infoLabel.Visible)
             {

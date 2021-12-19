@@ -48,7 +48,7 @@ namespace KnightsOfEmpire.GameStates.Match
                         if(candidates.Count>0)
                         {
                             request.UnitIDs = candidates.ToArray();
-                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitsMoveToTileRequest, -1);
+                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitsMoveToTileRequest);
                             packet.stringBuilder.Append(JsonSerializer.Serialize(request));
                             Client.TCPClient.SendToServer(packet);
                             Console.WriteLine(packet.stringBuilder.ToString());

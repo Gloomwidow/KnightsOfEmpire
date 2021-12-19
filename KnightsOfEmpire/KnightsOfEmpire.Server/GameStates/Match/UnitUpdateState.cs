@@ -110,7 +110,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         protected void CreateMoveUnitsGroup(ReceivedPacket packet)
         {
-            MoveUnitsToPositionRequest request = packet.GetRequestOrDefault<MoveUnitsToPositionRequest>();
+            MoveUnitsToPositionRequest request = packet.GetDeserializedClassOrDefault<MoveUnitsToPositionRequest>();
             if (request == null) return;
 
             UnitGroup group = new UnitGroup();
@@ -131,7 +131,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         protected void TrainUnit(ReceivedPacket packet)
         {
-            TrainUnitRequest request = packet.GetRequestOrDefault<TrainUnitRequest>();
+            TrainUnitRequest request = packet.GetDeserializedClassOrDefault<TrainUnitRequest>();
             if (request == null) return;
 
             //TO-DO: once we will have gold, check if player has enough of it to train

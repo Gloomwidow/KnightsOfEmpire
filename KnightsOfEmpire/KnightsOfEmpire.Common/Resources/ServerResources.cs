@@ -76,19 +76,21 @@ namespace KnightsOfEmpire.Common.Resources
             MaxUnitsCapacity = new int[maxPlayers];
             HasChanged = new bool[maxPlayers];
             Map = null;
-            StartInfo(maxPlayers);
+            ResetPlayerGameInfo(maxPlayers);
         }
 
         public ServerResources(int maxPlayers)
         {
             Init(maxPlayers);
         }
-        public void StartInfo(int maxPlayers) 
+        public void ResetPlayerGameInfo(int maxPlayers) 
         {
             for(int i = 0; i < maxPlayers; i++) 
             {
                 GoldAmount[i] = StartGold;
                 MaxUnitsCapacity[i] = StartMaxCapacity;
+                CurrentUnitsCapacity[i] = 0;
+                HasChanged[i] = true;
             }
         }
     }

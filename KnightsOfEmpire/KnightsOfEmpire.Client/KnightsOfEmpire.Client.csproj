@@ -118,7 +118,6 @@
     <Compile Include="GameStates\Match\UnitOrdersState.cs" />
     <Compile Include="GameStates\Match\UnitUpdateState.cs" />
     <Compile Include="GameStates\Match\ViewControlState.cs" />
-    <Compile Include="GameStates\TestState.cs" />
     <Compile Include="GameStates\Match\UnitsSelectionState.cs" />
     <Compile Include="GameStates\WaitingState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

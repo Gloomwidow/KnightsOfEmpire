@@ -34,7 +34,9 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitsOrdersState = new UnitOrdersState();
             FogOfWarState = new FogOfWarState();
             MapRenderState.LoadResources();
+            UnitUpdateState.LoadResources();
         }
+
 
         public override void Initialize()
         {

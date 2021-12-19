@@ -83,6 +83,7 @@ namespace KnightsOfEmpire
                 {
                     UDPClient.Stop();
                 }
+                GameStateManager.GameState.Dispose();
                 RenderWindow.Close(); 
             };
 
@@ -98,6 +99,8 @@ namespace KnightsOfEmpire
             while (RenderWindow.IsOpen)
             {
                 DeltaTime = DeltaTimeClock.Restart().AsSeconds();
+                if (DeltaTime >= 1.0f / 15.0f) Console.WriteLine($"Huge DeltaTime:{DeltaTime}");
+
 
                 RenderWindow.DispatchEvents();
                 RenderWindow.Clear();
