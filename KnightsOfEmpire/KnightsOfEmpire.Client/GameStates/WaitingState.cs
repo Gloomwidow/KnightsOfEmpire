@@ -19,6 +19,7 @@ using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
 
 using KnightsOfEmpire.GameStates.Match;
+using KnightsOfEmpire.Common.Extensions;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -432,19 +433,13 @@ namespace KnightsOfEmpire.GameStates
         private void HandleWaitingStateServerResponse(ReceivedPacket packet)
         {
             string received = packet.GetContent();
-            WaitingStateServerResponse request = null;
-            try
+            WaitingStateServerResponse request = packet.GetDeserializedClassOrDefault<WaitingStateServerResponse>();
+            if(request==null)
             {
-                request = JsonSerializer.Deserialize<WaitingStateServerResponse>(received);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
                 SendInfoPacket();
+                return;
             }
 
-            if (request != null)
-            {
                 switch (request.Message)
                 {
                     case WaitingMessage.ServerOk:
@@ -487,26 +482,12 @@ namespace KnightsOfEmpire.GameStates
                         }
                         break;
                 }
-            }
         }
 
         private void HandleMapServerResponse(ReceivedPacket packet)
         {
-            string received = packet.GetContent();
-
-            Map request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<Map>(received);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                SendMapRequest(false);
-                return;
-            }
-
-            if(request == null)
+            Map request = packet.GetDeserializedClassOrDefault<Map>();
+            if(request ==null)
             {
                 SendMapRequest(false);
                 return;
@@ -520,20 +501,7 @@ namespace KnightsOfEmpire.GameStates
 
         private void HandleCustomUnitsServerResponse(ReceivedPacket packet)
         {
-            string received = packet.GetContent();
-
-            CustomUnitsServerResponse request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<CustomUnitsServerResponse>(received);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                SendCustomUnitsRequest();
-                return;
-            }
-
+            CustomUnitsServerResponse request = packet.GetDeserializedClassOrDefault<CustomUnitsServerResponse>();
             if (request == null)
             {
                 SendCustomUnitsRequest();
@@ -550,19 +518,8 @@ namespace KnightsOfEmpire.GameStates
         {
             string received = packet.GetContent();
 
-            StartGameServerRequest request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<StartGameServerRequest>(received);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                // TODO: Inform Server
-                return;
-            }
-
-            if (request == null)
+            StartGameServerRequest request = packet.GetDeserializedClassOrDefault<StartGameServerRequest>();
+            if(request == null)
             {
                 // TODO: Inform Server
                 return;

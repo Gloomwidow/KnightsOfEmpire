@@ -1,4 +1,5 @@
-﻿using KnightsOfEmpire.Common.GameStates;
+﻿using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
@@ -22,6 +23,8 @@ namespace KnightsOfEmpire.GameStates.Match
 
         List<UpdateUnitData> updateUnitDatas;
 
+        public Texture UnitsAtlas;
+
 
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
@@ -40,20 +43,13 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void HandleUDPPackets(List<ReceivedPacket> packets)
         {
             List<UpdateUnitsResponse> updateUnitResponses = new List<UpdateUnitsResponse>();
+
             foreach(ReceivedPacket packet in packets)
             {
                 if(packet.GetHeader() == PacketsHeaders.GameUnitUpdateRequest)
                 {
 
-                    UpdateUnitsResponse updateUnitsResponse = null;
-                    try
-                    {
-                        updateUnitsResponse = (UpdateUnitsResponse)JsonSerializer.Deserialize<UpdateUnitsResponse>(packet.GetContent());
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    UpdateUnitsResponse updateUnitsResponse = packet.GetDeserializedClassOrDefault<UpdateUnitsResponse>();
                     if(updateUnitsResponse!=null) updateUnitResponses.Add(updateUnitsResponse);
                 }
             }
@@ -73,14 +69,17 @@ namespace KnightsOfEmpire.GameStates.Match
                     }
                 }
             }
-
-            //Console.WriteLine("Recive UDP: Units count: " + updateUnitDatas.Count);
+        }
+        public override void LoadResources()
+        {
+            UnitsAtlas = new Texture(@"./Assets/Textures/cavalry - light.png");
         }
         public override void Initialize()
         {
             base.Initialize();
             selectionState = new UnitsSelectionState();
             selectionState.GameUnits = this.GameUnits;
+           
         }
 
         public override void Update()
@@ -103,8 +102,6 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void Render()
         {
-            // TO-DO: render units with actual texture instead of simple Rect
-            // TO-DO: render health bars
             // TO-DO: color unit textures with teams color based on unit coloring
 
             // different red colors to distinguish other enemy units
@@ -117,7 +114,8 @@ namespace KnightsOfEmpire.GameStates.Match
             };
             // friendly units are always green
             playerColors[Client.Resources.PlayerGameId] = Color.Green;
- 
+            RectangleShape unitShape = new RectangleShape();
+            RectangleShape hpBar = new RectangleShape();
             for (int i=0; i< MaxPlayerCount; i++)
             {
                 foreach(Unit unit in GameUnits[i])
@@ -130,9 +128,10 @@ namespace KnightsOfEmpire.GameStates.Match
                         if (visionCoef == FogOfWarState.VisibilityMinLevel) continue;
                     }
 
-                    RectangleShape unitShape = new RectangleShape(new Vector2f(Unit.UnitSize, Unit.UnitSize));
+                    unitShape.Size = new Vector2f(Unit.UnitSize, Unit.UnitSize);
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
-                    unitShape.Texture = new Texture(@"./Assets/Textures/cavalry - light.png",new IntRect(0,0,16,16));
+                    unitShape.Texture = UnitsAtlas;
+                    unitShape.TextureRect = new IntRect(0, 0, 16, 16);
                     unitShape.FillColor = new Color((byte)(playerColors[i].R*visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
                     
                     if (unit.IsSelected) 
@@ -140,7 +139,7 @@ namespace KnightsOfEmpire.GameStates.Match
                         unitShape.OutlineColor = Color.Blue;
                         unitShape.OutlineThickness = 1;
                     }
-                    RectangleShape hpBar = new RectangleShape(new Vector2f(Unit.UnitSize*unit.Stats.HealthPercentage, 5));
+                    hpBar.Size = new Vector2f(Unit.UnitSize*unit.Stats.HealthPercentage, 5);
                     hpBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2));
                     hpBar.FillColor = playerColors[i];
 
@@ -152,20 +151,10 @@ namespace KnightsOfEmpire.GameStates.Match
             selectionState.Render();
         }
 
-
-
         protected void RegisterUnit(ReceivedPacket packet)
         {
-            RegisterUnitRequest request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<RegisterUnitRequest>(packet.GetContent());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
+            RegisterUnitRequest request = packet.GetDeserializedClassOrDefault<RegisterUnitRequest>();
+            if (request == null) return;
 
             Unit unit = new Unit()
             {
@@ -181,24 +170,15 @@ namespace KnightsOfEmpire.GameStates.Match
 
         protected void UnregisterUnit(ReceivedPacket packet)
         {
-            UnregisterUnitRequest request = null;
-            try
-            {
-                request = JsonSerializer.Deserialize<UnregisterUnitRequest>(packet.GetContent());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
-            }
+            UnregisterUnitRequest request = packet.GetDeserializedClassOrDefault<UnregisterUnitRequest>();
             int deleteIndex = GameUnits[request.PlayerId].FindIndex(x => x.EqualID(request.ID));
             if (deleteIndex != -1) GameUnits[request.PlayerId].RemoveAt(deleteIndex);
-            else Console.WriteLine("Unit not found!!!");
-
-            //TO-DO: Make sure that units deleting won't mess up unit selection with Null References
+            else return;
         }
 
-        
-
+        public override void Dispose()
+        {
+            UnitsAtlas.Dispose();
+        }
     }  
 }

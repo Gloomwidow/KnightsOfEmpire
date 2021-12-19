@@ -27,7 +27,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
         }
         protected void CreateBuilding(ReceivedPacket packet)
         {
-            BuildingCreateRequest request = packet.GetRequestOrDefault<BuildingCreateRequest>();
+            BuildingCreateRequest request = packet.GetDeserializedClassOrDefault<BuildingCreateRequest>();
             if (request == null) return;
 
             //TO-DO: once we will have gold, check if player has enough of it to train

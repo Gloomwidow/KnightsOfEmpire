@@ -10,7 +10,7 @@ namespace KnightsOfEmpire.Common.Extensions
 {
     public static class ReceivedPacketExtension
     {
-        public static T GetRequestOrDefault<T>(this ReceivedPacket p)
+        public static T GetDeserializedClassOrDefault<T>(this ReceivedPacket p)
         {
             T request = default(T);
             try
