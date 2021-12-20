@@ -1,4 +1,4 @@
-﻿using KnightsOfEmpire.Common.Building;
+﻿using KnightsOfEmpire.Common.Buildings;
 using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Networking;
@@ -13,9 +13,13 @@ using System.Threading.Tasks;
 
 namespace KnightsOfEmpire.Server.GameStates.Match
 {
-    public class BuildingUpdateState : GameState
+    public class BuildingUpdateState : BuildingState
     {
-        public const int MaxPlayerCount = 4;
+
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch (packet.GetHeader())
@@ -27,7 +31,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
         }
         protected void CreateBuilding(ReceivedPacket packet)
         {
-            BuildingCreateRequest request = packet.GetDeserializedClassOrDefault<BuildingCreateRequest>();
+            CreateBuildingRequest request = packet.GetDeserializedClassOrDefault<CreateBuildingRequest>();
             if (request == null) return;
 
             //TO-DO: once we will have gold, check if player has enough of it to train

@@ -104,9 +104,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Building\Building.cs" />
+    <Compile Include="Buldings\Building.cs" />
     <Compile Include="Extensions\ReceivedPacketExtension.cs" />
     <Compile Include="Extensions\Vector2fExtension.cs" />
+    <Compile Include="GameStates\BuildingState.cs" />
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="GameStates\UnitState.cs" />
@@ -124,7 +125,9 @@
     <Compile Include="Networking\UDP\UDPClient.cs" />
     <Compile Include="Networking\UDP\UDPServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Buildings\BuildingCreateRequest.cs" />
+    <Compile Include="Resources\Buildings\CreateBuildingRequest.cs" />
+    <Compile Include="Resources\Buildings\RegisterBuildingRequest.cs" />
+    <Compile Include="Resources\Buildings\UnregisterBuildingRequest.cs" />
     <Compile Include="Resources\ClientResources.cs" />
     <Compile Include="Resources\Player\ChangePlayerInfoRequest.cs" />
     <Compile Include="Resources\ServerResources.cs" />

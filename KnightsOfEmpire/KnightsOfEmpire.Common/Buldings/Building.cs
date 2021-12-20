@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KnightsOfEmpire.Common.Building
+namespace KnightsOfEmpire.Common.Buildings
 {
     public class Building
     {

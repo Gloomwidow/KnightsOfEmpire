@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace KnightsOfEmpire.Common.Resources.Buildings
 {
     [Serializable]
-    public class BuildingCreateRequest
+    public class RegisterBuildingRequest
     {
+        public int PlayerId { get; set; }
         public int BuildingTypeId { get; set; }
-        public int BuildingPosX { get; set; }
-        public int BuildingPosY { get; set; }
+        public int DestroyPosX { get; set; }
+        public int DestroyPosY { get; set; }
     }
 }
