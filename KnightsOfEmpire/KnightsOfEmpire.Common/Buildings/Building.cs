@@ -1,4 +1,5 @@
-﻿using SFML.System;
+﻿using KnightsOfEmpire.Common.Resources;
+using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace KnightsOfEmpire.Common.Buildings
 {
     public class Building
     {
-        public string Name { get; set; }
+        public int BuildingId { get; set; }
         public int BuildCost { get; set; }
         public Vector2i Position { get; set; }
         public int PlayerId { get; set; }
@@ -23,9 +24,15 @@ namespace KnightsOfEmpire.Common.Buildings
                 return (float)(Health * 1.00f / MaxHealth * 1.00f);
             }
         }
-        public string Description { get; set; }
-        public virtual void OnCreate() { }
-        public virtual void Update() { }
-        public virtual void OnDestroy() { }
+
+        public Building() { }
+
+        public Building(Building original)
+        {
+            MaxHealth = original.MaxHealth;
+            Health = MaxHealth;
+            BuildCost = original.BuildCost;
+            TextureId = original.TextureId;
+        }
     }
 }

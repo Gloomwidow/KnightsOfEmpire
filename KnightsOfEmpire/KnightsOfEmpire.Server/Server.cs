@@ -29,10 +29,7 @@ namespace KnightsOfEmpire.Server
 
         public static ServerResources Resources { get; protected set; }
 
-        /// <summary>
-        /// Time for server to do one gamestate loop
-        /// </summary>
-        private static float TickRate = 1.0f / 32.0f;
+        public const float ServerTickRate = 1.0f / 32.0f;
 
         private static Stopwatch TickTimer;
 
@@ -93,9 +90,9 @@ namespace KnightsOfEmpire.Server
 
                 float elapsedTime = TickTimer.ElapsedMilliseconds / 1000.0f;
                 // The server will wait for the next update in case of doing it much faster
-                if(elapsedTime<=TickRate)
+                if(elapsedTime<= ServerTickRate)
                 {
-                    float Difference = TickRate - elapsedTime;
+                    float Difference = ServerTickRate - elapsedTime;
                     Thread.Sleep((int)(Difference * 1000));
                 }
                 DeltaTimer.Stop();
