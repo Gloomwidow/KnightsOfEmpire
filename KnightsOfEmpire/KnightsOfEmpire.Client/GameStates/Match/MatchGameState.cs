@@ -1,6 +1,7 @@
 ﻿using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Common.Resources.Buildings;
 using KnightsOfEmpire.Common.Resources.Units;
 using SFML.System;
 using SFML.Window;
@@ -21,6 +22,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public UnitUpdateState UnitUpdateState;
         public UnitOrdersState UnitsOrdersState;
         public FogOfWarState FogOfWarState;
+        public BuildingUpdateState BuildingUpdateState;
 
         bool isMousePressed = false;
 
@@ -33,8 +35,10 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitUpdateState = new UnitUpdateState();
             UnitsOrdersState = new UnitOrdersState();
             FogOfWarState = new FogOfWarState();
+            BuildingUpdateState = new BuildingUpdateState();
             MapRenderState.LoadResources();
             UnitUpdateState.LoadResources();
+            BuildingUpdateState.LoadResources();
         }
 
 
@@ -43,6 +47,7 @@ namespace KnightsOfEmpire.GameStates.Match
             MapRenderState.GameMap = Client.Resources.Map;
             MapRenderState.Initialize();
             UnitUpdateState.Initialize();
+            BuildingUpdateState.Initialize();
 
             ViewControlState.SetCameraBounds(MapRenderState.GetMapBounds());
 
@@ -68,6 +73,10 @@ namespace KnightsOfEmpire.GameStates.Match
                 if (packet.GetHeader().StartsWith(PacketsHeaders.ChangePlayerInfoRequest)) 
                 {
                     GameGUIState.HandleTCPPacket(packet);
+                }
+                if (packet.GetHeader().StartsWith(PacketsHeaders.BuildingHeaderStart)) 
+                {
+                    BuildingUpdateState.HandleTCPPacket(packet);
                 }
             }
         }
@@ -107,13 +116,36 @@ namespace KnightsOfEmpire.GameStates.Match
                         }
                     }
                 }
+                else if (!isMousePressed && Mouse.IsButtonPressed(Mouse.Button.Left) && Keyboard.IsKeyPressed(Keyboard.Key.LShift))
+                {
+                    isMousePressed = true;
+                    Vector2i clickPos = Mouse.GetPosition(Client.RenderWindow);
+                    if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
+                    {
+                        Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
+                        if (MapRenderState.GameMap.CanUnitBeSpawnedOnPos(spawnPos))
+                        {
+                            CreateBuildingRequest request = new CreateBuildingRequest
+                            {
+                                BuildingTypeId = 0,
+                                BuildingPosX = (int)spawnPos.X,
+                                BuildingPosY = (int)spawnPos.Y,
+
+                            };
+
+                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest, -1);
+                            packet.stringBuilder.Append(JsonSerializer.Serialize(request));
+                            Client.TCPClient.SendToServer(packet);
+                        }
+                    }
+                }
                 else if (!Mouse.IsButtonPressed(Mouse.Button.Left))
                 {
                     isMousePressed = false;
                 }
             }
 
-
+            BuildingUpdateState.Update();
             UnitUpdateState.Update();
             UnitsOrdersState.Update();
             ViewControlState.Update();
@@ -125,6 +157,7 @@ namespace KnightsOfEmpire.GameStates.Match
         {
             MapRenderState.RenderView = ViewControlState.View;
             MapRenderState.Render();
+            BuildingUpdateState.Render();
             UnitUpdateState.Render();
             GameGUIState.Render();
         }
@@ -135,6 +168,7 @@ namespace KnightsOfEmpire.GameStates.Match
             MapRenderState.Dispose();
             GameGUIState.Dispose();
             UnitUpdateState.Dispose();
+            BuildingUpdateState.Dispose();
             FogOfWarState.Dispose();
         }
     }
