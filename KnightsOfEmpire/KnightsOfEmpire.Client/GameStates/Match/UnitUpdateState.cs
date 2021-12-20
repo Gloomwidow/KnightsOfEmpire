@@ -133,12 +133,9 @@ namespace KnightsOfEmpire.GameStates.Match
                     unitShape.Texture = UnitsAtlas;
                     unitShape.TextureRect = new IntRect(0, 0, 16, 16);
                     unitShape.FillColor = new Color((byte)(playerColors[i].R*visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
-                    
-                    if (unit.IsSelected) 
-                    {
-                        unitShape.OutlineColor = Color.Blue;
-                        unitShape.OutlineThickness = 1;
-                    }
+                    unitShape.OutlineColor = Color.Blue;
+                    unitShape.OutlineThickness = 0;
+                    if (unit.IsSelected) unitShape.OutlineThickness = 1;
                     hpBar.Size = new Vector2f(Unit.UnitSize*unit.Stats.HealthPercentage, 5);
                     hpBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2));
                     hpBar.FillColor = playerColors[i];

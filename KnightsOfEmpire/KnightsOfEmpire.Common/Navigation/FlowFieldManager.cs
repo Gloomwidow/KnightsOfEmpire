@@ -43,8 +43,18 @@ namespace KnightsOfEmpire.Common.Navigation
 
         public void AddBuildingOnMap(int buildX, int buildY)
         {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            gameMap.TileTypes[buildX][buildY] = TileType.NonWalkable;
+            gameMap.TileTypes[buildX][buildY] = TileType.Building;
+            UpdateBuildingFlowField(buildX, buildY);
+        }
+
+        public void RemoveBuildingFromMap(int buildX, int buildY)
+        {
+            gameMap.TileTypes[buildX][buildY] = TileType.Walkable;
+            UpdateBuildingFlowField(buildX, buildY);
+        }
+
+        protected void UpdateBuildingFlowField(int buildX, int buildY)
+        {
             Parallel.For(0, gameMap.TileCountX, (x, stateOuter) =>
             {
                 Parallel.For(0, gameMap.TileCountY, (y, stateInner) =>
@@ -53,11 +63,7 @@ namespace KnightsOfEmpire.Common.Navigation
                     flowFields[x, y].UpdateBuildingFlowField(gameMap, buildX, buildY);
                 }
                 );
-            }
-            );
-            watch.Stop();
-            long elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine($"Update Flowfields execution time: {elapsedMs * 1.00 / 1000.00}s");
+            });
         }
     }
 }

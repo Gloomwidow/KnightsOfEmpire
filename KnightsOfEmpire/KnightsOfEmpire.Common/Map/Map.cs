@@ -41,6 +41,7 @@ namespace KnightsOfEmpire.Common.Map
         public int TileCountY { get; set; }
         public TileType[][] TileTypes { get; set; }
         public int[][] TileTexture { get; set; }
+        public (int x, int y)[] starterPositions { get; set; }
 
         public bool IsTileInBounds(int x, int y)
         {
@@ -144,6 +145,8 @@ namespace KnightsOfEmpire.Common.Map
             string[] sizes = lines[0].Split(' ');
             TileCountX = Int32.Parse(sizes[0]);
             TileCountY = Int32.Parse(sizes[1]);
+            int startersCount = Int32.Parse(sizes[2]);
+            starterPositions = new (int x,int y)[startersCount];
 
             TileTypes = new TileType[TileCountX][];
             for (int i = 0; i < TileCountX; i++)
@@ -165,6 +168,12 @@ namespace KnightsOfEmpire.Common.Map
                     TileTypes[j][i] = (TileType)Int32.Parse(tileTypeValues[j]);
                     TileTexture[j][i] = Int32.Parse(tileTextureValues[j]);
                 }
+            }
+
+            for(int i=0;i<startersCount;i++)
+            {
+                string[] starterPos = lines[lines.Length-1-i].Split(' ');
+                starterPositions[i] = (int.Parse(starterPos[0]), int.Parse(starterPos[1]));
             }
         }
 
