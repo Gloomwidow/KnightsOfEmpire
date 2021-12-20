@@ -108,6 +108,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buildings\BuildingLogic.cs" />
+    <Compile Include="Buildings\BuildingLogicManager.cs" />
+    <Compile Include="Buildings\GoldGenerationBuildingLogic.cs" />
+    <Compile Include="Buildings\MainBuildingLogic.cs" />
+    <Compile Include="Buildings\UnitCapacityBuildingLogic.cs" />
     <Compile Include="GameStates\Match\BuildingUpdateState.cs" />
     <Compile Include="GameStates\Match\MatchGameState.cs" />
     <Compile Include="GameStates\Match\UnitUpdateState.cs" />

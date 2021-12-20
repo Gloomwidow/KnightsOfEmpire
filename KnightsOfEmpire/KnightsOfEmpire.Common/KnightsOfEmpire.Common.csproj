@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buildings\Building.cs" />
+    <Compile Include="Buildings\BuildingManager.cs" />
     <Compile Include="Extensions\ReceivedPacketExtension.cs" />
     <Compile Include="Extensions\Vector2fExtension.cs" />
     <Compile Include="GameStates\BuildingState.cs" />

@@ -20,27 +20,30 @@ namespace KnightsOfEmpire.Common.Resources
 
         public CustomUnits[] CustomUnits { get; set; }
 
-        public int[] GoldAmount { get; set; }
+        public int[] GoldAmount { get; protected set; }
 
-        public bool[] IsDefeated { get; set; }
+        public bool[] IsDefeated { get; protected set; }
 
-        public int[] CurrentUnitsCapacity { get; set; }
+        public int[] CurrentUnitsCapacity { get; protected set; }
 
-        public int[] MaxUnitsCapacity { get; set; }
+        public int[] MaxUnitsCapacity { get; protected set; }
         public bool[] HasChanged { get; set; }
 
         public void DefeatPlayer(int playerId) 
         {
             IsDefeated[playerId] = true;
+            HasChanged[playerId] = true;
         }
         public void IncreaseCapacity(int playerId, int amount) 
         {
             MaxUnitsCapacity[playerId] += amount;
+            HasChanged[playerId] = true;
         }
 
         public void DecreaseCapacity(int playerId, int amount)
         {
             MaxUnitsCapacity[playerId] -= amount;
+            HasChanged[playerId] = true;
         }
 
         public bool AddUnitToCapacity(int playerId, int amount) 
@@ -50,18 +53,30 @@ namespace KnightsOfEmpire.Common.Resources
                 return false;
             }
             CurrentUnitsCapacity[playerId] += amount;
+            HasChanged[playerId] = true;
             return true;
         }
 
-        public bool RemoveUnitFromCapacity(int playerId, int amount)
+        public void RemoveUnitFromCapacity(int playerId, int amount)
         {
-            if (CurrentUnitsCapacity[playerId] - amount < 0)
-            {
-                return false;
-            }
             CurrentUnitsCapacity[playerId] -= amount;
+            HasChanged[playerId] = true;
+        }
+
+        public void AddGold(int playerId, int amount)
+        {
+            GoldAmount[playerId] += amount;
+            HasChanged[playerId] = true;
+        }
+
+        public bool UseGold(int playerId, int amount)
+        {
+            if (GoldAmount[playerId] < amount) return false;
+            GoldAmount[playerId] -= amount;
+            HasChanged[playerId] = true;
             return true;
         }
+
         public void Reset() 
         {
             Init(IsDefeated.Length);
