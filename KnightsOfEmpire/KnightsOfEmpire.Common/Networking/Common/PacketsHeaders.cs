@@ -37,7 +37,9 @@ namespace KnightsOfEmpire.Common.Networking
         // Everything for building will have header starting with 60
         public const string BuildingHeaderStart = "60";
 
-        public const string BuildingCreateRequest = "6010";
+        public const string CreateBuildingRequest = "6010";
+        public const string RegisterBuildingRequest = "6021";
+        public const string UnregisterBuildingRequest = "6022";
 
         // Update player info such as gold, capacity etc.
         public const string ChangePlayerInfoRequest = "7010";

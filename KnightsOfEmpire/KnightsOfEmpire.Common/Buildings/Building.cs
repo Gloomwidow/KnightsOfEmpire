@@ -34,5 +34,13 @@ namespace KnightsOfEmpire.Common.Buildings
             BuildCost = original.BuildCost;
             TextureId = original.TextureId;
         }
+        public bool EqualPosition(Vector2i position)
+        {
+            if (Position.Equals(position)) 
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

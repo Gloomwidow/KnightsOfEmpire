@@ -11,7 +11,7 @@ namespace KnightsOfEmpire.Common.Resources.Buildings
     {
         public int PlayerId { get; set; }
         public int BuildingTypeId { get; set; }
-        public int DestroyPosX { get; set; }
-        public int DestroyPosY { get; set; }
+        public int BuildingPosX { get; set; }
+        public int BuildingPosY { get; set; }
     }
 }
