@@ -28,6 +28,11 @@ namespace KnightsOfEmpire.GameStates.Match
             VisibilityLevel = new float[map.TileCountX, map.TileCountY];
         }
 
+        public override void LoadDependencies()
+        {
+            PlayerUnits = Parent.GetSiblingGameState<UnitUpdateState>().GameUnits[Client.Resources.PlayerGameId];
+        }
+
         public override void Update()
         {
             for(int x=0;x<map.TileCountX;x++)

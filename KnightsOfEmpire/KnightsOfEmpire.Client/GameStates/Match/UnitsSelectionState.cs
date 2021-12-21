@@ -19,6 +19,7 @@ using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
 using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.GameStates.Match;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -27,9 +28,9 @@ namespace KnightsOfEmpire.GameStates
         public RectangleShape selectionRectangle;
         public List<Unit>[] GameUnits;
 
-        public override void Initialize() 
+        public override void LoadDependencies()
         {
-
+            GameUnits = Parent.GetSiblingGameState<UnitUpdateState>().GameUnits;
         }
 
         public override void Update()

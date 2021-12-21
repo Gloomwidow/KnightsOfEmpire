@@ -19,8 +19,14 @@ namespace KnightsOfEmpire.GameStates.Match
         bool isRightMouseClicked = false;
         public int MainPanelHeight = 0;
 
+        public override void LoadDependencies()
+        {
+            GameUnits = Parent.GetSiblingGameState<UnitUpdateState>().GameUnits;
+        }
+
         public override void Update()
         {
+            MainPanelHeight = Parent.GetSiblingGameState<GameGUIState>().MainPanelHeight;
             if (!Client.RenderWindow.HasFocus()) return;
 
             bool clicked = Mouse.IsButtonPressed(Mouse.Button.Right);
