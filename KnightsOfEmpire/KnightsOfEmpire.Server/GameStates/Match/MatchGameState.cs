@@ -14,39 +14,31 @@ namespace KnightsOfEmpire.Server.GameStates
 {
     public class MatchGameState : GameState
     {
-        protected UnitUpdateState unitState = new UnitUpdateState();
-        protected BuildingUpdateState buildingState = new BuildingUpdateState();
-        public override void Initialize()
+        public MatchGameState()
         {
-            Console.WriteLine("Start MatchGameState on server");
-            unitState.Initialize();
-            buildingState.GameUnits = unitState.GameUnits;
-            buildingState.Initialize();
+            RegisterGameState(new UnitUpdateState());
+            RegisterGameState(new BuildingUpdateState());
+            RegisterTCPRedirects(new (string Header, Type T)[]
+                {
+                    (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),
+                    (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
+                }
+            );
         }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
         {
-            foreach(ReceivedPacket packet in packets)
-            {
-                if (packet.GetHeader().StartsWith(PacketsHeaders.GameUnitHeaderStart))
-                {
-                    unitState.HandleTCPPacket(packet);
-                }
-                if (packet.GetHeader().StartsWith(PacketsHeaders.BuildingHeaderStart)) 
-                {
-                    buildingState.HandleTCPPacket(packet);
-                }
-            }
+            RedirectTCPPackets(packets);
         }
 
         public override void Update()
         {
-            if(Server.TCPServer.CurrentActiveConnections<=0)
+            base.Update();
+            if (Server.TCPServer.CurrentActiveConnections<=0)
             {
                 Console.WriteLine("No one is connected. Resetting to WaitingState");
                 GameStateManager.GameState = new WaitingGameState();
             }
-            unitState.Update();
             for (int i = 0; i < MaxPlayerCount; i++)
             {
                 if (Server.Resources.HasChanged[i]) 
@@ -68,11 +60,6 @@ namespace KnightsOfEmpire.Server.GameStates
                     Server.Resources.HasChanged[i] = false;
                 }
             }
-        }
-
-        public override void Dispose()
-        {
-            
         }
     }
 }

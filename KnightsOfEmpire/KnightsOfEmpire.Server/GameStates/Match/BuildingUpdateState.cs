@@ -23,20 +23,31 @@ namespace KnightsOfEmpire.Server.GameStates.Match
         public override void Initialize()
         {
             base.Initialize();
+            
+        }
+
+        public override void LoadDependencies()
+        {
+            GameUnits = Parent.GetSiblingGameState<UnitUpdateState>().GameUnits;
+            BuildPlayerStartBases();
+        }
+
+        public void BuildPlayerStartBases()
+        {
             (int x, int y)[] StartPoses = Server.Resources.Map.starterPositions;
             Random rand = new Random();
             (int x, int y)[] ShuffledStartPoses = StartPoses.OrderBy(x => rand.Next()).ToArray();
             Console.WriteLine("Positions");
-            foreach((int x, int y) sp in ShuffledStartPoses)
+            foreach ((int x, int y) sp in ShuffledStartPoses)
             {
                 Console.WriteLine($"{sp.x} {sp.y}");
             }
             int pos = 0;
-            for(int i=0;i<MaxPlayerCount;i++)
+            for (int i = 0; i < MaxPlayerCount; i++)
             {
                 if (!Server.TCPServer.IsClientConnected(i)) continue;
                 CreateBuildingRequest request = new CreateBuildingRequest
-                {                  
+                {
                     BuildingPosX = ShuffledStartPoses[pos].x,
                     BuildingPosY = ShuffledStartPoses[pos].y,
                     BuildingTypeId = BuildingManager.MainBuildingId
@@ -45,6 +56,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 pos++;
             }
         }
+
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch (packet.GetHeader())
