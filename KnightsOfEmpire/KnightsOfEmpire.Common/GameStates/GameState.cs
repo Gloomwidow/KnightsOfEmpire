@@ -11,6 +11,10 @@ namespace KnightsOfEmpire.Common.GameStates
     {
         public const int MaxPlayerCount = 4;
 
+        protected List<GameState> GameStates;
+
+        protected Dictionary<string, int> TCPPacketRedirects;
+
         protected GameState parent = null;
 
         protected GameState Parent
@@ -27,8 +31,6 @@ namespace KnightsOfEmpire.Common.GameStates
                 }
             }
         }
-
-        protected List<GameState> GameStates;
 
         public GameState()
         {
@@ -50,6 +52,10 @@ namespace KnightsOfEmpire.Common.GameStates
             }
         }
 
+        /// <summary>
+        /// This function is called when all components are initialized.
+        /// There any external dependencies from other GameStates should be referenced.
+        /// </summary>
         public virtual void LoadDependencies()
         {
             foreach (GameState gs in GameStates)
@@ -57,7 +63,6 @@ namespace KnightsOfEmpire.Common.GameStates
                 gs.LoadDependencies();
             }
         }
-
         public virtual void HandleTCPPacket(ReceivedPacket packets) { }
         public virtual void HandleTCPPackets(List<ReceivedPacket> packets) 
         {
@@ -88,7 +93,7 @@ namespace KnightsOfEmpire.Common.GameStates
                 gs.Dispose();
             }
         }
-        public void RegisterGameState(GameState gs) 
+        protected void RegisterGameState(GameState gs) 
         {
             if(gs.Parent!=null)
             {
@@ -97,11 +102,49 @@ namespace KnightsOfEmpire.Common.GameStates
             gs.Parent = this;
             GameStates.Add(gs);
         }
-
         public T GetSiblingGameState<T>() where T: GameState
         {
             var gs = GameStates.Find(x => x.GetType()==typeof(T));
             return gs as T;
+        }
+        /// <summary>
+        /// Registers redirects fro RedirectTCPPackets function
+        /// </summary>
+        /// <param name="redirects">
+        /// Redirects constisting of header and type of class 
+        /// Header can be either full header (4 digits) or start (2 digits)
+        /// </param>
+        protected void RegisterTCPRedirects((string Header, Type T)[] redirects)
+        {
+            if (TCPPacketRedirects == null)
+            {
+                TCPPacketRedirects = new Dictionary<string, int>();
+                foreach ((string Header, Type T) redirect in redirects)
+                {
+                    int pos = GameStates.FindIndex(x => x.GetType() == redirect.T);
+                    if (pos == -1)
+                    {
+                        throw new ArgumentOutOfRangeException($"GameState of type {redirect.T} not registered!");
+                    }
+                    TCPPacketRedirects.Add(redirect.Header, pos);
+                }
+            }
+        }
+        protected void RedirectTCPPackets(List<ReceivedPacket> packets)
+        {
+            foreach (ReceivedPacket packet in packets)
+            {
+                string headerStart = packet.GetHeader().Substring(0, 2);
+                int GameStatePosition;
+                if (TCPPacketRedirects.TryGetValue(headerStart, out GameStatePosition))
+                {
+                    GameStates[GameStatePosition].HandleTCPPacket(packet);
+                }
+                if (TCPPacketRedirects.TryGetValue(packet.GetHeader(), out GameStatePosition))
+                {
+                    GameStates[GameStatePosition].HandleTCPPacket(packet);
+                }
+            }
         }
 
     }

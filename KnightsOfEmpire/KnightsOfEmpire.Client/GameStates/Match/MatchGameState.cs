@@ -18,42 +18,33 @@ namespace KnightsOfEmpire.GameStates.Match
     {
         public GameGUIState GameGUIState;
         public UnitUpdateState UnitUpdateState;
-        public BuildingUpdateState BuildingUpdateState;
 
         bool isMousePressed = false;
 
         public MatchGameState()
         {
             GameGUIState = new GameGUIState();
-            BuildingUpdateState = new BuildingUpdateState();
             UnitUpdateState = new UnitUpdateState();
             RegisterGameState(new ViewControlState());
             RegisterGameState(new MapRenderState());
             RegisterGameState(new UnitOrdersState());
             RegisterGameState(UnitUpdateState);
-            RegisterGameState(BuildingUpdateState);
+            RegisterGameState(new BuildingUpdateState());
             RegisterGameState(GameGUIState);
             RegisterGameState(new FogOfWarState());
-            
+            RegisterTCPRedirects(new (string Header, Type T)[]
+                {
+                    (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),
+                    (PacketsHeaders.ChangePlayerInfoRequest, typeof(GameGUIState)),
+                    (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
+                }
+            );
         }
+
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
         {
-            foreach(ReceivedPacket packet in packets)
-            {
-                if(packet.GetHeader().StartsWith(PacketsHeaders.GameUnitHeaderStart))
-                {
-                    UnitUpdateState.HandleTCPPacket(packet);
-                }
-                if (packet.GetHeader().StartsWith(PacketsHeaders.ChangePlayerInfoRequest)) 
-                {
-                    GameGUIState.HandleTCPPacket(packet);
-                }
-                if (packet.GetHeader().StartsWith(PacketsHeaders.BuildingHeaderStart)) 
-                {
-                    BuildingUpdateState.HandleTCPPacket(packet);
-                }
-            }
+            RedirectTCPPackets(packets);
         }
 
         public override void HandleUDPPackets(List<ReceivedPacket> packets)
@@ -107,7 +98,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
                             };
 
-                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest);
+                            SentPacket packet = new SentPacket(PacketsHeaders.CreateBuildingRequest);
                             packet.stringBuilder.Append(JsonSerializer.Serialize(request));
                             Client.TCPClient.SendToServer(packet);
                         }
