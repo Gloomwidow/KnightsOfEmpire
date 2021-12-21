@@ -202,7 +202,33 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                 Console.WriteLine(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex, packet.ClientID);
             }
+        }
 
+        /// <summary>
+        /// Send prepared packet to every connected client
+        /// </summary>
+        /// <param name="packet"> Packet to send</param>
+        public void Broadcast(SentPacket packet)
+        {
+            if (!isRunning) return;
+            for (int i = 0; i < MaxConnections; i++)
+            {
+                packet.ClientID = i;
+                if (Connections[packet.ClientID].isEmpty) return;
+
+                byte[] byteData = Encoding.ASCII.GetBytes(packet.GetContent());
+
+                try
+                {
+                    Connections[packet.ClientID].socket.BeginSend(byteData, 0, byteData.Length, 0,
+                    new AsyncCallback(SendCallback), packet.ClientID);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    if (ex is SocketException) HandleSocketException((SocketException)ex, packet.ClientID);
+                }
+            }
         }
 
         public IPEndPoint GetClientAddress(int id)

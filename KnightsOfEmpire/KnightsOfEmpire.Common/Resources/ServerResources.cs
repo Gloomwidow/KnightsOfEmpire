@@ -14,6 +14,8 @@ namespace KnightsOfEmpire.Common.Resources
         public static int StartMaxCapacity = 10;
         public Map.Map Map { get; set; }
 
+        string MapLocation { get; set; }
+
         public FlowFieldManager NavigationManager;
 
         public string[] Nicknames { get; set; }
@@ -90,12 +92,13 @@ namespace KnightsOfEmpire.Common.Resources
             CurrentUnitsCapacity = new int[maxPlayers];
             MaxUnitsCapacity = new int[maxPlayers];
             HasChanged = new bool[maxPlayers];
-            Map = null;
+            Map = new Map.Map(MapLocation);
             ResetPlayerGameInfo(maxPlayers);
         }
 
-        public ServerResources(int maxPlayers)
+        public ServerResources(int maxPlayers, string mapLocation)
         {
+            MapLocation = mapLocation;
             Init(maxPlayers);
         }
         public void ResetPlayerGameInfo(int maxPlayers) 

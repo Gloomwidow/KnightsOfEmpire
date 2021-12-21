@@ -24,7 +24,7 @@ namespace KnightsOfEmpire.GameStates
     public class MapRenderState : GameState
     {
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
-
+        protected bool renderOutline = true; 
         public Map GameMap;
         public float[,] VisibilityLevel;
         public List<Texture> textures;
@@ -66,6 +66,11 @@ namespace KnightsOfEmpire.GameStates
             mapRectangles[x, y] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
             mapRectangles[x, y].Position = new Vector2f(x * Map.TilePixelSize, y * Map.TilePixelSize);
             mapRectangles[x, y].Texture = textures[GameMap.TileTexture[x][y]];
+            if (renderOutline)
+            {
+                mapRectangles[x, y].OutlineColor = Color.Black;
+                mapRectangles[x, y].OutlineThickness = 2;
+            }
         }
 
 

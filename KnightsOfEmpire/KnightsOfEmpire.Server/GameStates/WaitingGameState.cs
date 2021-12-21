@@ -28,7 +28,7 @@ namespace KnightsOfEmpire.Server.GameStates
 
         public override void Initialize()
         {
-            Server.Resources.ResetPlayerGameInfo(Server.TCPServer.MaxConnections);
+            Server.Resources.Reset();
             Nicknames = new string[Server.TCPServer.MaxConnections];
             ReadyStatus = new bool[Server.TCPServer.MaxConnections];
             IsNicknameChecked = new bool[Server.TCPServer.MaxConnections];

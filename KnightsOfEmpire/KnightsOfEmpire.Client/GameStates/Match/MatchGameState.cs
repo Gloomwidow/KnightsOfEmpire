@@ -60,6 +60,7 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitsOrdersState.GameUnits = UnitUpdateState.GameUnits;
             MapRenderState.VisibilityLevel = FogOfWarState.VisibilityLevel;
             UnitUpdateState.VisibilityLevel = FogOfWarState.VisibilityLevel;
+            BuildingUpdateState.VisibilityLevel = FogOfWarState.VisibilityLevel;
         }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
@@ -110,7 +111,7 @@ namespace KnightsOfEmpire.GameStates.Match
                                 BuildingPosY = (int)spawnPos.Y,
                             };
 
-                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest, -1);
+                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest);
                             packet.stringBuilder.Append(JsonSerializer.Serialize(request));
                             Client.TCPClient.SendToServer(packet);
                         }
@@ -123,8 +124,6 @@ namespace KnightsOfEmpire.GameStates.Match
                     if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
                     {
                         Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
-                        if (MapRenderState.GameMap.CanUnitBeSpawnedOnPos(spawnPos))
-                        {
                             CreateBuildingRequest request = new CreateBuildingRequest
                             {
                                 BuildingTypeId = 0,
@@ -133,10 +132,9 @@ namespace KnightsOfEmpire.GameStates.Match
 
                             };
 
-                            SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest, -1);
+                            SentPacket packet = new SentPacket(PacketsHeaders.CreateBuildingRequest);
                             packet.stringBuilder.Append(JsonSerializer.Serialize(request));
                             Client.TCPClient.SendToServer(packet);
-                        }
                     }
                 }
                 else if (!Mouse.IsButtonPressed(Mouse.Button.Left))
