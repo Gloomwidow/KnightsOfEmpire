@@ -1,6 +1,7 @@
 ﻿using KnightsOfEmpire.Common.Buildings;
 using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Buildings;
@@ -19,6 +20,8 @@ namespace KnightsOfEmpire.GameStates.Match
     {
         public Texture BuildingsAtlas;
         public float[,] VisibilityLevel;
+        protected int AtlasSizeX;
+        protected int AtlasSizeY;
 
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
@@ -40,6 +43,8 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void LoadResources()
         {
             BuildingsAtlas = new Texture(@"./Assets/Textures/tileset.png");
+            AtlasSizeX = (int)BuildingsAtlas.Size.X;
+            AtlasSizeY = (int)BuildingsAtlas.Size.Y;
         }
 
         public override void Render()
@@ -62,21 +67,20 @@ namespace KnightsOfEmpire.GameStates.Match
             {
                 foreach (Building building in GameBuildings[i])
                 {
-                    Vector2i pos = Map.ToTilePos((Vector2f)building.Position);
-                    float visionCoef = VisibilityLevel[pos.X, pos.Y];
+                    float visionCoef = VisibilityLevel[building.Position.X, building.Position.Y];
 
-                    if (i != Client.Resources.PlayerGameId)
-                    {
-                        if (visionCoef == FogOfWarState.VisibilityMinLevel) continue;
-                    }
+                    //if (i != Client.Resources.PlayerGameId)
+                    //{
+                    //    if (visionCoef == FogOfWarState.VisibilityMinLevel) continue;
+                    //}
 
                     buildingShape.Size = new Vector2f(Map.TilePixelSize, Map.TilePixelSize);
-                    buildingShape.Position = new Vector2f(building.Position.X - (Map.TilePixelSize / 2), building.Position.Y - (Map.TilePixelSize / 2));
+                    buildingShape.Position = new Vector2f(building.Position.X*Map.TilePixelSize, building.Position.Y * Map.TilePixelSize);
                     buildingShape.Texture = BuildingsAtlas;
-                    buildingShape.TextureRect = new IntRect(0, 0, 16, 16);
+                    buildingShape.TextureRect = IdToTextureRect.GetRect(BuildingManager.GetTextureId(building.BuildingId), AtlasSizeX, AtlasSizeY);
                     buildingShape.FillColor = new Color((byte)(playerColors[i].R * visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
                     hpBar.Size = new Vector2f(Map.TilePixelSize * building.HealthPercentage, 5);
-                    hpBar.Position = new Vector2f(building.Position.X - (Map.TilePixelSize / 2), building.Position.Y + (Map.TilePixelSize / 2));
+                    hpBar.Position = new Vector2f(building.Position.X * Map.TilePixelSize - (Map.TilePixelSize / 2), building.Position.Y * Map.TilePixelSize + (Map.TilePixelSize / 2));
                     hpBar.FillColor = playerColors[i];
 
 
@@ -92,9 +96,9 @@ namespace KnightsOfEmpire.GameStates.Match
 
             Building building = new Building()
             {
+                BuildingId = request.BuildingTypeId,
                 PlayerId = request.PlayerId,
                 Position = new Vector2i(request.BuildingPosX, request.BuildingPosY),
-                TextureId = request.BuildingTypeId
             };
 
             GameBuildings[request.PlayerId].Add(building);

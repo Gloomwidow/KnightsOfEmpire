@@ -20,6 +20,8 @@ namespace KnightsOfEmpire.Server.GameStates
         {
             Console.WriteLine("Start MatchGameState on server");
             unitState.Initialize();
+            buildingState.GameUnits = unitState.GameUnits;
+            buildingState.Initialize();
         }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)

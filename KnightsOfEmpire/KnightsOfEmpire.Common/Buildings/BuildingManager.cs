@@ -15,9 +15,21 @@ namespace KnightsOfEmpire.Common.Buildings
 
     public static class BuildingManager
     {
+        public static int MainBuildingId = 32;
         private static Dictionary<int, BuildingInfo> buildingsInfo = new Dictionary<int, BuildingInfo>()
-        {
-            [0] = new BuildingInfo
+        { 
+            [0] = new BuildingInfo 
+            {
+                Name = "Barracks",
+                Description = "Increases max unit capacity, allowing Empires to have more units at once.",
+                Building = new Building
+                {
+                    BuildCost = 25,
+                    MaxHealth = 250,
+                    TextureId = 0,
+                }
+            },
+            [32] = new BuildingInfo
             {
                 Name = "Main Building",
                 Description = "The Heart of Empire. Player is defeated when their main building is destroyed.",
@@ -25,9 +37,9 @@ namespace KnightsOfEmpire.Common.Buildings
                 {
                     BuildCost = 0,
                     MaxHealth = 1000,
-                    TextureId = 0,
+                    TextureId = 5,
                 }
-            }
+            },
         };
 
 
@@ -52,6 +64,13 @@ namespace KnightsOfEmpire.Common.Buildings
             BuildingInfo info = null;
             if (!buildingsInfo.TryGetValue(buildingId, out info)) return string.Empty;
             return info.Description;
+        }
+
+        public static int GetTextureId(int buildingId)
+        {
+            BuildingInfo info = null;
+            if (!buildingsInfo.TryGetValue(buildingId, out info)) return 0;
+            return info.Building.TextureId;
         }
 
     }

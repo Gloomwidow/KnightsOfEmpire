@@ -64,10 +64,7 @@ namespace KnightsOfEmpire.Server
             }
 
             // Server resources
-            Resources = new ServerResources(TCPServer.MaxConnections);
-            
-            // Load default map
-            Resources.Map = new Map("wallstest.kmap");
+            Resources = new ServerResources(TCPServer.MaxConnections, "wallstest.kmap");
 
 
             // First game state
