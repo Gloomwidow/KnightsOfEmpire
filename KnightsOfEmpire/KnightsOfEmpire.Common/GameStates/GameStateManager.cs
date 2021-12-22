@@ -35,6 +35,7 @@ namespace KnightsOfEmpire.Common.GameStates
                 nextGameState = null;
                 currentGameState.LoadResources();
                 currentGameState.Initialize();
+                currentGameState.LoadDependencies();
             }
         }
     }

@@ -44,7 +44,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             UnitGroups = new List<UnitGroup>();
             Server.Resources.NavigationManager = new FlowFieldManager(Server.Resources.Map);
         }
-
         public override void Update()
         {
             for (int i = 0; i < UnitGroups.Count; i++)
@@ -95,9 +94,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 }
             }
 
-
-
-            // Send Uppdate about all units
             for (int i=0; i<GameUnits.Length; i++)
             {
                 if(GameUnits[i].Count > 0)
@@ -106,7 +102,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 }
             }
         }
-
 
         protected void CreateMoveUnitsGroup(ReceivedPacket packet)
         {

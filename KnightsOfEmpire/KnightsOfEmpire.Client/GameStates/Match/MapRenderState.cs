@@ -18,13 +18,14 @@ using System.Net;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
+using KnightsOfEmpire.GameStates.Match;
 
 namespace KnightsOfEmpire.GameStates
 {
     public class MapRenderState : GameState
     {
         public View View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
-        protected bool renderOutline = true; 
+
         public Map GameMap;
         public float[,] VisibilityLevel;
         public List<Texture> textures;
@@ -40,15 +41,22 @@ namespace KnightsOfEmpire.GameStates
 
         public override void LoadResources()
         {
+            
             textures = new List<Texture>();
             textures.Add(new Texture(@"./Assets/Textures/grass.png"));
             textures.Add(new Texture(@"./Assets/Textures/water.png"));
             textures.Add(new Texture(@"./Assets/Textures/wall.png"));
         }
-        
+
+        public override void LoadDependencies()
+        {
+            VisibilityLevel = Parent.GetSiblingGameState<FogOfWarState>().VisibilityLevel;
+            RenderView = Parent.GetSiblingGameState<ViewControlState>().View;
+        }
 
         public override void Initialize()
         {
+            GameMap = Client.Resources.Map;
             mapRectangles = new RectangleShape[GameMap.TileCountX, GameMap.TileCountY];
 
             Parallel.For(0, GameMap.TileCountX, (x, stateOuter) =>
@@ -66,11 +74,6 @@ namespace KnightsOfEmpire.GameStates
             mapRectangles[x, y] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
             mapRectangles[x, y].Position = new Vector2f(x * Map.TilePixelSize, y * Map.TilePixelSize);
             mapRectangles[x, y].Texture = textures[GameMap.TileTexture[x][y]];
-            if (renderOutline)
-            {
-                mapRectangles[x, y].OutlineColor = Color.Black;
-                mapRectangles[x, y].OutlineThickness = 2;
-            }
         }
 
 

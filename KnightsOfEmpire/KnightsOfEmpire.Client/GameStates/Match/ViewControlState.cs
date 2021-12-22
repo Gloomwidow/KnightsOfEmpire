@@ -64,9 +64,14 @@ namespace KnightsOfEmpire.GameStates
             Client.RenderWindow.MouseWheelScrolled += mouseScrollZoomHandler;
         }
 
+        public override void LoadDependencies()
+        {
+            SetCameraBounds(Parent.GetSiblingGameState<MapRenderState>().GetMapBounds());
+        }
+
         public override void Update()
         {
-           
+            ViewBottomBoundGuiHeight = Parent.GetSiblingGameState<GameGUIState>().MainPanelHeight;
             View.Size = new Vector2f(Client.RenderWindow.Size.X, Client.RenderWindow.Size.Y);
             View.Zoom(gameZoom);
 

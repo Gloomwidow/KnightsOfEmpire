@@ -16,70 +16,35 @@ namespace KnightsOfEmpire.GameStates.Match
 {
     public class MatchGameState : GameState
     {
-        public ViewControlState ViewControlState;
-        public MapRenderState MapRenderState;
         public GameGUIState GameGUIState;
         public UnitUpdateState UnitUpdateState;
-        public UnitOrdersState UnitsOrdersState;
-        public FogOfWarState FogOfWarState;
-        public BuildingUpdateState BuildingUpdateState;
 
         bool isMousePressed = false;
 
-
-        public override void LoadResources()
+        public MatchGameState()
         {
-            ViewControlState = new ViewControlState();
-            MapRenderState = new MapRenderState();
             GameGUIState = new GameGUIState();
             UnitUpdateState = new UnitUpdateState();
-            UnitsOrdersState = new UnitOrdersState();
-            FogOfWarState = new FogOfWarState();
-            BuildingUpdateState = new BuildingUpdateState();
-            MapRenderState.LoadResources();
-            UnitUpdateState.LoadResources();
-            BuildingUpdateState.LoadResources();
+            RegisterGameState(new ViewControlState());
+            RegisterGameState(new MapRenderState());
+            RegisterGameState(new UnitOrdersState());
+            RegisterGameState(UnitUpdateState);
+            RegisterGameState(new BuildingUpdateState());
+            RegisterGameState(GameGUIState);
+            RegisterGameState(new FogOfWarState());
+            RegisterTCPRedirects(new (string Header, Type T)[]
+                {
+                    (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),
+                    (PacketsHeaders.ChangePlayerInfoRequest, typeof(GameGUIState)),
+                    (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
+                }
+            );
         }
 
-
-        public override void Initialize()
-        {
-            MapRenderState.GameMap = Client.Resources.Map;
-            MapRenderState.Initialize();
-            UnitUpdateState.Initialize();
-            BuildingUpdateState.Initialize();
-
-            ViewControlState.SetCameraBounds(MapRenderState.GetMapBounds());
-
-            ViewControlState.Initialize();
-
-            GameGUIState.Initialize();
-            FogOfWarState.Initialize();
-
-            FogOfWarState.PlayerUnits = UnitUpdateState.GameUnits[Client.Resources.PlayerGameId];
-            UnitsOrdersState.GameUnits = UnitUpdateState.GameUnits;
-            MapRenderState.VisibilityLevel = FogOfWarState.VisibilityLevel;
-            UnitUpdateState.VisibilityLevel = FogOfWarState.VisibilityLevel;
-            BuildingUpdateState.VisibilityLevel = FogOfWarState.VisibilityLevel;
-        }
 
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
         {
-            foreach(ReceivedPacket packet in packets)
-            {
-                if(packet.GetHeader().StartsWith(PacketsHeaders.GameUnitHeaderStart))
-                {
-                    UnitUpdateState.HandleTCPPacket(packet);
-                }
-                if (packet.GetHeader().StartsWith(PacketsHeaders.ChangePlayerInfoRequest)) 
-                {
-                    GameGUIState.HandleTCPPacket(packet);
-                }
-                if (packet.GetHeader().StartsWith(PacketsHeaders.BuildingHeaderStart)) 
-                {
-                    BuildingUpdateState.HandleTCPPacket(packet);
-                }
-            }
+            RedirectTCPPackets(packets);
         }
 
         public override void HandleUDPPackets(List<ReceivedPacket> packets)
@@ -89,8 +54,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void Update()
         {
-            ViewControlState.ViewBottomBoundGuiHeight = GameGUIState.MainPanelHeight;
-            UnitsOrdersState.MainPanelHeight = GameGUIState.MainPanelHeight;
+            base.Update();
 
             //TO-DO: convert this behavior to button press on MainState GUI
             if (Client.RenderWindow.HasFocus())
@@ -102,7 +66,7 @@ namespace KnightsOfEmpire.GameStates.Match
                     if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
                     {
                         Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
-                        if (MapRenderState.GameMap.CanUnitBeSpawnedOnPos(spawnPos))
+                        if (Client.Resources.Map.CanUnitBeSpawnedOnPos(spawnPos))
                         {
                             TrainUnitRequest request = new TrainUnitRequest
                             {
@@ -124,6 +88,8 @@ namespace KnightsOfEmpire.GameStates.Match
                     if (clickPos.Y < Client.RenderWindow.Size.Y - GameGUIState.MainPanelHeight) // clicked on map
                     {
                         Vector2f spawnPos = Client.RenderWindow.MapPixelToCoords(clickPos);
+                        if (Client.Resources.Map.CanUnitBeSpawnedOnPos(spawnPos))
+                        {
                             CreateBuildingRequest request = new CreateBuildingRequest
                             {
                                 BuildingTypeId = 0,
@@ -135,6 +101,7 @@ namespace KnightsOfEmpire.GameStates.Match
                             SentPacket packet = new SentPacket(PacketsHeaders.CreateBuildingRequest);
                             packet.stringBuilder.Append(JsonSerializer.Serialize(request));
                             Client.TCPClient.SendToServer(packet);
+                        }
                     }
                 }
                 else if (!Mouse.IsButtonPressed(Mouse.Button.Left))
@@ -142,32 +109,6 @@ namespace KnightsOfEmpire.GameStates.Match
                     isMousePressed = false;
                 }
             }
-
-            BuildingUpdateState.Update();
-            UnitUpdateState.Update();
-            UnitsOrdersState.Update();
-            ViewControlState.Update();
-            FogOfWarState.Update();
-            GameGUIState.Update();
-        }
-
-        public override void Render()
-        {
-            MapRenderState.RenderView = ViewControlState.View;
-            MapRenderState.Render();
-            BuildingUpdateState.Render();
-            UnitUpdateState.Render();
-            GameGUIState.Render();
-        }
-
-        public override void Dispose()
-        {
-            ViewControlState.Dispose();
-            MapRenderState.Dispose();
-            GameGUIState.Dispose();
-            UnitUpdateState.Dispose();
-            BuildingUpdateState.Dispose();
-            FogOfWarState.Dispose();
         }
     }
 }

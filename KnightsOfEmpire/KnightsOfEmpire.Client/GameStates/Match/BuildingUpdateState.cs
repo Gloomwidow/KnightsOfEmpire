@@ -36,9 +36,9 @@ namespace KnightsOfEmpire.GameStates.Match
 
             }
         }
-        public override void Initialize()
+        public override void LoadDependencies()
         {
-            base.Initialize();
+            VisibilityLevel = Parent.GetSiblingGameState<FogOfWarState>().VisibilityLevel;
         }
         public override void LoadResources()
         {
