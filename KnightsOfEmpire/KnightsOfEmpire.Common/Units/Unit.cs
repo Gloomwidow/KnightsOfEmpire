@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 
 using KnightsOfEmpire.Common.Resources.Units;
+using KnightsOfEmpire.Common.Buildings;
 
 namespace KnightsOfEmpire.Common.Units
 {
@@ -15,6 +16,8 @@ namespace KnightsOfEmpire.Common.Units
         public UnitGroup UnitGroup;
 
         public bool IsGroupCompleted { get; set; }
+
+        public AttackTarget AttackTarget = AttackTarget.None;
 
         public const int UnitSize = 32;
         public const int UnitAvoidanceDistance = (int)(UnitSize*1.44f); // UnitSize*sqrt(2)
@@ -115,30 +118,56 @@ namespace KnightsOfEmpire.Common.Units
             if (MoveDirection.Length2() != 0.0) Stance = UnitStance.Moving;
             else Stance = UnitStance.Idle;
         }
-        
-        public void Attack(float DeltaTime, List<Unit> targets)
+
+        public void Attack(float DeltaTime, List<Unit> targetUnits, List<Building> targetBuildings)
         {
-            if (targets.Count <= 0)
+
+            if(AttackTarget==AttackTarget.None)
             {
-                AttackProgress = 0.0f;
-                HasAttacked = false;
+                if (targetUnits.Count > 0) AttackTarget = AttackTarget.Unit;
+                else if (targetBuildings.Count > 0) AttackTarget = AttackTarget.Building;
+            }
+
+            if (AttackTarget == AttackTarget.None) return;
+
+            if ((AttackTarget == AttackTarget.Unit && targetUnits.Count <= 0) ||
+            (AttackTarget == AttackTarget.Building && targetBuildings.Count <= 0))
+            {
+                ResetAttack();
                 return;
             }
 
             Stance = UnitStance.Attacking;
             AttackProgress += Stats.AttackSpeed * DeltaTime;
-            if(!HasAttacked && AttackProgress>=Stats.AttackExecuteTime)
+            if (!HasAttacked && AttackProgress >= Stats.AttackExecuteTime)
             {
-                Unit u = targets[targets.Count - 1];
-                u.Stats.Health -= Stats.AttackDamage;
+                Console.WriteLine($"B:{targetBuildings.Count}");
+                if (AttackTarget == AttackTarget.Unit)
+                {
+                    Unit u = targetUnits[targetUnits.Count - 1];
+                    u.Stats.Health -= Stats.AttackDamage;
+                }
+                else
+                {
+                    Building b = targetBuildings[targetBuildings.Count - 1];
+                    b.Health -= Stats.AttackDamage;
+                    Console.WriteLine($"Hit {BuildingManager.GetName(b.BuildingId)} for {Stats.AttackDamage}. Health left:{b.Health}");
+                }
                 HasAttacked = true;
             }
-            if(AttackProgress>=1.0f)
+            if (AttackProgress >= 1.0f)
             {
-                AttackProgress %= 1.0f;
+                AttackProgress = 0.0f;
+                AttackTarget = AttackTarget.None;
                 HasAttacked = false;
-            }  
-        }
+            }
+        }  
         
+        protected void ResetAttack()
+        {
+            AttackProgress = 0.0f;
+            AttackTarget = AttackTarget.None;
+            HasAttacked = false;
+        }
     }
 }

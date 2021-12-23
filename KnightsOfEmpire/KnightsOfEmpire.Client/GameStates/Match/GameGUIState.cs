@@ -42,6 +42,7 @@ namespace KnightsOfEmpire.GameStates
 
         private string gold = "gold value";
         private string capacity = "currect/max";
+        private string mainBaseHealth = "2137/2137";
 
 
         private BitmapButton[,] buldingsButtons;

@@ -19,7 +19,8 @@ namespace KnightsOfEmpire.Server.Buildings
         private static BuildingLogic defaultBuildingLogic = new BuildingLogic();
         private static Dictionary<int, BuildingLogic> buildingsLogic = new Dictionary<int, BuildingLogic>()
         {
-            [32] = new MainBuildingLogic(2, 5),
+            [0] = new UnitCapacityBuildingLogic(10),
+            [32] = new MainBuildingLogic(5, 1),
         };
 
 

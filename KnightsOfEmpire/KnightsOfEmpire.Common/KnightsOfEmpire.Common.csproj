@@ -137,6 +137,7 @@
     <Compile Include="Resources\Waiting\CustomUnitsServerResponse.cs" />
     <Compile Include="Resources\Waiting\MapClientRequest.cs" />
     <Compile Include="Resources\Waiting\StartGameServerRequest.cs" />
+    <Compile Include="Units\AttackTarget.cs" />
     <Compile Include="Units\CustomUnits.cs" />
     <Compile Include="Resources\Units\TrainUnitRequest.cs" />
     <Compile Include="Resources\Units\UnregisterUnitRequest.cs" />
