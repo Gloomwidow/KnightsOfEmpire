@@ -57,6 +57,25 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             }
         }
 
+        public override void Update()
+        {
+            base.Update();
+            for(int i=0;i<MaxPlayerCount;i++)
+            {
+                for(int j=0;j<GameBuildings[i].Count;j++)
+                {
+                    Building b = GameBuildings[i][j];
+                    if (b.HealthPercentage <= 0)
+                    {
+                        DestroyBuilding(i, j);
+                        j--;
+                        continue;
+                    }
+                    BuildingLogicManager.ProcessUpdate(b);
+                }
+            }
+        }
+
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch (packet.GetHeader())
@@ -162,25 +181,26 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             Server.TCPServer.Broadcast(sentPacket);
         }
 
-        protected void DestroyBuilding(int playerId, Vector2i tilePos)
+        protected void DestroyBuilding(int playerId, int index)
         {
-            int deleteIndex = GameBuildings[playerId].FindIndex(x => x.Equals(tilePos));
-            if (deleteIndex != -1) GameBuildings[playerId].RemoveAt(deleteIndex);
-            else return;
+            Building b = GameBuildings[playerId][index];
 
-            Server.Resources.NavigationManager.RemoveBuildingFromMap(tilePos.X, tilePos.Y);
+            Server.Resources.NavigationManager.RemoveBuildingFromMap(b.Position.X, b.Position.Y);
 
             UnregisterBuildingRequest response = new UnregisterBuildingRequest
             {
-                DestroyPosX = tilePos.X,
-                DestroyPosY = tilePos.Y,
+                DestroyPosX = b.Position.X,
+                DestroyPosY = b.Position.Y,
                 PlayerId = playerId
             };
+
+            BuildingLogicManager.ProcessOnDestroy(b);
 
             SentPacket sentPacket = new SentPacket(PacketsHeaders.UnregisterBuildingRequest);
             sentPacket.stringBuilder.Append(JsonSerializer.Serialize(response));
 
             Server.TCPServer.Broadcast(sentPacket);
+            GameBuildings[playerId].RemoveAt(index);
         }
     }
 }

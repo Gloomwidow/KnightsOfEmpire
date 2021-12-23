@@ -1,4 +1,5 @@
-﻿using SFML.System;
+﻿using SFML.Graphics;
+using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,6 +90,14 @@ namespace KnightsOfEmpire.Common.Extensions
             float rotation = rotationSpeed * timeStep;
             rotation = Math.Max(Math.Min(rotation, 1.0f), 0.0f);
             return start + (delta * rotation);
+        }
+
+
+        public static float Distance2Rect(this Vector2f p, FloatRect rect)
+        {
+            float dx = Math.Min(Math.Abs(rect.Left - p.X), Math.Abs(p.X - (rect.Left+rect.Width)));
+            float dy = Math.Min(Math.Abs(rect.Top - p.Y), Math.Abs(p.Y - (rect.Top+rect.Height)));
+            return dx * dx + dy * dy;
         }
     }
 }

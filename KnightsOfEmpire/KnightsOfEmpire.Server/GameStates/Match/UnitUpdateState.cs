@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net;
+using KnightsOfEmpire.Common.Buildings;
 
 namespace KnightsOfEmpire.Server.GameStates.Match
 {
@@ -71,6 +72,8 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     Vector2f flowVector = new Vector2f(0, 0);
 
                     List<Unit> enemyInRange = GetEnemyUnitsInRange(u, u.Stats.AttackDistance);
+                    List<Building> buildingsInRange = 
+                        Parent.GetSiblingGameState<BuildingUpdateState>().GetEnemyBuildingsInRange(u, u.Stats.AttackDistance);
 
 
                     // if unit is in moving group, get its movement direction
@@ -83,7 +86,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     {
                         if (u.UnitGroup != null) u.UnitGroup.Leave(u);
                     }
-                    u.Attack(Server.DeltaTime, enemyInRange);
+                    u.Attack(Server.DeltaTime, enemyInRange, buildingsInRange);
                     u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
                     u.Move(Server.DeltaTime);
 
