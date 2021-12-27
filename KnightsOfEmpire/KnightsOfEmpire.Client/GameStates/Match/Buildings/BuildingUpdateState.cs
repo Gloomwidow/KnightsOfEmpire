@@ -113,11 +113,11 @@ namespace KnightsOfEmpire.GameStates.Match
                     Client.RenderWindow.Draw(buildingShape);
                     buildingShape.Texture = BuildingsColorAtlas;
                     buildingShape.FillColor = new Color((byte)(playerColors[i].R * visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
+                    Client.RenderWindow.Draw(buildingShape);
                     if (i != Client.Resources.PlayerGameId)
                     {
-                        if (visionCoef != FogOfWarState.VisibilityMinLevel) Client.RenderWindow.Draw(buildingShape);
+                        if (visionCoef != FogOfWarState.VisibilityMinLevel) Client.RenderWindow.Draw(hpBar);
                     }
-                    Client.RenderWindow.Draw(hpBar);
                 }
             }
         }

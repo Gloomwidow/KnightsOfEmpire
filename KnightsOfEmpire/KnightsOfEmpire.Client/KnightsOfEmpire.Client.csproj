@@ -110,8 +110,8 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="GameStates\ConnectState.cs" />
-    <Compile Include="GameStates\Match\BuildingPlacementState.cs" />
-    <Compile Include="GameStates\Match\BuildingUpdateState.cs" />
+    <Compile Include="GameStates\Match\Buildings\BuildingPlacementState.cs" />
+    <Compile Include="GameStates\Match\Buildings\BuildingUpdateState.cs" />
     <Compile Include="GameStates\Match\FogOfWarState.cs" />
     <Compile Include="GameStates\Match\GameGUIState.cs" />
     <Compile Include="GameStates\MainState.cs" />
