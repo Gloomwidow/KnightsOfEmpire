@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 namespace KnightsOfEmpire.Common.Resources.Units
 {
     [Serializable]
-    public class UpdateUnitsResponse
+    public class UpdateUnitsResponse : UDPBaseRequest
     {
-        /// <summary>
-        /// Convert DateTime to long
-        /// </summary>
-        public long TimeStamp { get; set; }
-
         public UpdateUnitData[] UnitData { get; set; }
     }
 }

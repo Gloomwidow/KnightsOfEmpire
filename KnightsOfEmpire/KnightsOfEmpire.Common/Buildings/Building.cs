@@ -10,6 +10,8 @@ namespace KnightsOfEmpire.Common.Buildings
 {
     public class Building
     {
+
+        public float Timer = 0;
         public int BuildingId { get; set; }
         public int BuildCost { get; set; }
         public Vector2i Position { get; set; }

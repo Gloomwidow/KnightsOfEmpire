@@ -20,7 +20,9 @@ namespace KnightsOfEmpire.Server.Buildings
         private static Dictionary<int, BuildingLogic> buildingsLogic = new Dictionary<int, BuildingLogic>()
         {
             [0] = new UnitCapacityBuildingLogic(10),
-            [32] = new MainBuildingLogic(5, 1),
+            [1] = new GoldGenerationBuildingLogic(1, 2),
+            [2] = new FriendlyHealingBuildingLogic(10, 128, 5),
+            [BuildingManager.MainBuildingId] = new MainBuildingLogic(5, 1),
         };
 
 

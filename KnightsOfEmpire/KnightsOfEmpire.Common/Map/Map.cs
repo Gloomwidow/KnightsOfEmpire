@@ -69,6 +69,20 @@ namespace KnightsOfEmpire.Common.Map
             return IsTileWalkable(tileX, tileY);
         }
 
+        public bool HasWallInNeighborhood(Vector2i pos)
+        {
+            if (!IsTileInBounds(pos.X, pos.Y)) return true;
+            for(int i=-1;i<=1;i++)
+            {
+                for(int j=-1;j<=1;j++)
+                {
+                    if (!IsTileInBounds(pos.X + i, pos.Y + j)) continue;
+                    if (!IsTileWalkable(pos.X + i, pos.Y + j)) return true;
+                }
+            }
+            return false;
+        }
+
         public static Vector2i ToTilePos(Vector2f pos)
         {
             int tileX = (int)(pos.X / TilePixelSize);

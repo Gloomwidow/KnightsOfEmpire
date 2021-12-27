@@ -30,7 +30,7 @@ namespace KnightsOfEmpire.GameStates
 
         public override void LoadDependencies()
         {
-            GameUnits = Parent.GetSiblingGameState<UnitUpdateState>().GameUnits;
+            GameUnits = GameStateManager.GameState.GetSiblingGameState<UnitUpdateState>().GameUnits;
         }
 
         public override void Update()

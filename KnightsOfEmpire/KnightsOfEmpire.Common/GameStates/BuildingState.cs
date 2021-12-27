@@ -14,6 +14,7 @@ namespace KnightsOfEmpire.Common.GameStates
     public class BuildingState : GameState
     {
         public List<Building>[] GameBuildings;
+        public static int MaxBuildingSeparateDistance = 5;
 
         public override void Initialize()
         {

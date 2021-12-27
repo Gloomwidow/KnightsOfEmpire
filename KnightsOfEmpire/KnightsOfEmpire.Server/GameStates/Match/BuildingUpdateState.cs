@@ -17,8 +17,7 @@ using System.Threading.Tasks;
 namespace KnightsOfEmpire.Server.GameStates.Match
 {
     public class BuildingUpdateState : BuildingState
-    {
-        public static int MaxBuildingSeparateDistance = 5;
+    { 
         public List<Unit>[] GameUnits;
         public override void Initialize()
         {
@@ -74,7 +73,38 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     BuildingLogicManager.ProcessUpdate(b);
                 }
             }
+            SendDataUpdates();
         }
+
+        public void SendDataUpdates()
+        {
+            foreach (List<Building> buildings in GameBuildings)
+            {
+                foreach (Building b in buildings)
+                {
+                    UpdateBuildingDataRequest request = new UpdateBuildingDataRequest
+                    {
+                        TimeStamp = DateTime.Now.Ticks,
+                        PosX = b.Position.X,
+                        PosY = b.Position.Y,
+                        PlayerId = b.PlayerId,
+                        Health = b.Health
+                    };
+                    SentPacket packet = new SentPacket(PacketsHeaders.UpdateBuildingDataRequest);
+                    packet.stringBuilder.Append(JsonSerializer.Serialize(request));
+
+                    for (int i = 0; i < Server.TCPServer.MaxConnections; i++)
+                    {
+                        if (Server.TCPServer.IsClientConnected(i))
+                        {
+                            packet.ClientID = i;
+                            Server.UDPServer.SentTo(packet, Server.TCPServer.GetClientAddress(i), i);
+                        }
+                    }
+                }
+            }
+        }
+
 
         public override void HandleTCPPacket(ReceivedPacket packet)
         {

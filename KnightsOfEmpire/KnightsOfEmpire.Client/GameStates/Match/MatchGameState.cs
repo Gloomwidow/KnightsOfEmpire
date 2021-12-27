@@ -17,18 +17,16 @@ namespace KnightsOfEmpire.GameStates.Match
     public class MatchGameState : GameState
     {
         public GameGUIState GameGUIState;
-        public UnitUpdateState UnitUpdateState;
 
         bool isMousePressed = false;
 
         public MatchGameState()
         {
             GameGUIState = new GameGUIState();
-            UnitUpdateState = new UnitUpdateState();
             RegisterGameState(new ViewControlState());
             RegisterGameState(new MapRenderState());
             RegisterGameState(new UnitOrdersState());
-            RegisterGameState(UnitUpdateState);
+            RegisterGameState(new UnitUpdateState());
             RegisterGameState(new BuildingUpdateState());
             RegisterGameState(GameGUIState);
             RegisterGameState(new FogOfWarState());
@@ -36,6 +34,13 @@ namespace KnightsOfEmpire.GameStates.Match
                 {
                     (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),
                     (PacketsHeaders.ChangePlayerInfoRequest, typeof(GameGUIState)),
+                    (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
+                }
+            );
+
+            RegisterUDPRedirects(new (string Header, Type T)[]
+                {
+                    (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),
                     (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
                 }
             );
@@ -49,7 +54,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void HandleUDPPackets(List<ReceivedPacket> packets)
         {
-            UnitUpdateState.HandleUDPPackets(packets);
+            RedirectUDPPackets(packets);
         }
 
         public override void Update()

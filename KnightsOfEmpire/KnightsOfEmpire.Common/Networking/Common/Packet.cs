@@ -48,6 +48,9 @@ namespace KnightsOfEmpire.Common.Networking
     {
         protected string Content;
 
+        protected object Deserialized = null;
+
+
         public DateTime ReceiveTime { get; protected set; }
 
         public ReceivedPacket(int clientID, string content)
@@ -55,6 +58,12 @@ namespace KnightsOfEmpire.Common.Networking
             ClientID = clientID;
             Content = content;
             ReceiveTime = DateTime.Now;
+        }
+
+        public ReceivedPacket(string content, long dateTime)
+        {
+            Content = content;
+            ReceiveTime = Convert.ToDateTime(dateTime);
         }
 
         public string GetHeader()
@@ -66,6 +75,7 @@ namespace KnightsOfEmpire.Common.Networking
         {
             return Content.Substring(HeaderSize, Content.Length - EOFTag.Length - HeaderSize);
         }
+
     }
 
     public class SentPacket : Packet

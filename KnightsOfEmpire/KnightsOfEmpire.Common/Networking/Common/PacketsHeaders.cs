@@ -41,6 +41,8 @@ namespace KnightsOfEmpire.Common.Networking
         public const string RegisterBuildingRequest = "6021";
         public const string UnregisterBuildingRequest = "6022";
 
+        public const string UpdateBuildingDataRequest = "6025";
+
         // Update player info such as gold, capacity etc.
         public const string ChangePlayerInfoRequest = "7010";
     }

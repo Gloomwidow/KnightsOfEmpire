@@ -20,6 +20,9 @@ using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
 using KnightsOfEmpire.Common.Resources.Player;
 using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.Buildings;
+using KnightsOfEmpire.GameStates.Match;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -44,8 +47,13 @@ namespace KnightsOfEmpire.GameStates
         private string capacity = "currect/max";
         private string mainBaseHealth = "2137/2137";
 
+        protected Texture BuildingAtlas;
+        public int BuildingAtlasSizeX, BuildingAtlasSizeY;
 
-        private BitmapButton[,] buldingsButtons;
+
+        private BitmapButton[,] buildingsButtons;
+
+        private Texture[,] BuildingButttonTexture;
 
         private BitmapButton[,] unitsButtons;
 
@@ -58,7 +66,7 @@ namespace KnightsOfEmpire.GameStates
         private Vector2i mouseLastPosition = new Vector2i(0, 0);
         private float timeOnButton = 0f;
         private const float timeToShowInfo = 0.5f;
-        (int, int) buttonPosition;
+        (char buttonType, int id) buttonData;
 
         /// <summary>
         /// Initialize Game State
@@ -92,10 +100,40 @@ namespace KnightsOfEmpire.GameStates
             }
         }
 
+        public override void LoadDependencies()
+        {
+            base.LoadDependencies();
+            BuildingAtlas = Parent.GetSiblingGameState<BuildingUpdateState>().BuildingsAtlas;
+            BuildingAtlasSizeX = (int)BuildingAtlas.Size.X;
+            BuildingAtlasSizeY = (int)BuildingAtlas.Size.Y;
+            int id = 0;
+            Image imageBuilding = BuildingAtlas.CopyToImage();
+            for (int i = 0; i < buildingsButtons.GetLength(1); i++)
+            {
+                for (int j = 0; j < buildingsButtons.GetLength(0); j++)
+                {
+                    BuildingInfo b = BuildingManager.GetNextBuilding(id);
+                    if (b != null)
+                    {
+                        IntRect TextureRect = IdToTextureRect.GetRect(
+                            b.Building.TextureId,
+                            BuildingAtlasSizeX, BuildingAtlasSizeY);
+                        buildingsButtons[j, i].Renderer.Texture = new Texture(imageBuilding, TextureRect);
+                    }
+                    else break;
+                    id++;
+                }
+            }
+            imageBuilding.Dispose();
+        }
+
         public void ChangePlayerInfo(ReceivedPacket packet) 
         {
             ChangePlayerInfoRequest request = packet.GetDeserializedClassOrDefault<ChangePlayerInfoRequest>();
             if (request == null) return;
+            Client.Resources.GoldAmount = request.GoldAmount;
+            Client.Resources.MaxUnitCapacity = request.MaxUnitsCapacity;
+            Client.Resources.UnitCapacity = request.CurrentUnitsCapacity;
             gold = request.GoldAmount.ToString();
             capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();  
         }
@@ -108,7 +146,7 @@ namespace KnightsOfEmpire.GameStates
             goldLabel.Text = gold;
             unitsLabel.Text = capacity;
             //Info Label
-            if (isOnButton && !infoLabel.Visible)
+            if (isOnButton && !infoLabel.Visible && infoLabel.Text!=string.Empty)
             {
                 if(mouseLastPosition == Mouse.GetPosition(Client.RenderWindow))
                 {
@@ -121,7 +159,6 @@ namespace KnightsOfEmpire.GameStates
                 }
                 mouseLastPosition = Mouse.GetPosition(Client.RenderWindow);
             }
-            
         }
 
         /// <summary>
@@ -144,7 +181,13 @@ namespace KnightsOfEmpire.GameStates
 
         private void BuldingButtonClick(object sender, EventArgs e)
         {
-            // TODO: Add functionality
+            buttonData = ((char, int))(((BitmapButton)sender).UserData);
+            if (buttonData.buttonType == 'b')
+            {
+                int buildId = BuildingManager.GetNextBuildingId(buttonData.id);
+                Parent.GetSiblingGameState<BuildingUpdateState>().
+                    GetSiblingGameState<BuildingPlacementState>().BuildingIdToPlace = buildId;
+            }
         }
 
         private void UnitButtonClick(object sender, EventArgs e)
@@ -155,7 +198,16 @@ namespace KnightsOfEmpire.GameStates
         private void ButtonMouseEnter(object sender, EventArgs e)
         {
             isOnButton = true;
-            buttonPosition = ((int, int))((BitmapButton)sender).UserData;
+            buttonData = ((char, int))(((BitmapButton)sender).UserData);
+            if(buttonData.buttonType=='b')
+            {
+                BuildingInfo info = BuildingManager.GetNextBuilding(buttonData.id);
+                if (info != null)
+                {
+                    infoLabel.Text = info.Name + " (Cost: "+ info.Building.BuildCost.ToString() +")"+ "\n" + info.Description;
+                }
+                else infoLabel.Text = string.Empty;
+            }
         }
 
         private void ButtonMouseLeave(object sender, EventArgs e)
@@ -178,6 +230,7 @@ namespace KnightsOfEmpire.GameStates
 
         private void InitializeGamePanel()
         {
+            int id = 0;
             //Main Panel
             mainPanel = new Panel();
             mainPanel.Position = new Vector2f(0, 520);
@@ -293,20 +346,19 @@ namespace KnightsOfEmpire.GameStates
             buldingsPanel.Size = new Vector2f(260, 160);
             mainPanel.Add(buldingsPanel);
 
-            buldingsButtons = new BitmapButton[5, 3];
+            buildingsButtons = new BitmapButton[5, 3];
             for(int j = 0; j < 3; j++)
                 for(int i = 0; i < 5; i++)
                 {
-                    BitmapButton bitbutton = new BitmapButton();
-                    bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
-                    bitbutton.Size = new Vector2f(40, 40);
-                    bitbutton.UserData = (i, j);
-                    bitbutton.Focusable = true;
-                    bitbutton.Clicked += BuldingButtonClick;
-                    bitbutton.MouseEntered += ButtonMouseEnter;
-                    bitbutton.MouseLeft += ButtonMouseLeave;
-                    
-                    buldingsPanel.Add(bitbutton);
+                    buildingsButtons[i,j] = new BitmapButton();
+                    buildingsButtons[i, j].Position = new Vector2f(10 + i * 50, 10 + j * 50);
+                    buildingsButtons[i, j].Size = new Vector2f(40, 40);
+                    buildingsButtons[i, j].UserData = ('b', id++);
+                    buildingsButtons[i, j].Focusable = true;
+                    buildingsButtons[i, j].Clicked += BuldingButtonClick;
+                    buildingsButtons[i, j].MouseEntered += ButtonMouseEnter;
+                    buildingsButtons[i, j].MouseLeft += ButtonMouseLeave;
+                    buldingsPanel.Add(buildingsButtons[i, j]);
                 }
 
             //Units Panel
@@ -315,7 +367,7 @@ namespace KnightsOfEmpire.GameStates
             unitsPanel.Position = new Vector2f(730, 20);
             unitsPanel.Size = new Vector2f(360, 160);
             mainPanel.Add(unitsPanel);
-
+            id = 0;
             unitsButtons = new BitmapButton[7, 3];
             for (int j = 0; j < 3; j++)
                 for (int i = 0; i < 7; i++)
@@ -323,7 +375,7 @@ namespace KnightsOfEmpire.GameStates
                     BitmapButton bitbutton = new BitmapButton();
                     bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
                     bitbutton.Size = new Vector2f(40, 40);
-                    bitbutton.UserData = (i, j);
+                    bitbutton.UserData = ('u', id++);
                     bitbutton.Focusable = true;
                     bitbutton.Clicked += UnitButtonClick;
                     bitbutton.MouseEntered += ButtonMouseEnter;
@@ -369,7 +421,7 @@ namespace KnightsOfEmpire.GameStates
         private void InitializeInfoLabel()
         {
             infoLabel = new Label();
-            infoLabel.Size = new Vector2f(100, 20);
+            infoLabel.Size = new Vector2f(500, 60);
             infoLabel.Renderer.BackgroundColor = Color.White;
             infoLabel.Renderer.BorderColor = Color.Black;
             infoLabel.Renderer.Borders = new Outline(1f);

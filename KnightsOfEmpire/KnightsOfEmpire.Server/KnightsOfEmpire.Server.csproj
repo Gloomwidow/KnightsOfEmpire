@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Buildings\BuildingLogic.cs" />
     <Compile Include="Buildings\BuildingLogicManager.cs" />
+    <Compile Include="Buildings\FriendlyHealingBuildingLogic.cs" />
     <Compile Include="Buildings\GoldGenerationBuildingLogic.cs" />
     <Compile Include="Buildings\MainBuildingLogic.cs" />
     <Compile Include="Buildings\UnitCapacityBuildingLogic.cs" />

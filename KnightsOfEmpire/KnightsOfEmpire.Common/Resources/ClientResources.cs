@@ -27,5 +27,9 @@ namespace KnightsOfEmpire.Common.Resources
         public Map.Map Map { get; set; }
 
         public CustomUnits CustomUnits { get; set; }
+
+        public int GoldAmount = 0;
+        public int UnitCapacity = 0;
+        public int MaxUnitCapacity = 0;
     }
 }
