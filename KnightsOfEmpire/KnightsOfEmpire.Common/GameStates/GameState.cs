@@ -14,6 +14,7 @@ namespace KnightsOfEmpire.Common.GameStates
         protected List<GameState> GameStates;
 
         protected Dictionary<string, int> TCPPacketRedirects;
+        protected Dictionary<string, int> UDPPacketRedirects;
 
         protected GameState parent = null;
 
@@ -64,6 +65,8 @@ namespace KnightsOfEmpire.Common.GameStates
             }
         }
         public virtual void HandleTCPPacket(ReceivedPacket packets) { }
+
+        public virtual void HandleUDPPacket(ReceivedPacket packets) { }
         public virtual void HandleTCPPackets(List<ReceivedPacket> packets) 
         {
             foreach(ReceivedPacket packet in packets)
@@ -130,6 +133,24 @@ namespace KnightsOfEmpire.Common.GameStates
                 }
             }
         }
+
+        protected void RegisterUDPRedirects((string Header, Type T)[] redirects)
+        {
+            if (UDPPacketRedirects == null)
+            {
+                UDPPacketRedirects = new Dictionary<string, int>();
+                foreach ((string Header, Type T) redirect in redirects)
+                {
+                    int pos = GameStates.FindIndex(x => x.GetType() == redirect.T);
+                    if (pos == -1)
+                    {
+                        throw new ArgumentOutOfRangeException($"GameState of type {redirect.T} not registered!");
+                    }
+                    UDPPacketRedirects.Add(redirect.Header, pos);
+                }
+            }
+        }
+
         protected void RedirectTCPPackets(List<ReceivedPacket> packets)
         {
             foreach (ReceivedPacket packet in packets)
@@ -143,6 +164,22 @@ namespace KnightsOfEmpire.Common.GameStates
                 if (TCPPacketRedirects.TryGetValue(packet.GetHeader(), out GameStatePosition))
                 {
                     GameStates[GameStatePosition].HandleTCPPacket(packet);
+                }
+            }
+        }
+        protected void RedirectUDPPackets(List<ReceivedPacket> packets)
+        {
+            foreach (ReceivedPacket packet in packets)
+            {
+                string headerStart = packet.GetHeader().Substring(0, 2);
+                int GameStatePosition;
+                if (UDPPacketRedirects.TryGetValue(headerStart, out GameStatePosition))
+                {
+                    GameStates[GameStatePosition].HandleUDPPacket(packet);
+                }
+                if (UDPPacketRedirects.TryGetValue(packet.GetHeader(), out GameStatePosition))
+                {
+                    GameStates[GameStatePosition].HandleUDPPacket(packet);
                 }
             }
         }

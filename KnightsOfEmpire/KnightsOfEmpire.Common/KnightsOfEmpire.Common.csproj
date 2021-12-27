@@ -130,9 +130,11 @@
     <Compile Include="Resources\Buildings\CreateBuildingRequest.cs" />
     <Compile Include="Resources\Buildings\RegisterBuildingRequest.cs" />
     <Compile Include="Resources\Buildings\UnregisterBuildingRequest.cs" />
+    <Compile Include="Resources\Buildings\UpdateBuildingDataRequest.cs" />
     <Compile Include="Resources\ClientResources.cs" />
     <Compile Include="Resources\Player\ChangePlayerInfoRequest.cs" />
     <Compile Include="Resources\ServerResources.cs" />
+    <Compile Include="Resources\UDPBaseRequest.cs" />
     <Compile Include="Resources\Units\MoveUnitsToPositionRequest.cs" />
     <Compile Include="Resources\Waiting\CustomUnitsServerResponse.cs" />
     <Compile Include="Resources\Waiting\MapClientRequest.cs" />

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using KnightsOfEmpire.Common.Resources;
+using System.Text.Json;
 
 namespace KnightsOfEmpire.Common.Networking.UDP
 {
@@ -74,8 +76,10 @@ namespace KnightsOfEmpire.Common.Networking.UDP
                     string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
                     bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
 
+                    UDPBaseRequest b = JsonSerializer.Deserialize<UDPBaseRequest>
+                        (packetContent.Substring(Packet.HeaderSize, 
+                        packetContent.Length - Packet.EOFTag.Length - Packet.HeaderSize));
                     ReceivedPacket packet = new ReceivedPacket(-1, packetContent);
-
                     ReceivedPackets.Enqueue(packet);
 
                 }
@@ -86,6 +90,11 @@ namespace KnightsOfEmpire.Common.Networking.UDP
             {
                 Console.WriteLine(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex);
+                if(isRunning)
+                {
+                    DataState state = new DataState(-1);
+                    Socket.BeginReceiveFrom(state.buffer, 0, DataState.BufferSize, SocketFlags.None, ref SenderEndpoint, new AsyncCallback(ReceiveCallback), state);
+                }
             }
         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KnightsOfEmpire.Common.Buildings
 {
-    class BuildingInfo
+    public class BuildingInfo
     {
         public Building Building;
         public string Name;
@@ -24,12 +24,34 @@ namespace KnightsOfEmpire.Common.Buildings
                 Description = "Increases max unit capacity, allowing Empires to have more units at once.",
                 Building = new Building
                 {
-                    BuildCost = 25,
+                    BuildCost = 100,
                     MaxHealth = 250,
-                    TextureId = 0,
+                    TextureId = 5,
                 }
             },
-            [32] = new BuildingInfo
+            [1] = new BuildingInfo
+            {
+                Name = "Gold Mine",
+                Description = "Increases gold income.",
+                Building = new Building
+                {
+                    BuildCost = 150,
+                    MaxHealth = 250,
+                    TextureId = 6,
+                }
+            },
+            [2] = new BuildingInfo
+            {
+                Name = "Ritual Site",
+                Description = "Periodically heals friendly units in close range.",
+                Building = new Building
+                {
+                    BuildCost = 150,
+                    MaxHealth = 250,
+                    TextureId = 8,
+                }
+            },
+            [MainBuildingId] = new BuildingInfo
             {
                 Name = "Main Building",
                 Description = "The Heart of Empire. Player is defeated when their main building is destroyed.",
@@ -37,10 +59,34 @@ namespace KnightsOfEmpire.Common.Buildings
                 {
                     BuildCost = 0,
                     MaxHealth = 1000,
-                    TextureId = 5,
+                    TextureId = 0,
                 }
             },
         };
+
+        public static int GetNextBuildingId(int buttonId)
+        {
+            int skip = 0;
+            foreach (int b in buildingsInfo.Keys)
+            {
+                if (b == MainBuildingId) continue;
+                if (skip == buttonId) return b;
+                else skip++;
+            }
+            return -1;
+        }
+
+        public static BuildingInfo GetNextBuilding(int buttonId)
+        {
+            int skip = 0;
+            foreach(int b in buildingsInfo.Keys)
+            {
+                if (b == MainBuildingId) continue;
+                if (skip == buttonId) return buildingsInfo[b];
+                else skip++;
+            }
+            return null;
+        }
 
 
         public static Building GetBuilding(int buildingId)

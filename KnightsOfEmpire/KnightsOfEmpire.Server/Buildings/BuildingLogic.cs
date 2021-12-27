@@ -18,7 +18,7 @@ namespace KnightsOfEmpire.Server.Buildings
 
         public virtual void OnUpdate()
         {
-
+            
         }
 
         public virtual void OnDestroy()

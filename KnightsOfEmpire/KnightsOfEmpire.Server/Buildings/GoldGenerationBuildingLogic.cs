@@ -11,7 +11,6 @@ namespace KnightsOfEmpire.Server.Buildings
         public int GoldGain { get; protected set; }
         public float GenerationTime { get; protected set; }
 
-        protected float GenerationTimer;
         public GoldGenerationBuildingLogic(int GoldGain, float GenerationTime)
         {
             this.GoldGain = GoldGain;
@@ -20,10 +19,10 @@ namespace KnightsOfEmpire.Server.Buildings
 
         public override void OnUpdate()
         {
-            GenerationTimer += Server.DeltaTime;
-            if(GenerationTimer>=GenerationTime)
+            BuildingInstance.Timer += Server.DeltaTime;
+            if(BuildingInstance.Timer >= GenerationTime)
             {
-                GenerationTimer %= GenerationTime;
+                BuildingInstance.Timer %= GenerationTime;
                 Server.Resources.AddGold(BuildingInstance.PlayerId, GoldGain);
             }
         }

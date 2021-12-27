@@ -6,6 +6,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using KnightsOfEmpire.Common.Resources;
+using KnightsOfEmpire.Common.Extensions;
 
 namespace KnightsOfEmpire.Common.Networking.UDP
 {
@@ -47,8 +50,10 @@ namespace KnightsOfEmpire.Common.Networking.UDP
                     received.Add(removedPacket);
                 }
             }
-
-            // TO-DO: sort UDP packets, because they can arrive out of order
+            received.Sort((p1, p2) =>
+            {
+                return p1.ReceiveTime.CompareTo(p2.ReceiveTime);
+            });
             return received;
         }
     }

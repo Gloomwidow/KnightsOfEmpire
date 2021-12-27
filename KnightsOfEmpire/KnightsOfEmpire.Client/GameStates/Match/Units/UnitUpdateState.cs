@@ -17,13 +17,10 @@ namespace KnightsOfEmpire.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
-
-        public UnitsSelectionState selectionState;
         public float[,] VisibilityLevel;
 
-        List<UpdateUnitData> updateUnitDatas;
-
         public Texture UnitsAtlas;
+
 
 
         public override void HandleTCPPacket(ReceivedPacket packet)
@@ -40,76 +37,45 @@ namespace KnightsOfEmpire.GameStates.Match
             }
         }
 
-        public override void HandleUDPPackets(List<ReceivedPacket> packets)
+        public override void HandleUDPPacket(ReceivedPacket packet)
         {
-            List<UpdateUnitsResponse> updateUnitResponses = new List<UpdateUnitsResponse>();
-
-            foreach(ReceivedPacket packet in packets)
+            if(packet.GetHeader() == PacketsHeaders.GameUnitUpdateRequest)
             {
-                if(packet.GetHeader() == PacketsHeaders.GameUnitUpdateRequest)
+                UpdateUnitsResponse updateUnitsResponse = packet.GetDeserializedClassOrDefault<UpdateUnitsResponse>();
+                if (updateUnitsResponse == null) return;
+                foreach (UpdateUnitData data in updateUnitsResponse.UnitData)
                 {
-
-                    UpdateUnitsResponse updateUnitsResponse = packet.GetDeserializedClassOrDefault<UpdateUnitsResponse>();
-                    if(updateUnitsResponse!=null) updateUnitResponses.Add(updateUnitsResponse);
+                    if (data == null) break;
+                    Unit unit = GameUnits[data.PlayerId].Find((Unit u) => { return u.EqualID(data.UnitId); });
+                    if(unit!=null) unit.UpdateData(data);
                 }
             }
-            updateUnitResponses.Sort((UpdateUnitsResponse r1, UpdateUnitsResponse r2) =>
-            {
-                return r2.TimeStamp.CompareTo(r1.TimeStamp);
-            });
+            
+        }
 
-            updateUnitDatas = new List<UpdateUnitData>();
-            foreach(UpdateUnitsResponse response in updateUnitResponses)
-            {
-                foreach(UpdateUnitData data in response.UnitData)
-                {
-                    if(data != null)
-                    {
-                        updateUnitDatas.Add(data);
-                    }
-                }
-            }
+        public UnitUpdateState()
+        {
+            RegisterGameState(new UnitsSelectionState());
         }
         public override void LoadResources()
         {
             UnitsAtlas = new Texture(@"./Assets/Textures/cavalry - light.png");
         }
+
         public override void Initialize()
         {
             base.Initialize();
-            selectionState = new UnitsSelectionState();
-            selectionState.GameUnits = this.GameUnits;
-           
         }
 
         public override void LoadDependencies()
         {
+            base.LoadDependencies();
             VisibilityLevel = Parent.GetSiblingGameState<FogOfWarState>().VisibilityLevel;
-        }
-
-        public override void Update()
-        {
-            selectionState.Update();
-
-            // Update Units Data
-
-            foreach(UpdateUnitData data in updateUnitDatas)
-            {
-                Unit unit = GameUnits[data.PlayerId].Find((Unit u) => { return u.EqualID(data.UnitId); });
-                if(unit != null)
-                {
-                    unit.UpdateData(data);
-                }
-            }
-
-            //Console.WriteLine("Uppdate units!");
         }
 
         public override void Render()
         {
-            // TO-DO: color unit textures with teams color based on unit coloring
-
-            // different red colors to distinguish other enemy units
+            base.Render();
             Color[] playerColors = new Color[]
             {
                 new Color(255,25,0),
@@ -150,7 +116,6 @@ namespace KnightsOfEmpire.GameStates.Match
                     Client.RenderWindow.Draw(hpBar);
                 }
             }
-            selectionState.Render();
         }
 
         protected void RegisterUnit(ReceivedPacket packet)
@@ -180,6 +145,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void Dispose()
         {
+            base.Dispose();
             UnitsAtlas.Dispose();
         }
     }  

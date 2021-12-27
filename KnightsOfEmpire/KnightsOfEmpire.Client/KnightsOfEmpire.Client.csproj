@@ -110,16 +110,17 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="GameStates\ConnectState.cs" />
+    <Compile Include="GameStates\Match\BuildingPlacementState.cs" />
     <Compile Include="GameStates\Match\BuildingUpdateState.cs" />
     <Compile Include="GameStates\Match\FogOfWarState.cs" />
     <Compile Include="GameStates\Match\GameGUIState.cs" />
     <Compile Include="GameStates\MainState.cs" />
     <Compile Include="GameStates\Match\MapRenderState.cs" />
     <Compile Include="GameStates\Match\MatchGameState.cs" />
-    <Compile Include="GameStates\Match\UnitOrdersState.cs" />
-    <Compile Include="GameStates\Match\UnitUpdateState.cs" />
+    <Compile Include="GameStates\Match\Units\UnitOrdersState.cs" />
+    <Compile Include="GameStates\Match\Units\UnitUpdateState.cs" />
     <Compile Include="GameStates\Match\ViewControlState.cs" />
-    <Compile Include="GameStates\Match\UnitsSelectionState.cs" />
+    <Compile Include="GameStates\Match\Units\UnitsSelectionState.cs" />
     <Compile Include="GameStates\WaitingState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -12,16 +12,16 @@ namespace KnightsOfEmpire.Common.Extensions
     {
         public static T GetDeserializedClassOrDefault<T>(this ReceivedPacket p)
         {
-            T request = default(T);
-            try
-            {
+           T request = default(T);
+           try
+           {
                 request = JsonSerializer.Deserialize<T>(p.GetContent());
-            }
-            catch (Exception ex)
-            {
+           }
+           catch (Exception ex)
+           {
                 Console.WriteLine(ex.Message);
-            }
-            return request;
+           }
+           return request;
         }
     }
 }
