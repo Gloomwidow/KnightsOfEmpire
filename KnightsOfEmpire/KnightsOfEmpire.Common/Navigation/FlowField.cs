@@ -42,6 +42,18 @@ namespace KnightsOfEmpire.Common.Navigation
             new Vector2f(1,1).Normalized()
         };
 
+        protected static Vector2i[] vectorTileIds = new Vector2i[]
+        {
+            new Vector2i(-1,-1),
+            new Vector2i(0,-1),
+            new Vector2i(1,-1),
+            new Vector2i(-1,0),
+            new Vector2i(1,0),
+            new Vector2i(-1,1),
+            new Vector2i(0,1),
+            new Vector2i(1,1)
+        };
+
         public FlowField(GameMap map, int endPosX, int endPosY)
         {
             EndPosX = endPosX;
@@ -56,6 +68,11 @@ namespace KnightsOfEmpire.Common.Navigation
         public Vector2f GetFlowVector(int x, int y)
         {
             return vectorIds[FlowVectors[x, y]];
+        }
+
+        public Vector2i GetFlowTileDir(int x, int y)
+        {
+            return vectorTileIds[FlowVectors[x, y]];
         }
 
         public void UpdateBuildingFlowField(GameMap map, int x, int y)

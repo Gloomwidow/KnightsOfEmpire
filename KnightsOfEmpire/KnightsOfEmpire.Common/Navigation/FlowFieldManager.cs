@@ -1,4 +1,6 @@
-﻿using KnightsOfEmpire.Common.Map;
+﻿using KnightsOfEmpire.Common.Helper;
+using KnightsOfEmpire.Common.Map;
+using KnightsOfEmpire.Common.Units;
 using SFML.System;
 using System;
 using System.Collections.Generic;
@@ -11,13 +13,16 @@ namespace KnightsOfEmpire.Common.Navigation
 {
     public class FlowFieldManager
     {
+        public const int MaxAllowedUnitsPerTile = 3;
         private GameMap gameMap;
         private FlowField[,] flowFields;
+        private int[,,] unitDensityMap;
 
         public FlowFieldManager(GameMap map)
         {
             gameMap = map;
             flowFields = new FlowField[gameMap.TileCountX, gameMap.TileCountY];
+            unitDensityMap = new int[Constants.MaxPlayers, gameMap.TileCountX, gameMap.TileCountY];
         }
 
         public Vector2f GetFlowVector(Vector2f currentPosition, Vector2i destination)
@@ -41,6 +46,13 @@ namespace KnightsOfEmpire.Common.Navigation
             return flowFields[destination.X, destination.Y].GetFlowVector(currentPosition.X, currentPosition.Y);
         }
 
+        public bool IsNextPositionOccupied(int PlayerId, Vector2f currentPosition, Vector2i destination)
+        {
+            Vector2i pos = Map.Map.ToTilePos(currentPosition);
+            Vector2i dirTile = flowFields[destination.X, destination.Y].GetFlowTileDir(pos.X, pos.Y);
+            return unitDensityMap[PlayerId, pos.X + dirTile.X, pos.Y + dirTile.Y] >= MaxAllowedUnitsPerTile;
+        }
+
         public void AddBuildingOnMap(int buildX, int buildY)
         {
             gameMap.TileTypes[buildX][buildY] = TileType.Building;
@@ -51,6 +63,26 @@ namespace KnightsOfEmpire.Common.Navigation
         {
             gameMap.TileTypes[buildX][buildY] = TileType.Walkable;
             UpdateBuildingFlowField(buildX, buildY);
+        }
+
+        public void MoveUnitOnDensityMap(Unit u)
+        {
+            Vector2i previousPosition = Map.Map.ToTilePos(u.PreviousPosition);
+            Vector2i nextPosition = Map.Map.ToTilePos(u.Position);
+            unitDensityMap[u.PlayerId, previousPosition.X, previousPosition.Y]--;
+            unitDensityMap[u.PlayerId, nextPosition.X, nextPosition.Y]++;
+        }
+
+        public void AddUnitOnDensityMap(Unit u)
+        {
+            Vector2i position = Map.Map.ToTilePos(u.Position);
+            unitDensityMap[u.PlayerId, position.X, position.Y]++;
+        }
+
+        public void RemoveUnitOnDensityMap(Unit u)
+        {
+            Vector2i position = Map.Map.ToTilePos(u.Position);
+            unitDensityMap[u.PlayerId, position.X, position.Y]--;
         }
 
         protected void UpdateBuildingFlowField(int buildX, int buildY)

@@ -131,6 +131,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         protected void CreateBuilding(int clientID, CreateBuildingRequest request)
         {
+            if (Server.Resources.IsDefeated[clientID]) return;
             Vector2i tileBuildPos = new Vector2i(request.BuildingPosX, request.BuildingPosY);
             Map gameMap = Server.Resources.Map;
             for (int i = -1; i <= 1; i++)
@@ -209,6 +210,15 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             sentPacket.stringBuilder.Append(JsonSerializer.Serialize(response));
             Console.WriteLine($"{tileBuildPos}: Build successful!");
             Server.TCPServer.Broadcast(sentPacket);
+        }
+
+        public void DestroyAllBuildings(int playerId)
+        {
+            for(int i=0;i<GameBuildings[i].Count;i++)
+            {
+                DestroyBuilding(playerId, i);
+                i--;
+            }
         }
 
         protected void DestroyBuilding(int playerId, int index)

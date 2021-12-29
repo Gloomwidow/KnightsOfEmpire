@@ -25,6 +25,7 @@ namespace KnightsOfEmpire.Common.Resources
         public int[] GoldAmount { get; protected set; }
 
         public bool[] IsDefeated { get; protected set; }
+        public bool[] IsDefeatDone { get; protected set; }
 
         public int[] CurrentUnitsCapacity { get; protected set; }
 
@@ -89,6 +90,7 @@ namespace KnightsOfEmpire.Common.Resources
             CustomUnits = new CustomUnits[maxPlayers];
             GoldAmount = new int[maxPlayers];
             IsDefeated = new bool[maxPlayers];
+            IsDefeatDone = new bool[maxPlayers];
             CurrentUnitsCapacity = new int[maxPlayers];
             MaxUnitsCapacity = new int[maxPlayers];
             HasChanged = new bool[maxPlayers];
@@ -108,6 +110,8 @@ namespace KnightsOfEmpire.Common.Resources
                 GoldAmount[i] = StartGold;
                 MaxUnitsCapacity[i] = StartMaxCapacity;
                 CurrentUnitsCapacity[i] = 0;
+                IsDefeated[i] = false;
+                IsDefeatDone[i] = false;
                 HasChanged[i] = true;
             }
         }

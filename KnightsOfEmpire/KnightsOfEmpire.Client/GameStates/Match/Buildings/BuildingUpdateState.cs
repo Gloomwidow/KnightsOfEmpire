@@ -116,8 +116,9 @@ namespace KnightsOfEmpire.GameStates.Match
                     Client.RenderWindow.Draw(buildingShape);
                     if (i != Client.Resources.PlayerGameId)
                     {
-                        if (visionCoef != FogOfWarState.VisibilityMinLevel) Client.RenderWindow.Draw(hpBar);
+                        if (visionCoef == FogOfWarState.VisibilityMinLevel) continue;
                     }
+                    Client.RenderWindow.Draw(hpBar);
                 }
             }
         }
@@ -140,7 +141,7 @@ namespace KnightsOfEmpire.GameStates.Match
         protected void UnregisterBuilding(ReceivedPacket packet)
         {
             UnregisterBuildingRequest request = packet.GetDeserializedClassOrDefault<UnregisterBuildingRequest>();
-            int deleteIndex = GameBuildings[request.PlayerId].FindIndex(x => x.EqualPosition(new Vector2i(request.DestroyPosX,request.DestroyPosY)));
+            int deleteIndex = GameBuildings[request.PlayerId].FindIndex(x => x.Position.Equals(new Vector2i(request.DestroyPosX,request.DestroyPosY)));
             if (deleteIndex != -1)
             {
                 GameBuildings[request.PlayerId].RemoveAt(deleteIndex);

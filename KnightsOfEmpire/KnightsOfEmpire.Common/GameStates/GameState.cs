@@ -1,4 +1,5 @@
-﻿using KnightsOfEmpire.Common.Networking;
+﻿using KnightsOfEmpire.Common.Helper;
+using KnightsOfEmpire.Common.Networking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace KnightsOfEmpire.Common.GameStates
 {
     public abstract class GameState
     {
-        public const int MaxPlayerCount = 4;
+        public const int MaxPlayerCount = Constants.MaxPlayers;
 
         protected List<GameState> GameStates;
 

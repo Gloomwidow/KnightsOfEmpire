@@ -41,8 +41,18 @@ namespace KnightsOfEmpire.Server.GameStates
             }
             for (int i = 0; i < MaxPlayerCount; i++)
             {
+                if (Server.Resources.IsDefeated[i])
+                {
+                    if(!Server.Resources.IsDefeatDone[i])
+                    {
+                        GetSiblingGameState<UnitUpdateState>().DeleteAllUnits(i);
+                        GetSiblingGameState<BuildingUpdateState>().DestroyAllBuildings(i);
+                        Server.Resources.IsDefeatDone[i] = true;
+                    }
+                }
                 if (Server.Resources.HasChanged[i]) 
                 {
+                    if (!Server.TCPServer.IsClientConnected(i)) continue;
                     ChangePlayerInfoRequest request = new ChangePlayerInfoRequest
                     {
                         PlayerId = i,
