@@ -15,13 +15,17 @@ namespace KnightsOfEmpire.Common.Units
 
         public UnitGroup UnitGroup;
 
+        public UnitGroup PreviousCompletedGroup;
+
         public bool IsGroupCompleted { get; set; }
+
+        public bool IsInAttackRange { get; set; }
 
         public AttackTarget AttackTarget = AttackTarget.None;
 
         public const int UnitSize = 32;
         public const int UnitAvoidanceDistance = (int)(UnitSize*1.44f); // UnitSize*sqrt(2)
-        public const int UnitFlockVisionDistance =  2*UnitAvoidanceDistance;
+        public const int UnitGroupVisionDistance =  (int)(1.2f*UnitAvoidanceDistance);
         public const float UnitDirectionRotationSpeed = 3.0f;
 
         public const float UnitAvoidanceWeight = 0.2f;
@@ -108,12 +112,10 @@ namespace KnightsOfEmpire.Common.Units
 
         public void Move(float DeltaTime)
         {
+            
             PreviousPosition = new Vector2f(Position.X, Position.Y);
-            if (TargetDirection.Length2() == 0.0f) MoveDirection = new Vector2f(0.0f, 0.0f);
-            else
-            {
-                MoveDirection = MoveDirection.LerpTimeStep(TargetDirection, UnitDirectionRotationSpeed, DeltaTime);
-            }
+            if (Stance == UnitStance.Attacking) MoveDirection = new Vector2f(0.0f, 0.0f);
+            MoveDirection = MoveDirection.LerpTimeStep(TargetDirection, UnitDirectionRotationSpeed, DeltaTime);
             Position += MoveDirection * DeltaTime;
             if (MoveDirection.Length2() != 0.0) Stance = UnitStance.Moving;
             else Stance = UnitStance.Idle;
@@ -121,7 +123,6 @@ namespace KnightsOfEmpire.Common.Units
 
         public void Attack(float DeltaTime, List<Unit> targetUnits, List<Building> targetBuildings)
         {
-
             if(AttackTarget==AttackTarget.None)
             {
                 if (targetUnits.Count > 0) AttackTarget = AttackTarget.Unit;
@@ -141,7 +142,6 @@ namespace KnightsOfEmpire.Common.Units
             AttackProgress += Stats.AttackSpeed * DeltaTime;
             if (!HasAttacked && AttackProgress >= Stats.AttackExecuteTime)
             {
-                Console.WriteLine($"B:{targetBuildings.Count}");
                 if (AttackTarget == AttackTarget.Unit)
                 {
                     Unit u = targetUnits[targetUnits.Count - 1];
@@ -150,21 +150,19 @@ namespace KnightsOfEmpire.Common.Units
                 else
                 {
                     Building b = targetBuildings[targetBuildings.Count - 1];
-                    b.Health -= Stats.AttackDamage;
-                    Console.WriteLine($"Hit {BuildingManager.GetName(b.BuildingId)} for {Stats.AttackDamage}. Health left:{b.Health}");
+                    b.Health -= Stats.AttackDamage;    
                 }
                 HasAttacked = true;
             }
             if (AttackProgress >= 1.0f)
             {
-                AttackProgress = 0.0f;
-                AttackTarget = AttackTarget.None;
-                HasAttacked = false;
+                ResetAttack();
             }
         }  
         
         protected void ResetAttack()
         {
+            Stance = UnitStance.Idle;
             AttackProgress = 0.0f;
             AttackTarget = AttackTarget.None;
             HasAttacked = false;

@@ -1,4 +1,5 @@
-﻿using SFML.System;
+﻿using KnightsOfEmpire.Common.Extensions;
+using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,42 @@ namespace KnightsOfEmpire.Common.Units.Groups
 {
     public class UnitGroup
     {
+        protected static int NextGroupID = 0;
+        public const int FinishDistance = 16;
+
+        public int GroupID { get; protected set; }
         public float TargetX;
         public float TargetY;
 
+        public bool IgnoresAttackRange = false;
+
         public int UnitCount { get; protected set; }
-        public int Completed { get; protected set; }
+
+        public Vector2f PreciseTarget
+        {
+            get
+            {
+                return new Vector2f(TargetX, TargetY);
+            }
+        }
 
         public Vector2i Target
         {
             get
             {
-                return new Vector2i((int)TargetX/GameMap.TilePixelSize, (int)TargetY/GameMap.TilePixelSize);
+                return Map.Map.ToTilePos(PreciseTarget);
             }
+        }
+
+        public UnitGroup()
+        {
+            GroupID = NextGroupID++;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is UnitGroup) return ((UnitGroup)(obj)).GroupID == this.GroupID;
+            return false;
         }
 
         public void Join(Unit unit)
@@ -37,15 +62,15 @@ namespace KnightsOfEmpire.Common.Units.Groups
 
         public void CompleteGroup(Unit unit)
         {
-            unit.IsGroupCompleted = true;
-            Completed++;
+            Leave(unit);
+            unit.PreviousCompletedGroup = this;
         }
 
         public void Leave(Unit unit)
         {
             UnitCount--;
-            unit.IsGroupCompleted = false;
             unit.UnitGroup = null;
+            unit.PreviousCompletedGroup = null;
         }
 
         public virtual void Update()
@@ -55,7 +80,12 @@ namespace KnightsOfEmpire.Common.Units.Groups
 
         public virtual void UpdateUnitComplete(Unit u)
         {
-            if (u.UnitGroup.Target.Equals(GameMap.ToTilePos(u.Position)))
+            //if (u.UnitGroup.Target.Equals(GameMap.ToTilePos(u.Position)))
+            //{
+            //    u.UnitGroup.CompleteGroup(u);
+            //}
+
+            if(u.Position.Distance2(new Vector2f(TargetX, TargetY))<=FinishDistance*FinishDistance)
             {
                 u.UnitGroup.CompleteGroup(u);
             }
@@ -63,7 +93,7 @@ namespace KnightsOfEmpire.Common.Units.Groups
 
         public virtual bool HasGroupBeenCompleted()
         {
-            return UnitCount <= 0 || Completed>=UnitCount;
+            return UnitCount <= 0;
         }
     }
 }

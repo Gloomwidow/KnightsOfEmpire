@@ -16,6 +16,7 @@ using KnightsOfEmpire.Common.Units;
 
 
 using KnightsOfEmpire.Server.GameStates;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.Server
 {
@@ -49,7 +50,7 @@ namespace KnightsOfEmpire.Server
             TickTimer = new Stopwatch();
             DeltaTimer = new Stopwatch();
 
-            TCPServer = new TCPServer("127.0.0.1", 26969, 4, 30);
+            TCPServer = new TCPServer("127.0.0.1", 26969, Constants.MaxPlayers, 30);
 
             TCPServer.Start();
 

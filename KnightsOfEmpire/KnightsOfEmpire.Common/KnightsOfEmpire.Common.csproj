@@ -112,6 +112,7 @@
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="GameStates\UnitState.cs" />
+    <Compile Include="Helper\Constants.cs" />
     <Compile Include="Helper\IdToTextureRect.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\TileType.cs" />
