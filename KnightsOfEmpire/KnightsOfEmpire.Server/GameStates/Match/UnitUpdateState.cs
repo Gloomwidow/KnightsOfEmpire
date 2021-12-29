@@ -9,16 +9,19 @@ using KnightsOfEmpire.Common.Units.Groups;
 using SFML.System;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Net;
 using KnightsOfEmpire.Common.Buildings;
 
 namespace KnightsOfEmpire.Server.GameStates.Match
 {
     public class UnitUpdateState : UnitState
     {
-        private const int unitPacketSize = 10;
-
-        private FlowFieldManager NavigationManager;
+        private const int unitPacketSize = 50;
 
         public List<UnitGroup> UnitGroups;
 
@@ -40,8 +43,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
         {
             base.Initialize();
             UnitGroups = new List<UnitGroup>();
-            NavigationManager = new FlowFieldManager(Server.Resources.Map);
-            Server.Resources.NavigationManager = NavigationManager;
+            Server.Resources.NavigationManager = new FlowFieldManager(Server.Resources.Map);
         }
         public override void Update()
         {
@@ -70,72 +72,28 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     Vector2f flowVector = new Vector2f(0, 0);
 
                     List<Unit> enemyInRange = GetEnemyUnitsInRange(u, u.Stats.AttackDistance);
-                    List<Unit> alliesInRange = GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance);
-                    List<Unit> alliesInVision = GetFriendlyUnitsInRange(u, Unit.UnitGroupVisionDistance);
                     List<Building> buildingsInRange = 
                         Parent.GetSiblingGameState<BuildingUpdateState>().GetEnemyBuildingsInRange(u, u.Stats.AttackDistance);
 
-                    bool InRangeOfCompleted = alliesInVision.Exists(x =>
-                    {
-                        if (x.PreviousCompletedGroup != null) return x.PreviousCompletedGroup.Equals(u.UnitGroup);
-                        return false;
-                    }
-                    );
-                    if(InRangeOfCompleted)
-                    {
-                        u.UnitGroup.CompleteGroup(u);
-                    }
 
-                    bool movementBlocked = false;
                     // if unit is in moving group, get its movement direction
                     if (u.UnitGroup != null && !u.IsGroupCompleted)
                     {
-                        if (!u.UnitGroup.Target.Equals(Map.ToTilePos(u.Position)))
-                            flowVector = NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
-                        else
-                            flowVector = (u.UnitGroup.PreciseTarget - u.Position).Normalized();
-                        movementBlocked = NavigationManager.IsNextPositionOccupied(u.PlayerId, u.Position, u.UnitGroup.Target);
-
+                        flowVector = Server.Resources.NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
                     }
 
                     if (enemyInRange.Count > 0)
                     {
-                        if (!u.IsInAttackRange)
-                        {
-                            if (u.UnitGroup != null && !u.UnitGroup.IgnoresAttackRange)
-                            {
-                                u.UnitGroup.Leave(u);
-                            }
-                        }
-                        u.IsInAttackRange = true;
+                        if (u.UnitGroup != null) u.UnitGroup.Leave(u);
                     }
-                    else
-                    {
-                        u.IsInAttackRange = false;
-                    }
-                    if (u.UnitGroup == null) NavigationManager.RemoveUnitOnDensityMap(u);
-
                     u.Attack(Server.DeltaTime, enemyInRange, buildingsInRange);
-
-                    //TO-DO: find when density behaviour could bug out and correct that
-                    // if (!movementBlocked)
-                    //{
-
-                    u.Update(flowVector, alliesInRange);
+                    u.Update(flowVector, GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance));
                     u.Move(Server.DeltaTime);
-
-
-                    //}
 
                     u.Position = Server.Resources.Map.SnapToWall(u.PreviousPosition, u.Position);
                     u.Position = Server.Resources.Map.SnapToBounds(u.Position);
 
-                    if (u.UnitGroup != null)
-                    {
-                        u.UnitGroup.UpdateUnitComplete(u);
-                        NavigationManager.MoveUnitOnDensityMap(u);
-                    }
-                    
+                    if (u.UnitGroup != null) u.UnitGroup.UpdateUnitComplete(u);
                 }
             }
 
@@ -162,8 +120,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 Unit u = GameUnits[packet.ClientID].Find(x => x.EqualID(ID.ToCharArray()));
                 if(u!=null)
                 {
-                    if (u.UnitGroup == null)
-                        NavigationManager.AddUnitOnDensityMap(u);
                     group.Join(u);
                 }
             }
@@ -173,7 +129,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         protected void TrainUnit(ReceivedPacket packet)
         {
-            if (Server.Resources.IsDefeated[packet.ClientID]) return;
             TrainUnitRequest request = packet.GetDeserializedClassOrDefault<TrainUnitRequest>();
             if (request == null) return;
 
@@ -255,11 +210,13 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             {
                 SendUnitsResponse(updateUnitDatas);
             }
+
+            //Console.WriteLine("Send Units data");
         }
 
         public void DeleteAllUnits(int playerId)
         {
-            for(int i=0;i<GameUnits[playerId].Count;i++)
+            for (int i = 0; i < GameUnits[playerId].Count; i++)
             {
                 DeleteUnit(playerId, i);
                 i--;

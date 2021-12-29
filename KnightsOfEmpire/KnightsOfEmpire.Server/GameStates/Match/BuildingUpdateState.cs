@@ -214,7 +214,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         public void DestroyAllBuildings(int playerId)
         {
-            for(int i=0;i<GameBuildings[i].Count;i++)
+            for(int i=0;i<GameBuildings[playerId].Count;i++)
             {
                 DestroyBuilding(playerId, i);
                 i--;
