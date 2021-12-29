@@ -134,6 +134,10 @@ namespace KnightsOfEmpire.GameStates
             Client.Resources.GoldAmount = request.GoldAmount;
             Client.Resources.MaxUnitCapacity = request.MaxUnitsCapacity;
             Client.Resources.UnitCapacity = request.CurrentUnitsCapacity;
+            if (request.IsDefeated) 
+            {
+                GameStateManager.GameState = new DefeatGameState();
+            }
             gold = request.GoldAmount.ToString();
             capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();  
         }

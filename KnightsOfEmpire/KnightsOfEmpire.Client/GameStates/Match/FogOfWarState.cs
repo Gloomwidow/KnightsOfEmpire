@@ -1,4 +1,5 @@
-﻿using KnightsOfEmpire.Common.GameStates;
+﻿using KnightsOfEmpire.Common.Buildings;
+using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Units;
 using SFML.System;
@@ -15,6 +16,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public float[,] VisibilityLevel;
 
         public List<Unit> PlayerUnits;
+        public List<Building> PlayerBuildings;
 
         private Map map;
         // TO-DO - make that units will have unique VisibilityDistance
@@ -31,6 +33,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void LoadDependencies()
         {
             PlayerUnits = Parent.GetSiblingGameState<UnitUpdateState>().GameUnits[Client.Resources.PlayerGameId];
+            PlayerBuildings = Parent.GetSiblingGameState<BuildingUpdateState>().GameBuildings[Client.Resources.PlayerGameId];
         }
 
         public override void Update()
@@ -45,6 +48,8 @@ namespace KnightsOfEmpire.GameStates.Match
             //Selects unique positions for visibility calculation
             //TO-DO: when units will have unique Visibility Distance, select unit with longest view distance
             List<Vector2i> visionStartPosition = PlayerUnits.GroupBy(u => Map.ToTilePos(u.Position)).Select(u => Map.ToTilePos(u.First().Position)).ToList();
+            visionStartPosition.AddRange(PlayerBuildings.Select(b => b.Position));
+
             foreach(Vector2i checkPos in visionStartPosition)
             {
                 VisibilityLevel[checkPos.X, checkPos.Y] = 1.0f;
