@@ -78,18 +78,6 @@ namespace KnightsOfEmpire.GameStates.Match
         {
             base.Render();
             // TO-DO: color unit textures with teams color based on unit coloring
-
-            // different red colors to distinguish other enemy units
-            Color[] playerColors = new Color[]
-            {
-                new Color(255,0,0),
-                new Color(255,255,0),
-                new Color(0,255,0),
-                new Color(0,0,255)
-            };
-
-            playerColors[Client.Resources.PlayerGameId] = Color.Green;
-
             RectangleShape buildingShape = new RectangleShape();
             RectangleShape hpBar = new RectangleShape();
             for (int i = 0; i < MaxPlayerCount; i++)
@@ -107,12 +95,12 @@ namespace KnightsOfEmpire.GameStates.Match
                     buildingShape.FillColor = new Color((byte)(255 * visionCoef), (byte)(255 * visionCoef), (byte)(255 * visionCoef));
                     hpBar.Size = new Vector2f(Map.TilePixelSize * building.HealthPercentage, 5);
                     hpBar.Position = new Vector2f(PositionX, PositionY + Map.TilePixelSize);
-                    hpBar.FillColor = playerColors[i];
+                    hpBar.FillColor = PlayerColors[i];
 
 
                     Client.RenderWindow.Draw(buildingShape);
                     buildingShape.Texture = BuildingsColorAtlas;
-                    buildingShape.FillColor = new Color((byte)(playerColors[i].R * visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
+                    buildingShape.FillColor = new Color((byte)(PlayerColors[i].R * visionCoef), (byte)(PlayerColors[i].G * visionCoef), (byte)(PlayerColors[i].B * visionCoef));
                     Client.RenderWindow.Draw(buildingShape);
                     if (i != Client.Resources.PlayerGameId)
                     {

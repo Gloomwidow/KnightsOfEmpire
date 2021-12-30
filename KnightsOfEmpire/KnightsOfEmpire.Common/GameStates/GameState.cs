@@ -1,5 +1,6 @@
 ﻿using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Networking;
+using SFML.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace KnightsOfEmpire.Common.GameStates
     public abstract class GameState
     {
         public const int MaxPlayerCount = Constants.MaxPlayers;
+        public readonly Color[] PlayerColors = Constants.playerColors;
 
         protected List<GameState> GameStates;
 
