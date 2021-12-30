@@ -76,15 +76,6 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void Render()
         {
             base.Render();
-            Color[] playerColors = new Color[]
-            {
-                new Color(255,25,0),
-                new Color(242,11,0),
-                new Color(255,0,0),
-                new Color(245,11,23)
-            };
-            // friendly units are always green
-            playerColors[Client.Resources.PlayerGameId] = Color.Green;
             RectangleShape unitShape = new RectangleShape();
             RectangleShape hpBar = new RectangleShape();
             for (int i=0; i< MaxPlayerCount; i++)
@@ -103,13 +94,13 @@ namespace KnightsOfEmpire.GameStates.Match
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
                     unitShape.Texture = UnitsAtlas;
                     unitShape.TextureRect = new IntRect(0, 0, 16, 16);
-                    unitShape.FillColor = new Color((byte)(playerColors[i].R*visionCoef), (byte)(playerColors[i].G * visionCoef), (byte)(playerColors[i].B * visionCoef));
-                    unitShape.OutlineColor = Color.Blue;
+                    unitShape.FillColor = new Color((byte)(PlayerColors[i].R*visionCoef), (byte)(PlayerColors[i].G * visionCoef), (byte)(PlayerColors[i].B * visionCoef));
+                    unitShape.OutlineColor = Color.White;
                     unitShape.OutlineThickness = 0;
                     if (unit.IsSelected) unitShape.OutlineThickness = 1;
                     hpBar.Size = new Vector2f(Unit.UnitSize*unit.Stats.HealthPercentage, 5);
                     hpBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2));
-                    hpBar.FillColor = playerColors[i];
+                    hpBar.FillColor = PlayerColors[i];
 
 
                     Client.RenderWindow.Draw(unitShape);
