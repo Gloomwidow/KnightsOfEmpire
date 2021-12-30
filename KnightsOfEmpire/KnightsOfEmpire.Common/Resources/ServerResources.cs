@@ -13,7 +13,7 @@ namespace KnightsOfEmpire.Common.Resources
         public static int StartGold = 50;
         public static int StartMaxCapacity = 10;
         public Map.Map Map { get; set; }
-
+        public int PlayersLeft { get; set; }
         string MapLocation { get; set; }
 
         public FlowFieldManager NavigationManager;
@@ -32,10 +32,14 @@ namespace KnightsOfEmpire.Common.Resources
         public int[] MaxUnitsCapacity { get; protected set; }
         public bool[] HasChanged { get; set; }
 
-        public void DefeatPlayer(int playerId) 
+        public void DefeatPlayer(int playerId, int maxPlayers) 
         {
             IsDefeated[playerId] = true;
-            HasChanged[playerId] = true;
+            for(int i = 0; i < maxPlayers; i++) 
+            {
+                HasChanged[i] = true;
+            }
+            PlayersLeft--;
         }
         public void IncreaseCapacity(int playerId, int amount) 
         {
@@ -95,6 +99,7 @@ namespace KnightsOfEmpire.Common.Resources
             MaxUnitsCapacity = new int[maxPlayers];
             HasChanged = new bool[maxPlayers];
             Map = new Map.Map(MapLocation);
+            PlayersLeft = 0;
             ResetPlayerGameInfo(maxPlayers);
         }
 

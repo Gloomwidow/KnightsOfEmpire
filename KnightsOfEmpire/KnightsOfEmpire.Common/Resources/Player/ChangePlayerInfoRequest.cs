@@ -10,6 +10,7 @@ namespace KnightsOfEmpire.Common.Resources.Player
     public class ChangePlayerInfoRequest
     {
         public int PlayerId { get; set; }
+        public int PlayersLeft { get; set; }
         public int GoldAmount { get; set; }
 
         public bool IsDefeated { get; set; }

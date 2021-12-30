@@ -31,5 +31,6 @@ namespace KnightsOfEmpire.Common.Resources
         public int GoldAmount = 0;
         public int UnitCapacity = 0;
         public int MaxUnitCapacity = 0;
+        public int PlayersLeft = 0;
     }
 }

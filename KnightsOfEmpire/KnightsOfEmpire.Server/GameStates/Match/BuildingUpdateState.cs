@@ -3,6 +3,7 @@ using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
+using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Buildings;
 using KnightsOfEmpire.Common.Units;
 using KnightsOfEmpire.Server.Buildings;
