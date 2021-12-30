@@ -128,7 +128,7 @@ namespace KnightsOfEmpire.Server.GameStates
                         SendStartGameRequest(i);
                     }
                 }
-
+                Server.Resources.PlayersLeft = Server.TCPServer.CurrentActiveConnections;
                 GameStateManager.GameState = new MatchGameState();
             }
 
@@ -197,6 +197,7 @@ namespace KnightsOfEmpire.Server.GameStates
         }
 
         // Handle request
+        
 
         private void HandleWaitnigClientRequest(ReceivedPacket packet)
         {

@@ -46,6 +46,7 @@ namespace KnightsOfEmpire.GameStates
         private string gold = "gold value";
         private string capacity = "currect/max";
         private string mainBaseHealth = "2137/2137";
+        private string playersLeft = "players left";
 
         protected Texture BuildingAtlas;
         public int BuildingAtlasSizeX, BuildingAtlasSizeY;
@@ -134,12 +135,20 @@ namespace KnightsOfEmpire.GameStates
             Client.Resources.GoldAmount = request.GoldAmount;
             Client.Resources.MaxUnitCapacity = request.MaxUnitsCapacity;
             Client.Resources.UnitCapacity = request.CurrentUnitsCapacity;
+            Client.Resources.PlayersLeft = request.PlayersLeft;
             if (request.IsDefeated) 
             {
-                GameStateManager.GameState = new DefeatGameState();
+                GameStateManager.GameState = new EndMatchGameState("You have been defeated");
+                return;
+            }
+            if(request.PlayersLeft == 1) 
+            {
+                GameStateManager.GameState = new EndMatchGameState("You won");
+                return;
             }
             gold = request.GoldAmount.ToString();
-            capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();  
+            capacity = request.CurrentUnitsCapacity.ToString() + '/' + request.MaxUnitsCapacity.ToString();
+            playersLeft = request.PlayersLeft.ToString();
         }
 
         /// <summary>
@@ -149,6 +158,7 @@ namespace KnightsOfEmpire.GameStates
         {
             goldLabel.Text = gold;
             unitsLabel.Text = capacity;
+            playerLabel.Text = playersLeft;
             //Info Label
             if (isOnButton && !infoLabel.Visible && infoLabel.Text!=string.Empty)
             {
@@ -337,7 +347,7 @@ namespace KnightsOfEmpire.GameStates
                 label.HorizontalAlignment = HorizontalAlignment.Right;
                 label.VerticalAlignmentAlignment = VerticalAlignment.Center;
                 label.TextSize = 16;
-                label.Text = "3";
+                label.Text = playersLeft;
                 statsPanel.Add(label);
                 playerLabel = label;
             }

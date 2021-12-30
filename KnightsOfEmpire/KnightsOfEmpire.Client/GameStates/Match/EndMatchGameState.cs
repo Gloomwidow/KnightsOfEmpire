@@ -9,9 +9,15 @@ using TGUI;
 
 namespace KnightsOfEmpire.GameStates.Match
 {
-    class DefeatGameState : GameState
+    class EndMatchGameState : GameState
     {
         private Panel panel;
+        private string message;
+
+        public EndMatchGameState(string message) : base()
+        {
+            this.message = message;
+        }
 
 
         public override void Initialize()
@@ -42,7 +48,7 @@ namespace KnightsOfEmpire.GameStates.Match
             panel.Size = new Vector2f(1280, 720);
 
             Label label = new Label();
-            label.Text = "You have been defeated";
+            label.Text = message;
             label.Position = new Vector2f(0, 190);
             label.Size = new Vector2f(1280, 150);
             label.TextSize = 100;

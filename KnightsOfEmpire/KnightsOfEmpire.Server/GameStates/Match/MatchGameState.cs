@@ -56,6 +56,7 @@ namespace KnightsOfEmpire.Server.GameStates
                     ChangePlayerInfoRequest request = new ChangePlayerInfoRequest
                     {
                         PlayerId = i,
+                        PlayersLeft = Server.Resources.PlayersLeft,
                         GoldAmount = Server.Resources.GoldAmount[i],
                         IsDefeated = Server.Resources.IsDefeated[i],
                         CurrentUnitsCapacity = Server.Resources.CurrentUnitsCapacity[i],

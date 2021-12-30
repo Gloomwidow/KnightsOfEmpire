@@ -16,7 +16,7 @@ namespace KnightsOfEmpire.Server.Buildings
 
         public override void OnDestroy()
         {
-            Server.Resources.IsDefeated[BuildingInstance.PlayerId] = true;
+            Server.Resources.DefeatPlayer(BuildingInstance.PlayerId, Server.TCPServer.MaxConnections);
         }
     }
 }
