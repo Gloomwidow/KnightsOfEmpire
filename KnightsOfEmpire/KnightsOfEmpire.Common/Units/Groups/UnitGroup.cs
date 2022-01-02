@@ -12,7 +12,7 @@ namespace KnightsOfEmpire.Common.Units.Groups
     public class UnitGroup
     {
         protected static int NextGroupID = 0;
-        public const int FinishDistance = 16;
+        public const int FinishDistance = (int)(Unit.UnitSize*1.25f);
 
         public int GroupID { get; protected set; }
         public float TargetX;

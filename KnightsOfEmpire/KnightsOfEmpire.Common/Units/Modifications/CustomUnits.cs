@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KnightsOfEmpire.Common.Units.Modifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace KnightsOfEmpire.Common.Units
     [Serializable]
     public class CustomUnits
     {
-        // TODO: Fill this class
+        public CustomUnit[] Units { get; set; }
         public int Test { get; set; }
 
         public CustomUnits()

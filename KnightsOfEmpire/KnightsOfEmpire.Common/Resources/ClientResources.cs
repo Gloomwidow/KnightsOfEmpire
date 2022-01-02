@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.Common.Units.Modifications;
 
 namespace KnightsOfEmpire.Common.Resources
 {
@@ -19,14 +20,16 @@ namespace KnightsOfEmpire.Common.Resources
         {
             Nickname = string.Empty;
             Map = null;
-            CustomUnits = new CustomUnits();
+            PlayerCustomUnits = UnitUpgradeManager.LoadCustomUnitsFromFile();
+            GameCustomUnits = new CustomUnits[Constants.MaxPlayers];
         }
 
         public string Nickname { get; set; }
 
         public Map.Map Map { get; set; }
 
-        public CustomUnits CustomUnits { get; set; }
+        public CustomUnits PlayerCustomUnits { get; set; }
+        public CustomUnits[] GameCustomUnits { get; set; }
 
         public int GoldAmount = 0;
         public int UnitCapacity = 0;

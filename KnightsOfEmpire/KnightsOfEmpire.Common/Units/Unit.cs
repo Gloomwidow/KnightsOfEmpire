@@ -3,10 +3,9 @@ using KnightsOfEmpire.Common.Units.Groups;
 using SFML.System;
 using System;
 using System.Collections.Generic;
-
-
 using KnightsOfEmpire.Common.Resources.Units;
 using KnightsOfEmpire.Common.Buildings;
+using KnightsOfEmpire.Common.Units.Enum;
 
 namespace KnightsOfEmpire.Common.Units
 {
@@ -20,6 +19,8 @@ namespace KnightsOfEmpire.Common.Units
         public bool IsGroupCompleted { get; set; }
 
         public bool IsInAttackRange { get; set; }
+
+        public int UnitTypeId { get; set; } 
 
         public AttackTarget AttackTarget = AttackTarget.None;
 
@@ -114,7 +115,8 @@ namespace KnightsOfEmpire.Common.Units
         {
             
             PreviousPosition = new Vector2f(Position.X, Position.Y);
-            if (Stance == UnitStance.Attacking) MoveDirection = new Vector2f(0.0f, 0.0f);
+            if (Stance == UnitStance.Attacking) TargetDirection = new Vector2f(0.0f, 0.0f);
+            if (TargetDirection.Length2() == 0.0f) MoveDirection = new Vector2f(0.0f, 0.0f);
             MoveDirection = MoveDirection.LerpTimeStep(TargetDirection, UnitDirectionRotationSpeed, DeltaTime);
             Position += MoveDirection * DeltaTime;
             if (MoveDirection.Length2() != 0.0) Stance = UnitStance.Moving;
@@ -150,7 +152,7 @@ namespace KnightsOfEmpire.Common.Units
                 else
                 {
                     Building b = targetBuildings[targetBuildings.Count - 1];
-                    b.Health -= Stats.AttackDamage;    
+                    b.Health -= (int)(Stats.AttackDamage*Stats.BuildingsDamageMultiplier);    
                 }
                 HasAttacked = true;
             }

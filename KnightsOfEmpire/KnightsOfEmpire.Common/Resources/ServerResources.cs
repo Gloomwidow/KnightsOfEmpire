@@ -10,17 +10,19 @@ namespace KnightsOfEmpire.Common.Resources
 {
     public class ServerResources
     {
-        public static int StartGold = 50;
+        public static int StartGold = 1000;
         public static int StartMaxCapacity = 10;
         public Map.Map Map { get; set; }
         public int PlayersLeft { get; set; }
+
+        public int StartPlayerCount { get; set; }
         string MapLocation { get; set; }
 
         public FlowFieldManager NavigationManager;
 
         public string[] Nicknames { get; set; }
 
-        public CustomUnits[] CustomUnits { get; set; }
+        public CustomUnits[] GameCustomUnits { get; set; }
 
         public int[] GoldAmount { get; protected set; }
 
@@ -84,6 +86,17 @@ namespace KnightsOfEmpire.Common.Resources
             return true;
         }
 
+        public bool AddUnit(int playerId, int cost, int capacity)
+        {
+            if (!UseGold(playerId, cost)) return false;
+            if(!AddUnitToCapacity(playerId,capacity))
+            {
+                AddGold(playerId, cost);
+                return false;
+            }
+            return true;
+        }
+
         public void Reset() 
         {
             Init(IsDefeated.Length);
@@ -91,7 +104,7 @@ namespace KnightsOfEmpire.Common.Resources
         public void Init(int maxPlayers) 
         {
             Nicknames = new string[maxPlayers];
-            CustomUnits = new CustomUnits[maxPlayers];
+            GameCustomUnits = new CustomUnits[maxPlayers];
             GoldAmount = new int[maxPlayers];
             IsDefeated = new bool[maxPlayers];
             IsDefeatDone = new bool[maxPlayers];
