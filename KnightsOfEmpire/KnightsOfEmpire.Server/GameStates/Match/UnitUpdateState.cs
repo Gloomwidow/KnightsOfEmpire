@@ -16,6 +16,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net;
 using KnightsOfEmpire.Common.Buildings;
+using KnightsOfEmpire.Common.Units.Modifications;
 
 namespace KnightsOfEmpire.Server.GameStates.Match
 {
@@ -132,20 +133,21 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             TrainUnitRequest request = packet.GetDeserializedClassOrDefault<TrainUnitRequest>();
             if (request == null) return;
 
-            if (!Server.Resources.AddUnitToCapacity(packet.ClientID, 1)) return;
-            if (!Server.Resources.UseGold(packet.ClientID, 5)) return;
+            Unit unit = UnitUpgradeManager.ProduceUnit
+                (Server.Resources.GameCustomUnits[packet.ClientID].Units[request.UnitTypeId]);
+
+
+            if (!Server.Resources.AddUnit(packet.ClientID, unit.Stats.TrainCost, 1)) return;
+
+            unit.ID = UnitIdManager.GetNewId();
+            unit.PlayerId = packet.ClientID;
+            unit.UnitTypeId = request.UnitTypeId;
+            unit.Stats.Health = unit.Stats.MaxHealth;
 
             //TO-DO: check if player has building to train this unit (check Building Pos)
-
-            Unit unit = new Unit()
-            {
-                ID = UnitIdManager.GetNewId(),
-                PlayerId = packet.ClientID,
-                Position = new Vector2f(request.BuildingPosX, request.BuildingPosY),
-                MoveDirection = new Vector2f(0, 0),
-                TextureId = 0,
-                Stats = new UnitStats()
-            };
+            //TO-DO: once training buildings are available, spawn in different position near the building
+            unit.Position = new Vector2f(request.BuildingPosX, request.BuildingPosY);
+            unit.MoveDirection = new Vector2f(0, 0);
 
             GameUnits[packet.ClientID].Add(unit);
             RegisterUnitRequest registerRequest = new RegisterUnitRequest
@@ -154,10 +156,10 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 StartPositionX = (float)Math.Round(unit.Position.X, 3, MidpointRounding.AwayFromZero),
                 StartPositionY = (float)Math.Round(unit.Position.Y, 3, MidpointRounding.AwayFromZero),
                 PlayerId = packet.ClientID,
-                UnitTypeId = 0
+                UnitTypeId = unit.UnitTypeId
             };
 
-            SentPacket registerPacket = new SentPacket(PacketsHeaders.GameUnitRegisterRequest, -1);
+            SentPacket registerPacket = new SentPacket(PacketsHeaders.GameUnitRegisterRequest);
             registerPacket.stringBuilder.Append(JsonSerializer.Serialize(registerRequest));
 
             for (int i=0;i<MaxPlayerCount;i++)
@@ -178,7 +180,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 ID = unitDeletion.ID
             };
 
-            SentPacket unregisterPacket = new SentPacket(PacketsHeaders.GameUnitUnregisterRequest, -1);
+            SentPacket unregisterPacket = new SentPacket(PacketsHeaders.GameUnitUnregisterRequest);
             unregisterPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
 
             for (int i = 0; i < MaxPlayerCount; i++)
@@ -210,8 +212,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             {
                 SendUnitsResponse(updateUnitDatas);
             }
-
-            //Console.WriteLine("Send Units data");
         }
 
         public void DeleteAllUnits(int playerId)

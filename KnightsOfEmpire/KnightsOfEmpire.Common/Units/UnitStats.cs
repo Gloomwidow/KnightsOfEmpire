@@ -27,6 +27,10 @@ namespace KnightsOfEmpire.Common.Units
         public float AttackExecuteTime { get; set; }
         public float AttackDistance { get; set; }
 
+        public float BuildingsDamageMultiplier { get; set; }
+
+        public int TrainCost { get; set; }
+
         public UnitStats()
         {
             Health = 100;
@@ -36,6 +40,8 @@ namespace KnightsOfEmpire.Common.Units
             AttackSpeed = 1;
             AttackExecuteTime = 0.5f;
             AttackDistance = 64;
+            BuildingsDamageMultiplier = 1.0f;
+            TrainCost = 25;
         }
 
         //TO-DO: Add any other parameters that will be needed for troops or upgrades system.

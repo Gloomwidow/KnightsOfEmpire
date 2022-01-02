@@ -62,6 +62,12 @@ namespace KnightsOfEmpire.Server.GameStates
                         CurrentUnitsCapacity = Server.Resources.CurrentUnitsCapacity[i],
                         MaxUnitsCapacity = Server.Resources.MaxUnitsCapacity[i]
                     };
+                    //This little hack will disable player won screen if only one player comes to game
+                    //TO-DO: remove this or make flag to enable and disable testing things like that
+                    if (Server.Resources.StartPlayerCount==1)
+                    {
+                        request.PlayersLeft++;
+                    }
                     SentPacket registerPacket = new SentPacket(PacketsHeaders.ChangePlayerInfoRequest, -1);
                     registerPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
 

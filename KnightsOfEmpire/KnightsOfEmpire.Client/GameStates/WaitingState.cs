@@ -26,7 +26,7 @@ namespace KnightsOfEmpire.GameStates
     class WaitingState : GameState
     {
         // State to manage GameState
-        private enum State { First, Main, Uppdate, StartGame}
+        private enum State { First, Main, Update, StartGame}
         private State state = State.First;
 
         // Players list
@@ -121,7 +121,7 @@ namespace KnightsOfEmpire.GameStates
                         connectPanel.Visible = false;
                     }
                     break;
-                case State.Uppdate:
+                case State.Update:
                     {
                         int playerNumber = 0;
                         for (int i=0; i<playersNicknames.Length; i++)
@@ -421,7 +421,7 @@ namespace KnightsOfEmpire.GameStates
         {
             SentPacket mapPacket = new SentPacket(PacketsHeaders.CustomUnitsClientRequest);
 
-            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(Client.Resources.CustomUnits));
+            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(Client.Resources.PlayerCustomUnits));
 
             Client.TCPClient.SendToServer(mapPacket);
 
@@ -446,22 +446,22 @@ namespace KnightsOfEmpire.GameStates
                         {
                             playersNicknames = request.PlayerNicknames;
                             playersReadyStatus = request.PlayerReadyStatus;
-                            state = State.Uppdate;
+                            state = State.Update;
                             Client.Resources.PlayerGameId = request.PlayerGameId;
                         }
                         break;
                     case WaitingMessage.ServerRefuse:
-                        {
+                        {                       
                             Console.WriteLine("Stop TCP");
                             Client.TCPClient.Stop();
-                            Console.WriteLine("Server is refuse you");
-                            GameStateManager.GameState = new MainState("Server refuse you");
+                            Console.WriteLine("Server refused you");
+                            GameStateManager.GameState = new MainState("Server refused you!");
                         }
                         break;
                     case WaitingMessage.ServerFull:
                         {
                             Console.WriteLine("Server is full");
-                            GameStateManager.GameState = new MainState("Server was full");
+                            GameStateManager.GameState = new MainState("Server is full!");
                             Console.WriteLine("Stop TCP");
                             Client.TCPClient.Stop();
                         }
@@ -476,7 +476,7 @@ namespace KnightsOfEmpire.GameStates
                     case WaitingMessage.ServerChangeNick:
                         {
                             Console.WriteLine("Change your nickname");
-                            GameStateManager.GameState = new MainState("Change your nickname");
+                            GameStateManager.GameState = new MainState("There is already a player with that nickname!");
                             Console.WriteLine("Stop TCP");
                             Client.TCPClient.Stop();
                         }
@@ -496,7 +496,7 @@ namespace KnightsOfEmpire.GameStates
             Client.Resources.Map = request;
             SendMapRequest(true);
 
-            Console.WriteLine("Map recived");
+            Console.WriteLine("Map received");
         }
 
         private void HandleCustomUnitsServerResponse(ReceivedPacket packet)
@@ -508,10 +508,7 @@ namespace KnightsOfEmpire.GameStates
                 return;
             }
 
-            if (request.IsUnitsReceived == false)
-            {
-                SendCustomUnitsRequest();
-            }
+            if (!request.IsUnitsReceived) SendCustomUnitsRequest();
         }
 
         private void HandleStartGameServerRequest(ReceivedPacket packet)
@@ -519,19 +516,15 @@ namespace KnightsOfEmpire.GameStates
             string received = packet.GetContent();
 
             StartGameServerRequest request = packet.GetDeserializedClassOrDefault<StartGameServerRequest>();
-            if(request == null)
-            {
-                // TODO: Inform Server
-                return;
-            }
+            if (request == null) return;
 
-            if (request.StartGame == true)
+            if (request.StartGame)
             {
+                for(int i=0;i<MaxPlayerCount;i++)
+                {
+                    Client.Resources.GameCustomUnits[i] = request.CustomUnits[i];
+                }
                 GameStateManager.GameState = new MatchGameState();
-            }
-            else
-            {
-                // TODO: Inform Server
             }
         }
     }

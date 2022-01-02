@@ -1,9 +1,12 @@
 ﻿using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
 using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.Common.Units.Enum;
+using KnightsOfEmpire.Common.Units.Modifications;
 using SFML.Graphics;
 using SFML.System;
 using System;
@@ -19,8 +22,8 @@ namespace KnightsOfEmpire.GameStates.Match
     {
         public float[,] VisibilityLevel;
 
-        public Texture UnitsAtlas;
-
+        public Texture[] UnitsAtlases;
+        public Vector2i[] UnitAtlasSizes;
 
 
         public override void HandleTCPPacket(ReceivedPacket packet)
@@ -59,7 +62,18 @@ namespace KnightsOfEmpire.GameStates.Match
         }
         public override void LoadResources()
         {
-            UnitsAtlas = new Texture(@"./Assets/Textures/cavalry - light.png");
+            int unitTypesCount = Enum.GetNames(typeof(UnitType)).Length;
+            UnitsAtlases = new Texture[unitTypesCount];
+            UnitAtlasSizes = new Vector2i[unitTypesCount];
+            UnitsAtlases[0] = new Texture(@"./Assets/Textures/heavy infantry.png");
+            UnitsAtlases[1] = new Texture(@"./Assets/Textures/light infantry.png");
+            UnitsAtlases[2] = new Texture(@"./Assets/Textures/cavalry - light.png");
+            //TO-Do: once we will find siege textures, replace them
+            UnitsAtlases[3] = new Texture(@"./Assets/Textures/cavalry - heavy.png");
+            for(int i=0;i<unitTypesCount;i++)
+            {
+                UnitAtlasSizes[i] = new Vector2i((int)UnitsAtlases[i].Size.X, (int)UnitsAtlases[i].Size.Y);
+            }
         }
 
         public override void Initialize()
@@ -89,12 +103,14 @@ namespace KnightsOfEmpire.GameStates.Match
                     {
                         if (visionCoef == FogOfWarState.VisibilityMinLevel) continue;
                     }
-
+                    CustomUnit unitInfo = Client.Resources.GameCustomUnits[unit.PlayerId].Units[unit.UnitTypeId];
                     unitShape.Size = new Vector2f(Unit.UnitSize, Unit.UnitSize);
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
-                    unitShape.Texture = UnitsAtlas;
-                    unitShape.TextureRect = new IntRect(0, 0, 16, 16);
-                    unitShape.FillColor = new Color((byte)(PlayerColors[i].R*visionCoef), (byte)(PlayerColors[i].G * visionCoef), (byte)(PlayerColors[i].B * visionCoef));
+                    int unitArchetypeId = (int)unitInfo.UnitType;
+
+                    unitShape.Texture = UnitsAtlases[unitArchetypeId];
+                    unitShape.TextureRect = IdToTextureRect.GetRect(unitInfo.TextureId, UnitAtlasSizes[unitArchetypeId]);
+                    //unitShape.FillColor = new Color((byte)(PlayerColors[i].R*visionCoef), (byte)(PlayerColors[i].G * visionCoef), (byte)(PlayerColors[i].B * visionCoef));
                     unitShape.OutlineColor = Color.White;
                     unitShape.OutlineThickness = 0;
                     if (unit.IsSelected) unitShape.OutlineThickness = 1;
@@ -114,14 +130,13 @@ namespace KnightsOfEmpire.GameStates.Match
             RegisterUnitRequest request = packet.GetDeserializedClassOrDefault<RegisterUnitRequest>();
             if (request == null) return;
 
-            Unit unit = new Unit()
-            {
-                ID = request.ID,
-                PlayerId = request.PlayerId,
-                Position = new Vector2f(request.StartPositionX, request.StartPositionY),
-                TextureId = 0,
-                Stats = new UnitStats()
-            };
+            Unit unit = UnitUpgradeManager.ProduceUnit(
+                Client.Resources.GameCustomUnits[request.PlayerId].Units[request.UnitTypeId]);
+
+            unit.ID = request.ID;
+            unit.PlayerId = request.PlayerId;
+            unit.Position = new Vector2f(request.StartPositionX, request.StartPositionY);
+            unit.UnitTypeId = request.UnitTypeId;
 
             GameUnits[request.PlayerId].Add(unit);
         }
@@ -137,7 +152,10 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void Dispose()
         {
             base.Dispose();
-            UnitsAtlas.Dispose();
+            for(int i=0;i<4;i++)
+            {
+                UnitsAtlases[i].Dispose();
+            }
         }
     }  
 }
