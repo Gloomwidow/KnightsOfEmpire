@@ -19,6 +19,7 @@ namespace KnightsOfEmpire.Common.Buildings
         public int TextureId { get; set; }
         public int Health { get; set; }
         public int MaxHealth { get; set; }
+        public int TrainType { get; set; } = -1;
         public float HealthPercentage
         {
             get
