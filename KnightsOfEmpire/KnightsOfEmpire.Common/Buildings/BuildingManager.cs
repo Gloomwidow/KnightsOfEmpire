@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KnightsOfEmpire.Common.Units.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ namespace KnightsOfEmpire.Common.Buildings
         { 
             [0] = new BuildingInfo 
             {
-                Name = "Barracks",
+                Name = "Supply Depot",
                 Description = "Increases max unit capacity, allowing Empires to have more units at once.",
                 Building = new Building
                 {
@@ -49,6 +50,54 @@ namespace KnightsOfEmpire.Common.Buildings
                     BuildCost = 150,
                     MaxHealth = 250,
                     TextureId = 8,
+                }
+            },
+            [3] = new BuildingInfo
+            {
+                Name = "Barracks",
+                Description = "Allows to create melee units.",
+                Building = new Building
+                {
+                    BuildCost = 150,
+                    MaxHealth = 250,
+                    TextureId = 1,
+                    TrainType = (int)UnitType.Melee
+                }
+            },
+            [4] = new BuildingInfo
+            {
+                Name = "Archery Range",
+                Description = "Allows to create archery units.",
+                Building = new Building
+                {
+                    BuildCost = 150,
+                    MaxHealth = 250,
+                    TextureId = 2,
+                    TrainType = (int)UnitType.Ranged
+                }
+            },
+            [5] = new BuildingInfo
+            {
+                Name = "Stable",
+                Description = "Allows to create cavalry units.",
+                Building = new Building
+                {
+                    BuildCost = 150,
+                    MaxHealth = 250,
+                    TextureId = 7,
+                    TrainType = (int)UnitType.Cavalry
+                }
+            },
+            [6] = new BuildingInfo
+            {
+                Name = "Siege Factory",
+                Description = "Allows to create siege machines",
+                Building = new Building
+                {
+                    BuildCost = 150,
+                    MaxHealth = 250,
+                    TextureId = 3,
+                    TrainType = (int)UnitType.Siege
                 }
             },
             [MainBuildingId] = new BuildingInfo
