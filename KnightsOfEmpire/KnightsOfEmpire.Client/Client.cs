@@ -70,8 +70,14 @@ namespace KnightsOfEmpire
             RenderWindow.Resized += (sender, e) =>
             {
                 Gui.View = new View(new FloatRect(new Vector2f(0, 0), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y)));
+                if(GameStateManager.GameState is MatchGameState)
+                {
+                    GameStateManager.GameState.GetSiblingGameState<GameGUIState>().ResizePanel();
+                }
             };
 
+            RenderWindow.SetVerticalSyncEnabled(true);
+            RenderWindow.SetFramerateLimit(60);
 
             RenderWindow.Closed += (obj, e) => 
             {

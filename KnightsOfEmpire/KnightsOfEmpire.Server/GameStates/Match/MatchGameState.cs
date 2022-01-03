@@ -18,10 +18,13 @@ namespace KnightsOfEmpire.Server.GameStates
         {
             RegisterGameState(new UnitUpdateState());
             RegisterGameState(new BuildingUpdateState());
+            RegisterGameState(new PlayerReconnectState());
             RegisterTCPRedirects(new (string Header, Type T)[]
                 {
                     (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),
-                    (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
+                    (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState)),
+                    (PacketsHeaders.WaitingStateClientRequest, typeof(PlayerReconnectState)),
+                    (PacketsHeaders.GameReadyPing, typeof(PlayerReconnectState))
                 }
             );
         }
@@ -37,6 +40,7 @@ namespace KnightsOfEmpire.Server.GameStates
             if (Server.TCPServer.CurrentActiveConnections<=0)
             {
                 Console.WriteLine("No one is connected. Resetting to WaitingState");
+                Server.EnableConnection();
                 GameStateManager.GameState = new WaitingGameState();
             }
             for (int i = 0; i < MaxPlayerCount; i++)

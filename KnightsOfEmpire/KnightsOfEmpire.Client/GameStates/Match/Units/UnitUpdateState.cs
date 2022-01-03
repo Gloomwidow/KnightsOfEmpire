@@ -68,8 +68,7 @@ namespace KnightsOfEmpire.GameStates.Match
             UnitsAtlases[0] = new Texture(@"./Assets/Textures/heavy infantry.png");
             UnitsAtlases[1] = new Texture(@"./Assets/Textures/light infantry.png");
             UnitsAtlases[2] = new Texture(@"./Assets/Textures/cavalry - light.png");
-            //TO-Do: once we will find siege textures, replace them
-            UnitsAtlases[3] = new Texture(@"./Assets/Textures/cavalry - heavy.png");
+            UnitsAtlases[3] = new Texture(@"./Assets/Textures/siege engines.png");
             for(int i=0;i<unitTypesCount;i++)
             {
                 UnitAtlasSizes[i] = new Vector2i((int)UnitsAtlases[i].Size.X, (int)UnitsAtlases[i].Size.Y);
@@ -108,9 +107,19 @@ namespace KnightsOfEmpire.GameStates.Match
                     unitShape.Position = new Vector2f(unit.Position.X-(Unit.UnitSize/2), unit.Position.Y - (Unit.UnitSize / 2));
                     int unitArchetypeId = (int)unitInfo.UnitType;
 
+
                     unitShape.Texture = UnitsAtlases[unitArchetypeId];
-                    unitShape.TextureRect = IdToTextureRect.GetRect(unitInfo.TextureId, UnitAtlasSizes[unitArchetypeId]);
-                    //unitShape.FillColor = new Color((byte)(PlayerColors[i].R*visionCoef), (byte)(PlayerColors[i].G * visionCoef), (byte)(PlayerColors[i].B * visionCoef));
+                    IntRect textureRect = IdToTextureRect.GetRect(unitInfo.TextureId, UnitAtlasSizes[unitArchetypeId]);
+                    if (unit.MoveDirection.X != 0)
+                    {
+                        unit.IsFacingLeft = unit.MoveDirection.X < 0;
+                    }
+                    if(unit.IsFacingLeft)
+                    {
+                        textureRect.Left += 16;
+                        textureRect.Width = -textureRect.Width;
+                    }
+                    unitShape.TextureRect = textureRect;
                     unitShape.OutlineColor = Color.White;
                     unitShape.OutlineThickness = 0;
                     if (unit.IsSelected) unitShape.OutlineThickness = 1;

@@ -18,10 +18,13 @@ namespace KnightsOfEmpire.GameStates.Match
     {
         public GameGUIState GameGUIState;
 
+        protected List<ReceivedPacket> packets = null;
+
         bool isMousePressed = false;
 
-        public MatchGameState()
+        public MatchGameState(List<ReceivedPacket> packets = null)
         {
+            this.packets = packets;
             GameGUIState = new GameGUIState();
             RegisterGameState(new ViewControlState());
             RegisterGameState(new MapRenderState());
@@ -44,6 +47,17 @@ namespace KnightsOfEmpire.GameStates.Match
                     (PacketsHeaders.BuildingHeaderStart, typeof(BuildingUpdateState))
                 }
             );
+        }
+
+        public override void LoadDependencies()
+        {
+            base.LoadDependencies();
+            if(packets != null)
+            {
+                HandleTCPPackets(packets);
+            }
+            SentPacket gameReadyPacket = new SentPacket(PacketsHeaders.GameReadyPing);
+            Client.TCPClient.SendToServer(gameReadyPacket);
         }
 
 

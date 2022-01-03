@@ -41,6 +41,17 @@ namespace KnightsOfEmpire.Server
 
         private static Stopwatch DeltaTimer;
 
+        public static void EnableConnection()
+        {
+            if(TCPServer!=null) TCPServer.Stop();
+            TCPServer = new TCPServer("127.0.0.1", 26969, Constants.MaxPlayers, 30);
+            TCPServer.Start();
+
+            if (UDPServer != null) UDPServer.Stop();
+            UDPServer = new UDPServer("127.0.0.1", 26969);
+            UDPServer.Start();
+        }
+
         static void Main(string[] args)
         {
             UnitIdManager.SetupIds(2);
@@ -50,13 +61,7 @@ namespace KnightsOfEmpire.Server
             TickTimer = new Stopwatch();
             DeltaTimer = new Stopwatch();
 
-            TCPServer = new TCPServer("127.0.0.1", 26969, Constants.MaxPlayers, 30);
-
-            TCPServer.Start();
-
-            UDPServer = new UDPServer("127.0.0.1", 26969);
-
-            UDPServer.Start();
+            EnableConnection();
 
             if(!TCPServer.isRunning)
             {
