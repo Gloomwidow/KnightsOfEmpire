@@ -81,7 +81,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             try
             {
                 int bytesSent = ServerSocket.EndSend(ar);
-                Console.WriteLine($"Sent {bytesSent} bytes to server.");
+                //Console.WriteLine($"Sent {bytesSent} bytes to server.");
 
             }
             catch (Exception ex)

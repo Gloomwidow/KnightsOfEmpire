@@ -93,6 +93,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             {
                 while(isRunning)
                 {
+                    if (!Listener.Pending()) continue;
                     Socket socket = Listener.AcceptSocket();
                     Console.WriteLine("Connection request received from:" + socket.RemoteEndPoint);
                     bool hasBeenAccepted = false;
@@ -180,6 +181,13 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             Console.WriteLine("Server successfully stop!");
         }
 
+        public void SwapConnection(int from, int to)
+        {
+            TCPServerConnection swap = Connections[from];
+            Connections[from] = Connections[to];
+            Connections[to] = swap;
+        }
+
         /// <summary>
         /// Send prepared packet to currently connected client.
         /// </summary>
@@ -248,7 +256,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             try
             {  
                 int bytesSent = Connections[receiverID].socket.EndSend(ar);
-                Console.WriteLine($"Sent {bytesSent} bytes to client {receiverID}.");
+                //Console.WriteLine($"Sent {bytesSent} bytes to client {receiverID}.");
 
             }
             catch (Exception ex)
@@ -264,7 +272,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
             DataState state = (DataState)ar.AsyncState;
             Socket sender = Connections[state.ConnectionID].socket;
-            Console.WriteLine($"Receiving data from client {state.ConnectionID}");
+            //Console.WriteLine($"Receiving data from client {state.ConnectionID}");
 
             try
             {

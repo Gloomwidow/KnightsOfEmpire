@@ -10,6 +10,8 @@ namespace KnightsOfEmpire.Common.Networking
     {
         public const string PING = "2001";
 
+        public const string GameReadyPing = "2005";
+
         public const string WaitingStateClientRequest = "3001";
         public const string WaitingStateServerResponse = "3002";
 

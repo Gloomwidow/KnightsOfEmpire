@@ -26,6 +26,8 @@ namespace KnightsOfEmpire.GameStates
     class WaitingState : GameState
     {
         // State to manage GameState
+
+        protected List<ReceivedPacket> packets;
         private enum State { First, Main, Update, StartGame}
         private State state = State.First;
 
@@ -78,6 +80,7 @@ namespace KnightsOfEmpire.GameStates
         /// <param name="packets">List of recived packets</param>
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
         {
+            this.packets = packets;
             foreach (ReceivedPacket packet in packets)
             {
                 switch(packet.GetHeader())
@@ -524,6 +527,7 @@ namespace KnightsOfEmpire.GameStates
                 {
                     Client.Resources.GameCustomUnits[i] = request.CustomUnits[i];
                 }
+
                 GameStateManager.GameState = new MatchGameState();
             }
         }

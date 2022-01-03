@@ -20,6 +20,8 @@ namespace KnightsOfEmpire.Common.Units
 
         public bool IsInAttackRange { get; set; }
 
+        public bool IsFacingLeft = false;
+
         public int UnitTypeId { get; set; } 
 
         public AttackTarget AttackTarget = AttackTarget.None;
@@ -113,9 +115,8 @@ namespace KnightsOfEmpire.Common.Units
 
         public void Move(float DeltaTime)
         {
-            
             PreviousPosition = new Vector2f(Position.X, Position.Y);
-            if (Stance == UnitStance.Attacking) TargetDirection = new Vector2f(0.0f, 0.0f);
+            if (Stance == UnitStance.Attacking && UnitGroup==null) TargetDirection = new Vector2f(0.0f, 0.0f);
             if (TargetDirection.Length2() == 0.0f) MoveDirection = new Vector2f(0.0f, 0.0f);
             MoveDirection = MoveDirection.LerpTimeStep(TargetDirection, UnitDirectionRotationSpeed, DeltaTime);
             Position += MoveDirection * DeltaTime;
@@ -125,6 +126,7 @@ namespace KnightsOfEmpire.Common.Units
 
         public void Attack(float DeltaTime, List<Unit> targetUnits, List<Building> targetBuildings)
         {
+            if (Stance != UnitStance.Idle) return;
             if(AttackTarget==AttackTarget.None)
             {
                 if (targetUnits.Count > 0) AttackTarget = AttackTarget.Unit;

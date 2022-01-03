@@ -43,6 +43,9 @@ namespace KnightsOfEmpire.GameStates
         private Label unitsLabel;
         private Label playerLabel;
 
+        private Label playerFlagLeft;
+        private Label playerFlagRight;
+
         private string gold = "gold value";
         private string capacity = "currect/max";
         private string mainBaseHealth = "2137/2137";
@@ -55,6 +58,8 @@ namespace KnightsOfEmpire.GameStates
         private BitmapButton[,] buildingsButtons;
 
         private Texture[,] BuildingButttonTexture;
+
+        private Texture PlayerFlagTexture;
 
         private BitmapButton[,] unitsButtons;
 
@@ -99,6 +104,12 @@ namespace KnightsOfEmpire.GameStates
                     ChangePlayerInfo(packet);
                     break;
             }
+        }
+
+        public override void LoadResources()
+        {
+            base.LoadResources();
+            PlayerFlagTexture = new Texture(@"./Assets/Textures/flag.png");
         }
 
         public override void LoadDependencies()
@@ -241,6 +252,11 @@ namespace KnightsOfEmpire.GameStates
             // TODO: Add functionality
         }
 
+        public void ResizePanel()
+        {
+            
+        }
+
 
         private void InitializeGamePanel()
         {
@@ -249,6 +265,32 @@ namespace KnightsOfEmpire.GameStates
             mainPanel = new Panel();
             mainPanel.Position = new Vector2f(0, 520);
             mainPanel.Size = new Vector2f(1280, 200);
+
+            Image flagImage = PlayerFlagTexture.CopyToImage();
+            Color playerColor = Constants.playerColors[Client.Resources.PlayerGameId];
+            for (uint x=0;x<flagImage.Size.X;x++)
+            {
+                for (uint y = 0; y < flagImage.Size.Y; y++)
+                {
+                    Color c = flagImage.GetPixel(x, y);
+                    float mg = (c.R / 255.0f);
+                    Color resultColor = new Color((byte)(mg * playerColor.R), (byte)(mg * playerColor.G), (byte)(mg * playerColor.B), c.A);
+                    flagImage.SetPixel(x, y, resultColor);
+                }
+            }
+
+            playerFlagLeft = new Label();
+            playerFlagLeft.Position = new Vector2f(0, 0);
+            playerFlagLeft.Size = new Vector2f(20, 200);
+            playerFlagLeft.Renderer.TextureBackground = new Texture(flagImage);
+            mainPanel.Add(playerFlagLeft);
+
+            playerFlagRight = new Label();
+            playerFlagRight.Position = new Vector2f(1260, 0);
+            playerFlagRight.Size = new Vector2f(20, 200);
+            playerFlagRight.Renderer.TextureBackground = new Texture(flagImage);
+            mainPanel.Add(playerFlagRight);
+
 
             //Map Panel
             mapPanel = new Panel();
