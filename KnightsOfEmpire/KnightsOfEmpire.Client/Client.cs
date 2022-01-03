@@ -56,6 +56,8 @@ namespace KnightsOfEmpire
 
         public static UDPClient UDPClient { get; set; }
 
+        public static Vector2u MinimumSize = new Vector2u(1280, 720);
+
 
         static void Main(string[] args)
         {
@@ -69,14 +71,34 @@ namespace KnightsOfEmpire
 
             RenderWindow.Resized += (sender, e) =>
             {
-                Gui.View = new View(new FloatRect(new Vector2f(0, 0), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y)));
                 if(GameStateManager.GameState is MatchGameState)
                 {
+                    Vector2u clampedSize = RenderWindow.Size;
+                    bool changed = false;
+                    if (clampedSize.X < MinimumSize.X)
+                    {
+                        clampedSize.X = MinimumSize.X;
+                        changed = true;
+                    }
+                    if (clampedSize.Y < MinimumSize.Y)
+                    {
+                        clampedSize.Y = MinimumSize.Y;
+                        changed = true;
+                    }
+                    if (changed) RenderWindow.Size = clampedSize;
+                    Gui.View = new View(new FloatRect(new Vector2f(0, 0), new Vector2f(RenderWindow.Size.X, RenderWindow.Size.Y)));
                     GameStateManager.GameState.GetSiblingGameState<GameGUIState>().ResizePanel();
                 }
+                else
+                {
+                    if (RenderWindow.Size != MinimumSize)
+                    {
+                        RenderWindow.Size = MinimumSize;
+                    }
+                }    
             };
 
-            RenderWindow.SetVerticalSyncEnabled(true);
+            //RenderWindow.SetVerticalSyncEnabled(true);
             RenderWindow.SetFramerateLimit(60);
 
             RenderWindow.Closed += (obj, e) => 

@@ -35,6 +35,7 @@ namespace KnightsOfEmpire.GameStates
         private Panel statsPanel;
         private Panel buldingsPanel;
         private Panel unitsPanel;
+        private Panel buttonsPanel;
 
         private Picture mapPicture;
 
@@ -73,6 +74,9 @@ namespace KnightsOfEmpire.GameStates
         private float timeOnButton = 0f;
         private const float timeToShowInfo = 0.5f;
         (char buttonType, int id) buttonData;
+
+        private int originalResolutionX = 1280;
+        private int differenceResolutionX = 0;
 
         /// <summary>
         /// Initialize Game State
@@ -170,6 +174,7 @@ namespace KnightsOfEmpire.GameStates
             goldLabel.Text = gold;
             unitsLabel.Text = capacity;
             playerLabel.Text = playersLeft;
+            mainBaseLabel.Text = parent.GetSiblingGameState<BuildingUpdateState>().GetMainBuildingHealthText();
             //Info Label
             if (isOnButton && !infoLabel.Visible && infoLabel.Text!=string.Empty)
             {
@@ -254,7 +259,20 @@ namespace KnightsOfEmpire.GameStates
 
         public void ResizePanel()
         {
-            
+            Vector2u windowSize = Client.RenderWindow.Size;
+            int newDifferenceResolutionX = (int)(windowSize.X - originalResolutionX)/2;
+            mainPanel.Position = new Vector2f(0, windowSize.Y-200);
+            mainPanel.Size = new Vector2f(windowSize.X, 200);
+
+            mapPanel.Position = new Vector2f(mapPanel.Position.X - differenceResolutionX + newDifferenceResolutionX, mapPanel.Position.Y);
+            statsPanel.Position = new Vector2f(statsPanel.Position.X - differenceResolutionX + newDifferenceResolutionX, statsPanel.Position.Y);
+            buttonsPanel.Position = new Vector2f(buttonsPanel.Position.X - differenceResolutionX + newDifferenceResolutionX, buttonsPanel.Position.Y);
+            unitsPanel.Position = new Vector2f(unitsPanel.Position.X - differenceResolutionX + newDifferenceResolutionX, unitsPanel.Position.Y);
+            buldingsPanel.Position = new Vector2f(buldingsPanel.Position.X - differenceResolutionX + newDifferenceResolutionX, buldingsPanel.Position.Y);
+
+            playerFlagRight.Position = new Vector2f(windowSize.X - 20, playerFlagRight.Position.Y);
+
+            differenceResolutionX = newDifferenceResolutionX;
         }
 
 
@@ -440,38 +458,44 @@ namespace KnightsOfEmpire.GameStates
                     unitsPanel.Add(bitbutton);
                 }
 
+            buttonsPanel = new Panel();
+            buttonsPanel.Renderer.BackgroundColor = backColor;
+            buttonsPanel.Position = new Vector2f(1100, 20);
+            buttonsPanel.Size = new Vector2f(200, 160);
+            mainPanel.Add(buttonsPanel);
+
             //Buttons
             Button button = new Button();
-            button.Position = new Vector2f(1110, 20);
+            button.Position = new Vector2f(0, 0);
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
             button.Text = "Menu";
             button.Clicked += MenuButtonClick;
-            mainPanel.Add(button);
+            buttonsPanel.Add(button);
 
             button = new Button();
-            button.Position = new Vector2f(1110, 62.5f);
+            button.Position = new Vector2f(0, 42.5f);
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
             button.Text = "";
             button.Enabled = false;
-            mainPanel.Add(button);
+            buttonsPanel.Add(button);
 
             button = new Button();
-            button.Position = new Vector2f(1110, 105);
+            button.Position = new Vector2f(0, 85);
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
             button.Text = "";
             button.Enabled = false;
-            mainPanel.Add(button);
+            buttonsPanel.Add(button);
 
             button = new Button();
-            button.Position = new Vector2f(1110, 147.5f);
+            button.Position = new Vector2f(0, 127.5f);
             button.Size = new Vector2f(150, 32.5f);
             button.TextSize = 16;
             button.Text = "Leave game";
             button.Clicked += LeaveButtonClick;
-            mainPanel.Add(button);
+            buttonsPanel.Add(button);
         }
 
         private void InitializeInfoLabel()

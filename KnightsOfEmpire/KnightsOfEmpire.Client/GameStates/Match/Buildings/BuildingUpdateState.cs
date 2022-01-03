@@ -29,6 +29,19 @@ namespace KnightsOfEmpire.GameStates.Match
             RegisterGameState(new BuildingPlacementState());
         }
 
+        public string GetMainBuildingHealthText()
+        {
+            Building b = GameBuildings[Client.Resources.PlayerGameId].Find(x => x.BuildingId == BuildingManager.MainBuildingId);
+            if(b!=null)
+            {
+                return $"{b.Health}/{b.MaxHealth}";
+            }
+            else
+            {
+                return "Destroyed!";
+            }
+        }
+
         public override void HandleTCPPacket(ReceivedPacket packet)
         {
             switch (packet.GetHeader())
