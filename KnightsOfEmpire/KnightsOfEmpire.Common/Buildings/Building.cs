@@ -36,6 +36,7 @@ namespace KnightsOfEmpire.Common.Buildings
             Health = MaxHealth;
             BuildCost = original.BuildCost;
             TextureId = original.TextureId;
+            TrainType = original.TrainType;
         }
     }
 }

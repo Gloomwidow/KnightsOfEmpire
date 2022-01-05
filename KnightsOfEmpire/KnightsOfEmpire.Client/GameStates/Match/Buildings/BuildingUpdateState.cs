@@ -6,6 +6,7 @@ using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Buildings;
 using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.GameStates.Match.Buildings;
 using SFML.Graphics;
 using SFML.System;
 using System;
@@ -27,6 +28,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public BuildingUpdateState()
         {
             RegisterGameState(new BuildingPlacementState());
+            RegisterGameState(new BuildingSelectionState());
         }
 
         public string GetMainBuildingHealthText()
@@ -93,6 +95,7 @@ namespace KnightsOfEmpire.GameStates.Match
             // TO-DO: color unit textures with teams color based on unit coloring
             RectangleShape buildingShape = new RectangleShape();
             RectangleShape hpBar = new RectangleShape();
+            Building SelectedBuilding = GetSiblingGameState<BuildingSelectionState>().SelectedBuilding;
             for (int i = 0; i < MaxPlayerCount; i++)
             {
                 foreach (Building building in GameBuildings[i])
@@ -106,6 +109,9 @@ namespace KnightsOfEmpire.GameStates.Match
                     buildingShape.Texture = BuildingsAtlas;
                     buildingShape.TextureRect = IdToTextureRect.GetRect(BuildingManager.GetTextureId(building.BuildingId), AtlasSizeX, AtlasSizeY);
                     buildingShape.FillColor = new Color((byte)(255 * visionCoef), (byte)(255 * visionCoef), (byte)(255 * visionCoef));
+                    buildingShape.OutlineColor = Color.White;
+                    buildingShape.OutlineThickness = 0;
+                    if (SelectedBuilding == building) buildingShape.OutlineThickness = 1;
                     hpBar.Size = new Vector2f(Map.TilePixelSize * building.HealthPercentage, 5);
                     hpBar.Position = new Vector2f(PositionX, PositionY + Map.TilePixelSize);
                     hpBar.FillColor = PlayerColors[i];
@@ -134,6 +140,7 @@ namespace KnightsOfEmpire.GameStates.Match
                 PlayerId = request.PlayerId,
                 MaxHealth = BuildingManager.GetBuilding(request.BuildingTypeId).MaxHealth,
                 Position = new Vector2i(request.BuildingPosX, request.BuildingPosY),
+                TrainType = BuildingManager.GetBuilding(request.BuildingTypeId).TrainType
             };
 
             GameBuildings[request.PlayerId].Add(building);

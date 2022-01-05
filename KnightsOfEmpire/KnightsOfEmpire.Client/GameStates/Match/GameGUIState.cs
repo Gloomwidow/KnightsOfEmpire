@@ -23,6 +23,10 @@ using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.Buildings;
 using KnightsOfEmpire.GameStates.Match;
 using KnightsOfEmpire.Common.Helper;
+using KnightsOfEmpire.GameStates.Match.Buildings;
+using KnightsOfEmpire.Common.Units;
+using KnightsOfEmpire.Common.Units.Modifications;
+using KnightsOfEmpire.Common.Resources.Units;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -55,7 +59,6 @@ namespace KnightsOfEmpire.GameStates
         protected Texture BuildingAtlas;
         public int BuildingAtlasSizeX, BuildingAtlasSizeY;
 
-
         private BitmapButton[,] buildingsButtons;
 
         private Texture[,] BuildingButttonTexture;
@@ -63,6 +66,9 @@ namespace KnightsOfEmpire.GameStates
         private Texture PlayerFlagTexture;
 
         private BitmapButton[,] unitsButtons;
+
+        protected Texture[] UnitAtlas;
+        public int UnitAtlasSizeX, UnitAtlasSizeY;
 
         private Label infoLabel;
 
@@ -119,6 +125,9 @@ namespace KnightsOfEmpire.GameStates
         public override void LoadDependencies()
         {
             base.LoadDependencies();
+            UnitAtlas = Parent.GetSiblingGameState<UnitUpdateState>().UnitsAtlases;
+            UnitAtlasSizeX = (int)UnitAtlas[0].Size.X;
+            UnitAtlasSizeY = (int)UnitAtlas[0].Size.Y;
             BuildingAtlas = Parent.GetSiblingGameState<BuildingUpdateState>().BuildingsAtlas;
             BuildingAtlasSizeX = (int)BuildingAtlas.Size.X;
             BuildingAtlasSizeY = (int)BuildingAtlas.Size.Y;
@@ -143,7 +152,52 @@ namespace KnightsOfEmpire.GameStates
             imageBuilding.Dispose();
         }
 
-        public void ChangePlayerInfo(ReceivedPacket packet) 
+        public void SetUnitButtons()
+        {
+            ResetUnitButtons();
+            Building SelectedBuilding = GameStateManager.GameState.GetSiblingGameState<BuildingUpdateState>().GetSiblingGameState<BuildingSelectionState>().SelectedBuilding;
+            if (SelectedBuilding.TrainType == -1) return;
+            Image imageUnit = UnitAtlas[SelectedBuilding.TrainType].CopyToImage();
+            int id = 0;
+            for (int i = 0; i < unitsButtons.GetLength(1); i++)
+            {
+                for (int j = 0; j < unitsButtons.GetLength(0); j++)
+                {
+                    Unit u = UnitUpgradeManager.ProduceUnit(Client.Resources.PlayerCustomUnits.Units[id]);
+                    if ((int)Client.Resources.PlayerCustomUnits.Units[id].UnitType == SelectedBuilding.TrainType)
+                    {
+                        IntRect TextureRect = IdToTextureRect.GetRect(
+                            u.TextureId,
+                            UnitAtlasSizeX, UnitAtlasSizeY);
+                        unitsButtons[j, i].Renderer.Texture = new Texture(imageUnit, TextureRect);
+                    }
+                    else
+                    {
+                        j--;
+                    };
+                    id++;
+                    if (id >= Constants.MaxUnitsPerPlayer)
+                    {
+                        imageUnit.Dispose();
+                        return;
+                    }
+                }
+            }
+
+        }
+
+        public void ResetUnitButtons()
+        {
+            for (int i = 0; i < unitsButtons.GetLength(1); i++)
+            {
+                for (int j = 0; j < unitsButtons.GetLength(0); j++)
+                {
+                    unitsButtons[j, i].Renderer.Texture = new Texture(1,1);
+                }
+            }
+        }
+
+        public void ChangePlayerInfo(ReceivedPacket packet)
         {
             ChangePlayerInfoRequest request = packet.GetDeserializedClassOrDefault<ChangePlayerInfoRequest>();
             if (request == null) return;
@@ -151,12 +205,12 @@ namespace KnightsOfEmpire.GameStates
             Client.Resources.MaxUnitCapacity = request.MaxUnitsCapacity;
             Client.Resources.UnitCapacity = request.CurrentUnitsCapacity;
             Client.Resources.PlayersLeft = request.PlayersLeft;
-            if (request.IsDefeated) 
+            if (request.IsDefeated)
             {
                 GameStateManager.GameState = new EndMatchGameState("You have been defeated");
                 return;
             }
-            if(request.PlayersLeft == 1) 
+            if (request.PlayersLeft == 1)
             {
                 GameStateManager.GameState = new EndMatchGameState("You won");
                 return;
@@ -176,9 +230,9 @@ namespace KnightsOfEmpire.GameStates
             playerLabel.Text = playersLeft;
             mainBaseLabel.Text = parent.GetSiblingGameState<BuildingUpdateState>().GetMainBuildingHealthText();
             //Info Label
-            if (isOnButton && !infoLabel.Visible && infoLabel.Text!=string.Empty)
+            if (isOnButton && !infoLabel.Visible && infoLabel.Text != string.Empty)
             {
-                if(mouseLastPosition == Mouse.GetPosition(Client.RenderWindow))
+                if (mouseLastPosition == Mouse.GetPosition(Client.RenderWindow))
                 {
                     timeOnButton += Client.DeltaTime;
                     if (timeOnButton >= timeToShowInfo)
@@ -222,19 +276,45 @@ namespace KnightsOfEmpire.GameStates
 
         private void UnitButtonClick(object sender, EventArgs e)
         {
-            // TODO: Add functionality
+            Building SelectedBuilding = GameStateManager.GameState.GetSiblingGameState<BuildingUpdateState>().GetSiblingGameState<BuildingSelectionState>().SelectedBuilding;
+            if (SelectedBuilding == null || SelectedBuilding.TrainType == -1) return;
+            buttonData = ((char, int))(((BitmapButton)sender).UserData);
+            int counter = 0;
+            int id = 0;
+            while(counter < Constants.MaxUnitsPerPlayer) 
+            {
+                if ((int)Client.Resources.PlayerCustomUnits.Units[counter].UnitType == SelectedBuilding.TrainType)
+                {
+                    if(buttonData.id == id) 
+                    {
+                        Unit u = UnitUpgradeManager.ProduceUnit(Client.Resources.PlayerCustomUnits.Units[counter]);
+                        TrainUnitRequest request = new TrainUnitRequest
+                        {
+                            UnitTypeId = u.UnitTypeId,
+                            BuildingPosX = SelectedBuilding.Position.X,
+                            BuildingPosY = SelectedBuilding.Position.Y,
+                        };
+
+                        SentPacket packet = new SentPacket(PacketsHeaders.GameUnitTrainRequest);
+                        packet.stringBuilder.Append(JsonSerializer.Serialize(request));
+                        Client.TCPClient.SendToServer(packet);
+                    }
+                    id++;
+                }
+                counter++;
+            }
         }
 
         private void ButtonMouseEnter(object sender, EventArgs e)
         {
             isOnButton = true;
             buttonData = ((char, int))(((BitmapButton)sender).UserData);
-            if(buttonData.buttonType=='b')
+            if (buttonData.buttonType == 'b')
             {
                 BuildingInfo info = BuildingManager.GetNextBuilding(buttonData.id);
                 if (info != null)
                 {
-                    infoLabel.Text = info.Name + " (Cost: "+ info.Building.BuildCost.ToString() +")"+ "\n" + info.Description;
+                    infoLabel.Text = info.Name + " (Cost: " + info.Building.BuildCost.ToString() + ")" + "\n" + info.Description;
                 }
                 else infoLabel.Text = string.Empty;
             }
@@ -260,8 +340,8 @@ namespace KnightsOfEmpire.GameStates
         public void ResizePanel()
         {
             Vector2u windowSize = Client.RenderWindow.Size;
-            int newDifferenceResolutionX = (int)(windowSize.X - originalResolutionX)/2;
-            mainPanel.Position = new Vector2f(0, windowSize.Y-200);
+            int newDifferenceResolutionX = (int)(windowSize.X - originalResolutionX) / 2;
+            mainPanel.Position = new Vector2f(0, windowSize.Y - 200);
             mainPanel.Size = new Vector2f(windowSize.X, 200);
 
             mapPanel.Position = new Vector2f(mapPanel.Position.X - differenceResolutionX + newDifferenceResolutionX, mapPanel.Position.Y);
@@ -286,7 +366,7 @@ namespace KnightsOfEmpire.GameStates
 
             Image flagImage = PlayerFlagTexture.CopyToImage();
             Color playerColor = Constants.playerColors[Client.Resources.PlayerGameId];
-            for (uint x=0;x<flagImage.Size.X;x++)
+            for (uint x = 0; x < flagImage.Size.X; x++)
             {
                 for (uint y = 0; y < flagImage.Size.Y; y++)
                 {
@@ -339,7 +419,7 @@ namespace KnightsOfEmpire.GameStates
                 label.TextSize = 16;
                 label.Text = "Gold";
                 statsPanel.Add(label);
-                
+
 
                 label = new Label();
                 label.Position = new Vector2f(15, 45);
@@ -421,10 +501,10 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(buldingsPanel);
 
             buildingsButtons = new BitmapButton[5, 3];
-            for(int j = 0; j < 3; j++)
-                for(int i = 0; i < 5; i++)
+            for (int j = 0; j < 3; j++)
+                for (int i = 0; i < 5; i++)
                 {
-                    buildingsButtons[i,j] = new BitmapButton();
+                    buildingsButtons[i, j] = new BitmapButton();
                     buildingsButtons[i, j].Position = new Vector2f(10 + i * 50, 10 + j * 50);
                     buildingsButtons[i, j].Size = new Vector2f(40, 40);
                     buildingsButtons[i, j].UserData = ('b', id++);
@@ -446,16 +526,16 @@ namespace KnightsOfEmpire.GameStates
             for (int j = 0; j < 3; j++)
                 for (int i = 0; i < 7; i++)
                 {
-                    BitmapButton bitbutton = new BitmapButton();
-                    bitbutton.Position = new Vector2f(10 + i * 50, 10 + j * 50);
-                    bitbutton.Size = new Vector2f(40, 40);
-                    bitbutton.UserData = ('u', id++);
-                    bitbutton.Focusable = true;
-                    bitbutton.Clicked += UnitButtonClick;
-                    bitbutton.MouseEntered += ButtonMouseEnter;
-                    bitbutton.MouseLeft += ButtonMouseLeave;
+                    unitsButtons[i, j] = new BitmapButton();
+                    unitsButtons[i, j].Position = new Vector2f(10 + i * 50, 10 + j * 50);
+                    unitsButtons[i, j].Size = new Vector2f(40, 40);
+                    unitsButtons[i, j].UserData = ('u', id++);
+                    unitsButtons[i, j].Focusable = true;
+                    unitsButtons[i, j].Clicked += UnitButtonClick;
+                    unitsButtons[i, j].MouseEntered += ButtonMouseEnter;
+                    unitsButtons[i, j].MouseLeft += ButtonMouseLeave;
 
-                    unitsPanel.Add(bitbutton);
+                    unitsPanel.Add(unitsButtons[i, j]);
                 }
 
             buttonsPanel = new Panel();

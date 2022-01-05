@@ -59,6 +59,13 @@ namespace KnightsOfEmpire.GameStates
                 }
                 selectionRectangle = null;
             }
+            if (Keyboard.IsKeyPressed(Keyboard.Key.Escape))
+            {
+                for (int i = 0; i < GameUnits[Client.Resources.PlayerGameId].Count; i++)
+                {
+                    GameUnits[Client.Resources.PlayerGameId][i].IsSelected = false;
+                }
+            }
         }
         void ChangleSelectionRectangleCoords(Vector2f endPosition)
         {
