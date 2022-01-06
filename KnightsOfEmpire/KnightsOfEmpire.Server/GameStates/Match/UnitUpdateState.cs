@@ -181,6 +181,18 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             TrainUnitRequest request = packet.GetDeserializedClassOrDefault<TrainUnitRequest>();
             if (request == null) return;
 
+            //check if building belongs to player
+            List<Building>[] buildings = GameStateManager.GameState.GetSiblingGameState<BuildingUpdateState>().GameBuildings;
+            bool isBuildingOwner = false;
+            foreach (Building building in buildings[packet.ClientID]) 
+            {
+                if(building.Position.X == request.BuildingPosX && building.Position.Y == request.BuildingPosY) 
+                {
+                    isBuildingOwner = true;
+                }
+            }
+            if (!isBuildingOwner) return;
+
             Unit unit = UnitUpgradeManager.ProduceUnit
                 (Server.Resources.GameCustomUnits[packet.ClientID].Units[request.UnitTypeId]);
 
