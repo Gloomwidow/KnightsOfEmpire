@@ -2,6 +2,7 @@
 using KnightsOfEmpire.Common.GameStates;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Units;
+using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML.System;
+using KnightsOfEmpire.Common.Helper;
+using SFML.Graphics;
 
 namespace KnightsOfEmpire.Common.Map
 {
@@ -34,6 +36,8 @@ namespace KnightsOfEmpire.Common.Map
          * 7,7,7,7
          */
 
+        public string MapName { get; set; }
+
         public static int TilePixelSize = 64;
 
         public const float WallPushBackBias = 0.01f;
@@ -41,7 +45,8 @@ namespace KnightsOfEmpire.Common.Map
         public int TileCountY { get; set; }
         public TileType[][] TileTypes { get; set; }
         public int[][] TileTexture { get; set; }
-        public (int x, int y)[] starterPositions { get; set; }
+        public int[] starterPositionsX { get; set; }
+        public int[] starterPositionsY { get; set; }
 
         public bool IsTileInBounds(int x, int y)
         {
@@ -152,7 +157,8 @@ namespace KnightsOfEmpire.Common.Map
 
         public Map(string mapFileName)
         {
-            string path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @".\Assets\Maps"));
+            MapName = mapFileName;
+            string path = Constants.MapsDirectory;
             path = Path.Combine(path, mapFileName);
             string[] lines = File.ReadAllLines(path);
 
@@ -160,7 +166,8 @@ namespace KnightsOfEmpire.Common.Map
             TileCountX = Int32.Parse(sizes[0]);
             TileCountY = Int32.Parse(sizes[1]);
             int startersCount = Int32.Parse(sizes[2]);
-            starterPositions = new (int x,int y)[startersCount];
+            starterPositionsX = new int[startersCount];
+            starterPositionsY = new int[startersCount];
 
             TileTypes = new TileType[TileCountX][];
             for (int i = 0; i < TileCountX; i++)
@@ -187,9 +194,46 @@ namespace KnightsOfEmpire.Common.Map
             for(int i=0;i<startersCount;i++)
             {
                 string[] starterPos = lines[lines.Length-1-i].Split(' ');
-                starterPositions[i] = (int.Parse(starterPos[0]), int.Parse(starterPos[1]));
+                starterPositionsX[i] = int.Parse(starterPos[0]);
+                starterPositionsY[i] = int.Parse(starterPos[1]);
             }
         }
 
+        public Texture GetPreview(bool inGame)
+        {
+            Image image = GetPreview();
+            if (!inGame)
+            {
+                for (int i = 0; i < starterPositionsX.Length; i++)
+                {
+                    image.SetPixel((uint)starterPositionsX[i], (uint)starterPositionsY[i], Color.Red);
+                }
+            }
+            return new Texture(image);
+        }
+
+        public Image GetPreview()
+        {
+            Image image = new Image((uint)TileCountX, (uint)TileCountY);
+            for(uint x=0;x<TileCountX;x++)
+            {
+                for (uint y = 0; y < TileCountY; y++)
+                {
+                    switch(TileTypes[x][y])
+                    {
+                        case TileType.Walkable:
+                            image.SetPixel(x, y, new Color(0, 200, 0));
+                            break;
+                        case TileType.NonWalkable:
+                            image.SetPixel(x, y, new Color(0, 0, 200));
+                            break;
+                        case TileType.Wall:
+                            image.SetPixel(x, y, new Color(128,128,128));
+                            break;
+                    }  
+                }
+            }
+            return image;
+        }
     }
 }

@@ -13,7 +13,10 @@ namespace KnightsOfEmpire.Common.Resources.Waiting
         public bool StartGame { get; set; }
 
         public int GameId { get; set; }
+
         public CustomUnits[] CustomUnits { get; set; }
+
+        public int MapID {get; set;}
 
         public StartGameServerRequest()
         {

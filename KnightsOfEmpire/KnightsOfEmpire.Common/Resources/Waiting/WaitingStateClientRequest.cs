@@ -12,5 +12,7 @@ namespace KnightsOfEmpire.Common.Resources.Waiting
         public string Nickname { get; set; }
 
         public bool IsReady { get; set; }
+
+        public int SelectedMap { get; set; }
     }
 }

@@ -34,7 +34,13 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
         public void BuildPlayerStartBases()
         {
-            (int x, int y)[] StartPoses = Server.Resources.Map.starterPositions;
+            Map map = Server.Resources.Map;
+            (int x, int y)[] StartPoses = new (int x, int y)[map.
+                        starterPositionsX.Length];
+            for(int i=0;i<map.starterPositionsX.Length; i++)
+            {
+                StartPoses[i] = (map.starterPositionsX[i], map.starterPositionsY[i]);
+            }
             Random rand = new Random();
             (int x, int y)[] ShuffledStartPoses = StartPoses.OrderBy(x => rand.Next()).ToArray();
             Console.WriteLine("Positions");

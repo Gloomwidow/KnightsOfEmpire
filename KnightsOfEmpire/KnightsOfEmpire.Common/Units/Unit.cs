@@ -160,6 +160,7 @@ namespace KnightsOfEmpire.Common.Units
             }
             if (AttackProgress >= 1.0f)
             {
+                ;
                 ResetAttack();
             }
         }  

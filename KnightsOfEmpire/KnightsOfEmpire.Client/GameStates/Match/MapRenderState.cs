@@ -19,6 +19,7 @@ using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
 using KnightsOfEmpire.GameStates.Match;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -28,7 +29,8 @@ namespace KnightsOfEmpire.GameStates
 
         public Map GameMap;
         public float[,] VisibilityLevel;
-        public List<Texture> textures;
+        public Texture TileAtlas;
+        public int TileAtlasSize;
         public RectangleShape[,] mapRectangles;
 
         public View RenderView;
@@ -41,11 +43,9 @@ namespace KnightsOfEmpire.GameStates
 
         public override void LoadResources()
         {
-            
-            textures = new List<Texture>();
-            textures.Add(new Texture(@"./Assets/Textures/grass.png"));
-            textures.Add(new Texture(@"./Assets/Textures/water.png"));
-            textures.Add(new Texture(@"./Assets/Textures/wall.png"));
+
+            TileAtlas = new Texture(@"./Assets/Textures/tiles.png");
+            TileAtlasSize = (int)TileAtlas.Size.X;
         }
 
         public override void LoadDependencies()
@@ -73,7 +73,9 @@ namespace KnightsOfEmpire.GameStates
         {
             mapRectangles[x, y] = new RectangleShape(new Vector2f(Map.TilePixelSize, Map.TilePixelSize));
             mapRectangles[x, y].Position = new Vector2f(x * Map.TilePixelSize, y * Map.TilePixelSize);
-            mapRectangles[x, y].Texture = textures[GameMap.TileTexture[x][y]];
+            mapRectangles[x, y].Texture = TileAtlas;
+            mapRectangles[x, y].TextureRect = IdToTextureRect.
+                GetRect(GameMap.TileTexture[x][y], new Vector2i(TileAtlasSize, TileAtlasSize), 32);
         }
 
 
@@ -94,10 +96,7 @@ namespace KnightsOfEmpire.GameStates
 
         public override void Dispose()
         {
-            foreach(Texture texture in textures)
-            {
-                texture.Dispose();
-            }
+            TileAtlas.Dispose();
         }
     }
 }

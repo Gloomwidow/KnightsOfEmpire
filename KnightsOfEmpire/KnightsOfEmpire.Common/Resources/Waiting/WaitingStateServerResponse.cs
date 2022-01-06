@@ -15,5 +15,7 @@ namespace KnightsOfEmpire.Common.Resources.Waiting
         public string[] PlayerNicknames { get; set; }
 
         public bool[] PlayerReadyStatus { get; set; }
+
+        public int[] PlayerSelectedMap { get; set; }
     }
 }
