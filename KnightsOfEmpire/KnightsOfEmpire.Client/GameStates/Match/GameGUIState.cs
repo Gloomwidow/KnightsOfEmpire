@@ -332,10 +332,35 @@ namespace KnightsOfEmpire.GameStates
                 BuildingInfo info = BuildingManager.GetNextBuilding(buttonData.id);
                 if (info != null)
                 {
-                    infoLabel.Text = info.Name + " (Cost: " + info.Building.BuildCost.ToString() + ")" + "\n" + info.Description;
+                    infoLabel.Text = info.Name + "\n" + "(Cost: " + info.Building.BuildCost.ToString() + ")" + "\n" + info.Description;
+                    return;
                 }
-                else infoLabel.Text = string.Empty;
+                
             }
+            else if(buttonData.buttonType == 'u') 
+            {
+                Building SelectedBuilding = GameStateManager.GameState.GetSiblingGameState<BuildingUpdateState>().GetSiblingGameState<BuildingSelectionState>().SelectedBuilding;
+                if (SelectedBuilding == null || SelectedBuilding.TrainType == -1) return;
+                int counter = 0;
+                int id = 0;
+                while (counter < Constants.MaxUnitsPerPlayer)
+                {
+                    if ((int)Client.Resources.PlayerCustomUnits.Units[counter].UnitType == SelectedBuilding.TrainType)
+                    {
+                        if (buttonData.id == id)
+                        {
+                            Unit info = UnitUpgradeManager.ProduceUnit(Client.Resources.PlayerCustomUnits.Units[counter]);
+                            infoLabel.Text = "Cost: " + info.Stats.TrainCost.ToString() + "\n" 
+                                + "Health: " + info.Stats.MaxHealth.ToString() + "\n" 
+                                + "Attack: " + info.Stats.AttackDamage.ToString() + "\n";
+                            return;
+                        }
+                        id++;
+                    }
+                    counter++;
+                }
+            }
+            infoLabel.Text = string.Empty;
         }
 
         private void ButtonMouseLeave(object sender, EventArgs e)
@@ -602,7 +627,7 @@ namespace KnightsOfEmpire.GameStates
         private void InitializeInfoLabel()
         {
             infoLabel = new Label();
-            infoLabel.Size = new Vector2f(500, 60);
+            infoLabel.Size = new Vector2f(300, 100);
             infoLabel.Renderer.BackgroundColor = Color.White;
             infoLabel.Renderer.BorderColor = Color.Black;
             infoLabel.Renderer.Borders = new Outline(1f);
