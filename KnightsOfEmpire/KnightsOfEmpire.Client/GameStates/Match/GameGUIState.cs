@@ -290,6 +290,7 @@ namespace KnightsOfEmpire.GameStates
                         Unit u = UnitUpgradeManager.ProduceUnit(Client.Resources.PlayerCustomUnits.Units[counter]);
                         TrainUnitRequest request = new TrainUnitRequest
                         {
+
                             UnitTypeId = u.UnitTypeId,
                             BuildingPosX = SelectedBuilding.Position.X,
                             BuildingPosY = SelectedBuilding.Position.Y,
