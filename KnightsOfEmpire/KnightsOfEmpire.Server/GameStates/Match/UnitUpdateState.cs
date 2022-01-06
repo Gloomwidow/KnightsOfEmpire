@@ -194,7 +194,14 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
             //TO-DO: check if player has building to train this unit (check Building Pos)
             //TO-DO: once training buildings are available, spawn in different position near the building
-            unit.Position = new Vector2f(request.BuildingPosX, request.BuildingPosY);
+            if(request.BuildingPosY + 1 == Server.Resources.Map.TileCountY) 
+            {
+                unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY - 0.5f) * Map.TilePixelSize);
+            }
+            else 
+            {
+                unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY + 1.5f) * Map.TilePixelSize);
+            }
             unit.MoveDirection = new Vector2f(0, 0);
 
             GameUnits[packet.ClientID].Add(unit);

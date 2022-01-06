@@ -111,6 +111,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="GameStates\ConnectState.cs" />
     <Compile Include="GameStates\Match\Buildings\BuildingPlacementState.cs" />
+    <Compile Include="GameStates\Match\Buildings\BuildingSelectionState.cs" />
     <Compile Include="GameStates\Match\Buildings\BuildingUpdateState.cs" />
     <Compile Include="GameStates\Match\EndMatchGameState.cs" />
     <Compile Include="GameStates\Match\FogOfWarState.cs" />

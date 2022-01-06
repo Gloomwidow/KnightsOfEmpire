@@ -11,11 +11,6 @@ namespace KnightsOfEmpire.Common.Units
     public class CustomUnits
     {
         public CustomUnit[] Units { get; set; }
-        public int Test { get; set; }
 
-        public CustomUnits()
-        {
-            Test = 1234;
-        }
     }
 }
