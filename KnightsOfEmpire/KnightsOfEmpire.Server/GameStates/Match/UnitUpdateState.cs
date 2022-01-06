@@ -202,7 +202,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             {
                 unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY + 1.5f) * Map.TilePixelSize);
             }
-            unit.MoveDirection = new Vector2f(0, 0);
+            unit.MoveDirection = new Vector2f(1, 0);
 
             GameUnits[packet.ClientID].Add(unit);
             RegisterUnitRequest registerRequest = new RegisterUnitRequest
