@@ -27,7 +27,8 @@ namespace KnightsOfEmpire.GameStates
     {
         // State to manage GameState
 
-        protected List<ReceivedPacket> packets;
+        protected Map[] ServerMaps;
+        protected Texture[] MapPreviews;
         private enum State { First, Main, Update, StartGame}
         private State state = State.First;
 
@@ -35,6 +36,8 @@ namespace KnightsOfEmpire.GameStates
         private bool clientReady = false;
         private string[] playersNicknames = null;
         private bool[] playersReadyStatus = null;
+        private int[] selectedMapId = null;
+        private int currentPickedMap = 0;
 
         // Panel for waiting to server first response
         private Panel connectPanel;
@@ -42,14 +45,19 @@ namespace KnightsOfEmpire.GameStates
         // Panel for wait state
         private Panel waitingPanel;
 
+        private Picture mapPreview;
+
         private const int maxPlayers = 4;
         private ScrollablePanel playerListPanel;
         private const string numLabelStr = "Num";
         private const string nicknameLabelStr = "Nick";
         private const string readyLabelStr = "Ready";
+        private const string selectedMapLabelStr = "MapSelect";
 
         private Button readyButton;
         private Button notReadyButton;
+
+        protected ComboBox mapPicker;
 
         /// <summary>
         /// Initialize GUI
@@ -62,13 +70,13 @@ namespace KnightsOfEmpire.GameStates
 
             for(int i = 0; i<maxPlayers; i++)
             {
-                Panel panel = CreatePlayerPanel(i + 1, "", false, maxPlayers);
+                Panel panel = CreatePlayerPanel(i + 1, "", "", false, maxPlayers);
                 panel.Position = new Vector2f(10, i * 40);
                 panel.Visible = false;
                 playerListPanel.Add(panel, "Player" + i.ToString());
             }
 
-            InitializeConnectPanle();
+            InitializeConnectPanel();
             connectPanel.Visible = true;
             Client.Gui.Add(connectPanel);
 
@@ -80,7 +88,6 @@ namespace KnightsOfEmpire.GameStates
         /// <param name="packets">List of recived packets</param>
         public override void HandleTCPPackets(List<ReceivedPacket> packets)
         {
-            this.packets = packets;
             foreach (ReceivedPacket packet in packets)
             {
                 switch(packet.GetHeader())
@@ -162,6 +169,7 @@ namespace KnightsOfEmpire.GameStates
                                 Panel panel = (Panel)playerListPanel.Get("Player" + j.ToString());
                                 ((Label)panel.Get(nicknameLabelStr)).Text = playersNicknames[i];
                                 ((Label)panel.Get(readyLabelStr)).Text = playersReadyStatus[i] ? "Yes" : "No";
+                                ((Label)panel.Get(selectedMapLabelStr)).Text = ServerMaps!=null?ServerMaps[selectedMapId[i]].MapName:"";
                                 panel.Visible = true;
                                 j++;
                             }
@@ -173,11 +181,6 @@ namespace KnightsOfEmpire.GameStates
                         }
 
                         state = State.Main;
-                    }
-                    break;
-                case State.StartGame:
-                    {
-                        // TODO: Load resource and start game
                     }
                     break;
             }
@@ -227,7 +230,7 @@ namespace KnightsOfEmpire.GameStates
 
             label = new Label();
             label.Text = "Map preview";
-            label.Position = new Vector2f(60, 250);
+            label.Position = new Vector2f(60, 210);
             label.Size = new Vector2f(440, 32);
             label.TextSize = 24;
             label.HorizontalAlignment = HorizontalAlignment.Center;
@@ -240,10 +243,18 @@ namespace KnightsOfEmpire.GameStates
             panel.Renderer.BackgroundColor = new Color(247, 247, 247);
             waitingPanel.Add(panel);
 
-            Picture picture = new Picture();
-            picture.Position = new Vector2f(110, 300);
-            picture.Size = new Vector2f(340, 280);
-            waitingPanel.Add(picture);
+            mapPreview = new Picture();
+            mapPreview.Position = new Vector2f(110, 300);
+            mapPreview.Size = new Vector2f(340, 340);
+            waitingPanel.Add(mapPreview);
+
+            mapPicker = new ComboBox();
+            mapPicker.Position = new Vector2f(110, 240);
+            mapPicker.Size = new Vector2f(340, 40);
+            mapPicker.ItemSelected += UpdateMapSelection;
+            waitingPanel.Add(mapPicker);
+            
+
 
             label = new Label();
             label.Text = "Player list";
@@ -261,7 +272,16 @@ namespace KnightsOfEmpire.GameStates
 
             label = new Label();
             label.Text = "Nickname";
-            label.Position = new Vector2f(80, 10);
+            label.Position = new Vector2f(0, 10);
+            label.Size = new Vector2f(320, 20);
+            label.TextSize = 14;
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            label.IgnoreMouseEvents = true;
+            panelLabel.Add(label);
+
+            label = new Label();
+            label.Text = "Selected Map";
+            label.Position = new Vector2f(180, 10);
             label.Size = new Vector2f(320, 20);
             label.TextSize = 14;
             label.HorizontalAlignment = HorizontalAlignment.Center;
@@ -325,16 +345,24 @@ namespace KnightsOfEmpire.GameStates
             SendInfoPacket();
         }
 
+
+        public void UpdateMapSelection(object sender, EventArgs e)
+        {
+            currentPickedMap = mapPicker.GetSelectedItemIndex();
+            mapPreview.Renderer.Texture = MapPreviews[currentPickedMap];
+            SendInfoPacket();
+        }
+
         private void DisconnectButton(object sender, EventArgs e)
         {
             if(Client.TCPClient != null)
             {
                 Client.TCPClient.Stop();
             }
-            GameStateManager.GameState = new MainState("Disconnect from server");
+            GameStateManager.GameState = new MainState("Disconnected from server");
         }
 
-        private Panel CreatePlayerPanel(int number, string nickname, bool isReady, int total = 4)
+        private Panel CreatePlayerPanel(int number, string nickname, string selectedMap, bool isReady, int total = 4)
         {
             Panel panel = new Panel();
             panel.Size = new Vector2f(total > 4 ? 565 : 580, 30);
@@ -351,13 +379,23 @@ namespace KnightsOfEmpire.GameStates
 
             label = new Label();
             label.Text = nickname;
-            label.Position = new Vector2f(70, 0);
+            label.Position = new Vector2f(100, 0);
+            label.Size = new Vector2f(320, 30);
+            label.TextSize = 18;
+            label.HorizontalAlignment = HorizontalAlignment.Left;
+            label.VerticalAlignmentAlignment = VerticalAlignment.Center;
+            label.IgnoreMouseEvents = true;
+            panel.Add(label, nicknameLabelStr);
+
+            label = new Label();
+            label.Text = selectedMap;
+            label.Position = new Vector2f(160, 0);
             label.Size = new Vector2f(320, 30);
             label.TextSize = 18;
             label.HorizontalAlignment = HorizontalAlignment.Center;
             label.VerticalAlignmentAlignment = VerticalAlignment.Center;
             label.IgnoreMouseEvents = true;
-            panel.Add(label, nicknameLabelStr);
+            panel.Add(label, selectedMapLabelStr);
 
             label = new Label();
             if (isReady)
@@ -375,7 +413,7 @@ namespace KnightsOfEmpire.GameStates
             return panel;
         }
 
-        private void InitializeConnectPanle()
+        private void InitializeConnectPanel()
         {
             connectPanel = new Panel();
             connectPanel.Position = new Vector2f(0, 0);
@@ -401,6 +439,7 @@ namespace KnightsOfEmpire.GameStates
             WaitingStateClientRequest request = new WaitingStateClientRequest();
             request.IsReady = clientReady;
             request.Nickname = Client.Resources.Nickname;
+            request.SelectedMap = currentPickedMap;
             infoPacket.stringBuilder.Append(JsonSerializer.Serialize(request));
 
             Client.TCPClient.SendToServer(infoPacket);
@@ -449,6 +488,7 @@ namespace KnightsOfEmpire.GameStates
                         {
                             playersNicknames = request.PlayerNicknames;
                             playersReadyStatus = request.PlayerReadyStatus;
+                            selectedMapId = request.PlayerSelectedMap;
                             state = State.Update;
                             Client.Resources.PlayerGameId = request.PlayerGameId;
                         }
@@ -489,17 +529,22 @@ namespace KnightsOfEmpire.GameStates
 
         private void HandleMapServerResponse(ReceivedPacket packet)
         {
-            Map request = packet.GetDeserializedClassOrDefault<Map>();
+            Map[] request = packet.GetDeserializedClassOrDefault<Map[]>();
             if(request ==null)
             {
                 SendMapRequest(false);
                 return;
             }
 
-            Client.Resources.Map = request;
+            ServerMaps = request;
+            MapPreviews = new Texture[request.Length];
+            for(int i=0;i<ServerMaps.Length;i++)
+            {
+                mapPicker.AddItem(ServerMaps[i].MapName, i.ToString());
+                MapPreviews[i] = ServerMaps[i].GetPreview(false);
+            }
+            mapPicker.SetSelectedItemById(0.ToString());
             SendMapRequest(true);
-
-            Console.WriteLine("Map received");
         }
 
         private void HandleCustomUnitsServerResponse(ReceivedPacket packet)
@@ -523,6 +568,7 @@ namespace KnightsOfEmpire.GameStates
 
             if (request.StartGame)
             {
+                Client.Resources.Map = ServerMaps[request.MapID];
                 for(int i=0;i<MaxPlayerCount;i++)
                 {
                     Client.Resources.GameCustomUnits[i] = request.CustomUnits[i];

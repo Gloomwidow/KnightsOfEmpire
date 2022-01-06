@@ -174,7 +174,8 @@ namespace KnightsOfEmpire.GameStates
             goldLabel.Text = gold;
             unitsLabel.Text = capacity;
             playerLabel.Text = playersLeft;
-            mainBaseLabel.Text = parent.GetSiblingGameState<BuildingUpdateState>().GetMainBuildingHealthText();
+            BuildingUpdateState buildingState = parent.GetSiblingGameState<BuildingUpdateState>();
+            mainBaseLabel.Text = buildingState.GetMainBuildingHealthText();
             //Info Label
             if (isOnButton && !infoLabel.Visible && infoLabel.Text!=string.Empty)
             {
@@ -188,6 +189,23 @@ namespace KnightsOfEmpire.GameStates
                     }
                 }
                 mouseLastPosition = Mouse.GetPosition(Client.RenderWindow);
+            }
+            if(buildingState.HasBuildingsChanged)
+            {
+                Image map = Client.Resources.Map.GetPreview();
+                Image builds = buildingState.BuildingsMiniMap;
+                for(uint x=0;x<map.Size.X;x++)
+                {
+                    for (uint y = 0; y < map.Size.Y; y++)
+                    {
+                        Color b = builds.GetPixel(x, y);
+                        if (b.A!=0)
+                        {
+                            map.SetPixel(x, y, b);
+                        }
+                    }
+                }
+                mapPanel.Renderer.TextureBackground = new Texture(map);
             }
         }
 
@@ -297,22 +315,10 @@ namespace KnightsOfEmpire.GameStates
                 }
             }
 
-            playerFlagLeft = new Label();
-            playerFlagLeft.Position = new Vector2f(0, 0);
-            playerFlagLeft.Size = new Vector2f(20, 200);
-            playerFlagLeft.Renderer.TextureBackground = new Texture(flagImage);
-            mainPanel.Add(playerFlagLeft);
-
-            playerFlagRight = new Label();
-            playerFlagRight.Position = new Vector2f(1260, 0);
-            playerFlagRight.Size = new Vector2f(20, 200);
-            playerFlagRight.Renderer.TextureBackground = new Texture(flagImage);
-            mainPanel.Add(playerFlagRight);
-
-
             //Map Panel
             mapPanel = new Panel();
             mapPanel.Renderer.BackgroundColor = backColor;
+            mapPanel.Renderer.TextureBackground = Client.Resources.Map.GetPreview(true);
             mapPanel.Position = new Vector2f(20, 20);
             mapPanel.Size = new Vector2f(160, 160);
             mainPanel.Add(mapPanel);
@@ -465,37 +471,52 @@ namespace KnightsOfEmpire.GameStates
             mainPanel.Add(buttonsPanel);
 
             //Buttons
-            Button button = new Button();
-            button.Position = new Vector2f(0, 0);
-            button.Size = new Vector2f(150, 32.5f);
-            button.TextSize = 16;
-            button.Text = "Menu";
-            button.Clicked += MenuButtonClick;
-            buttonsPanel.Add(button);
+            {
+                Button button = new Button();
+                button.Position = new Vector2f(0, 0);
+                button.Size = new Vector2f(150, 32.5f);
+                button.TextSize = 16;
+                button.Text = "Menu";
+                button.Clicked += MenuButtonClick;
+                buttonsPanel.Add(button);
 
-            button = new Button();
-            button.Position = new Vector2f(0, 42.5f);
-            button.Size = new Vector2f(150, 32.5f);
-            button.TextSize = 16;
-            button.Text = "";
-            button.Enabled = false;
-            buttonsPanel.Add(button);
+                button = new Button();
+                button.Position = new Vector2f(0, 42.5f);
+                button.Size = new Vector2f(150, 32.5f);
+                button.TextSize = 16;
+                button.Text = "";
+                button.Enabled = false;
+                buttonsPanel.Add(button);
 
-            button = new Button();
-            button.Position = new Vector2f(0, 85);
-            button.Size = new Vector2f(150, 32.5f);
-            button.TextSize = 16;
-            button.Text = "";
-            button.Enabled = false;
-            buttonsPanel.Add(button);
+                button = new Button();
+                button.Position = new Vector2f(0, 85);
+                button.Size = new Vector2f(150, 32.5f);
+                button.TextSize = 16;
+                button.Text = "";
+                button.Enabled = false;
+                buttonsPanel.Add(button);
 
-            button = new Button();
-            button.Position = new Vector2f(0, 127.5f);
-            button.Size = new Vector2f(150, 32.5f);
-            button.TextSize = 16;
-            button.Text = "Leave game";
-            button.Clicked += LeaveButtonClick;
-            buttonsPanel.Add(button);
+                button = new Button();
+                button.Position = new Vector2f(0, 127.5f);
+                button.Size = new Vector2f(150, 32.5f);
+                button.TextSize = 16;
+                button.Text = "Leave game";
+                button.Clicked += LeaveButtonClick;
+                buttonsPanel.Add(button);
+            }
+
+            playerFlagLeft = new Label();
+            playerFlagLeft.Position = new Vector2f(0, 0);
+            playerFlagLeft.Size = new Vector2f(20, 200);
+            playerFlagLeft.Renderer.TextureBackground = new Texture(flagImage);
+            mainPanel.Add(playerFlagLeft);
+
+            playerFlagRight = new Label();
+            playerFlagRight.Position = new Vector2f(1260, 0);
+            playerFlagRight.Size = new Vector2f(20, 200);
+            playerFlagRight.Renderer.TextureBackground = new Texture(flagImage);
+            mainPanel.Add(playerFlagRight);
+
         }
 
         private void InitializeInfoLabel()

@@ -16,7 +16,6 @@ namespace KnightsOfEmpire.Common.Resources
         public int PlayersLeft { get; set; }
 
         public int StartPlayerCount { get; set; }
-        string MapLocation { get; set; }
 
         public FlowFieldManager NavigationManager;
 
@@ -33,6 +32,10 @@ namespace KnightsOfEmpire.Common.Resources
 
         public int[] MaxUnitsCapacity { get; protected set; }
         public bool[] HasChanged { get; set; }
+
+        public Map.Map[] MapsPool;
+
+        public int CurrentMapId = 0;
 
         public void DefeatPlayer(int playerId, int maxPlayers) 
         {
@@ -100,6 +103,10 @@ namespace KnightsOfEmpire.Common.Resources
         public void Reset() 
         {
             Init(IsDefeated.Length);
+            for (int i = 0; i < MapsPool.Length; i++)
+            {
+                MapsPool[i] = new Map.Map(MapsPool[i].MapName);
+            }
         }
         public void Init(int maxPlayers) 
         {
@@ -111,14 +118,12 @@ namespace KnightsOfEmpire.Common.Resources
             CurrentUnitsCapacity = new int[maxPlayers];
             MaxUnitsCapacity = new int[maxPlayers];
             HasChanged = new bool[maxPlayers];
-            Map = new Map.Map(MapLocation);
             PlayersLeft = 0;
             ResetPlayerGameInfo(maxPlayers);
         }
 
-        public ServerResources(int maxPlayers, string mapLocation)
+        public ServerResources(int maxPlayers)
         {
-            MapLocation = mapLocation;
             Init(maxPlayers);
         }
         public void ResetPlayerGameInfo(int maxPlayers) 

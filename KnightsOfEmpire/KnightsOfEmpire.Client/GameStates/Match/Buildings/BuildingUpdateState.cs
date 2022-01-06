@@ -24,9 +24,41 @@ namespace KnightsOfEmpire.GameStates.Match
         protected int AtlasSizeX;
         protected int AtlasSizeY;
 
+        protected Image BuildingsPreview;
+        public bool HasBuildingsChanged { get; protected set; }
+
         public BuildingUpdateState()
         {
             RegisterGameState(new BuildingPlacementState());
+        }
+
+
+        public Image BuildingsMiniMap
+        {
+            get
+            {
+                HasBuildingsChanged = false;
+                int TileCountX = Client.Resources.Map.TileCountX;
+                int TileCountY = Client.Resources.Map.TileCountY;
+                for (uint x = 0; x < TileCountX; x++)
+                {
+                    for (uint y = 0; y < TileCountY; y++)
+                    {
+                        for (int i = 0; i < MaxPlayerCount; i++)
+                        {
+                            Building build = GameBuildings[i].Find(b =>
+                            b.Position.Equals(new Vector2i((int)x, (int)y)));
+                            if (build != null)
+                            {
+                                BuildingsPreview.SetPixel(x, y, Constants.playerColors[i]);
+                                break;
+                            }
+                            else BuildingsPreview.SetPixel(x, y, Color.Transparent);
+                        }
+                    }
+                }
+                return BuildingsPreview;
+            }
         }
 
         public string GetMainBuildingHealthText()
@@ -81,6 +113,7 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void LoadResources()
         {
             base.LoadResources();
+            BuildingsPreview = new Image((uint)Client.Resources.Map.TileCountX, (uint)Client.Resources.Map.TileCountY);
             BuildingsAtlas = new Texture(@"./Assets/Textures/buildings.png");
             BuildingsColorAtlas = new Texture(@"./Assets/Textures/buildings-colors.png");
             AtlasSizeX = (int)BuildingsAtlas.Size.X;
@@ -134,10 +167,12 @@ namespace KnightsOfEmpire.GameStates.Match
                 PlayerId = request.PlayerId,
                 MaxHealth = BuildingManager.GetBuilding(request.BuildingTypeId).MaxHealth,
                 Position = new Vector2i(request.BuildingPosX, request.BuildingPosY),
+                TrainType = BuildingManager.GetBuilding(request.BuildingTypeId).TrainType
             };
 
             GameBuildings[request.PlayerId].Add(building);
             Client.Resources.Map.TileTypes[request.BuildingPosX][request.BuildingPosY] = TileType.Building;
+            HasBuildingsChanged = true;
         }
         protected void UnregisterBuilding(ReceivedPacket packet)
         {
@@ -147,6 +182,7 @@ namespace KnightsOfEmpire.GameStates.Match
             {
                 GameBuildings[request.PlayerId].RemoveAt(deleteIndex);
                 Client.Resources.Map.TileTypes[request.DestroyPosX][request.DestroyPosY] = TileType.Walkable;
+                HasBuildingsChanged = true;
             }
         }
         public override void Dispose()

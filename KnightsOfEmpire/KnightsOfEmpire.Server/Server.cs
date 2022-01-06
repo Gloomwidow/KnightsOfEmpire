@@ -17,6 +17,7 @@ using KnightsOfEmpire.Common.Units;
 
 using KnightsOfEmpire.Server.GameStates;
 using KnightsOfEmpire.Common.Helper;
+using System.IO;
 
 namespace KnightsOfEmpire.Server
 {
@@ -70,7 +71,16 @@ namespace KnightsOfEmpire.Server
             }
 
             // Server resources
-            Resources = new ServerResources(TCPServer.MaxConnections, "wallstest.kmap");
+            Resources = new ServerResources(TCPServer.MaxConnections);
+
+            string[] mapFiles = Directory.GetFiles(Constants.MapsDirectory, "*.kmap");
+            Resources.MapsPool = new Map[mapFiles.Length];
+            for(int i=0;i<mapFiles.Length;i++)
+            {
+                Resources.MapsPool[i] = new Map(Path.GetFileName(mapFiles[i]));
+            }
+
+            
 
 
             // First game state
