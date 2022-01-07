@@ -27,15 +27,18 @@ namespace KnightsOfEmpire.Common.Units
         public float AttackExecuteTime { get; set; }
         public float AttackDistance { get; set; }
 
+        public int VisibilityDistance { get; set; } // In map tile
+
         public UnitStats()
         {
             Health = 100;
             MaxHealth = 100;
             MovementSpeed = 64;
             AttackDamage = 25;
-            AttackSpeed = 1;
-            AttackExecuteTime = 0.5f;
+            AttackSpeed = 0.5f;
+            AttackExecuteTime = 1f; // It is not update
             AttackDistance = 64;
+            VisibilityDistance = 5;
         }
 
         //TO-DO: Add any other parameters that will be needed for troops or upgrades system.
