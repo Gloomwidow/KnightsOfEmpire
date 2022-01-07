@@ -143,6 +143,7 @@ namespace KnightsOfEmpire.GameStates
         private void UnitsButton(object sender, EventArgs e)
         {
             // TODO: add units panel
+            GameStateManager.GameState = new UnitManagerState();
         }
 
         private void SettingsButton(object sender, EventArgs e)

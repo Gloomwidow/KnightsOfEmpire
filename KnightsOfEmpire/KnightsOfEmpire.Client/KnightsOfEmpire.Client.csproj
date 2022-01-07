@@ -123,6 +123,7 @@
     <Compile Include="GameStates\Match\Units\UnitUpdateState.cs" />
     <Compile Include="GameStates\Match\ViewControlState.cs" />
     <Compile Include="GameStates\Match\Units\UnitsSelectionState.cs" />
+    <Compile Include="GameStates\UnitManagerState.cs" />
     <Compile Include="GameStates\WaitingState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
