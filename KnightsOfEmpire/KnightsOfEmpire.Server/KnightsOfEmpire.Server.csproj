@@ -115,6 +115,7 @@
     <Compile Include="Buildings\MainBuildingLogic.cs" />
     <Compile Include="Buildings\UnitCapacityBuildingLogic.cs" />
     <Compile Include="GameStates\Match\BuildingUpdateState.cs" />
+    <Compile Include="GameStates\Match\FogOfWarState.cs" />
     <Compile Include="GameStates\Match\MatchGameState.cs" />
     <Compile Include="GameStates\Match\PlayerReconnectGameState.cs" />
     <Compile Include="GameStates\Match\UnitUpdateState.cs" />

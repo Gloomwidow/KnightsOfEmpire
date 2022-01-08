@@ -91,6 +91,7 @@ namespace KnightsOfEmpire.GameStates.Match
             base.Render();
             RectangleShape unitShape = new RectangleShape();
             RectangleShape hpBar = new RectangleShape();
+            RectangleShape attackBar = new RectangleShape();
             for (int i=0; i< MaxPlayerCount; i++)
             {
                 foreach(Unit unit in GameUnits[i])
@@ -127,9 +128,14 @@ namespace KnightsOfEmpire.GameStates.Match
                     hpBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2));
                     hpBar.FillColor = PlayerColors[i];
 
+                    attackBar.Size = new Vector2f(Unit.UnitSize * unit.AttackProgress, 5);
+                    attackBar.Position = new Vector2f(unit.Position.X - (Unit.UnitSize / 2), unit.Position.Y + (Unit.UnitSize / 2) - 5);
+                    attackBar.FillColor = Color.White;
+
 
                     Client.RenderWindow.Draw(unitShape);
                     Client.RenderWindow.Draw(hpBar);
+                    Client.RenderWindow.Draw(attackBar);
                 }
             }
         }

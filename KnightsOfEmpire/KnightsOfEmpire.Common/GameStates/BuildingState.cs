@@ -33,7 +33,7 @@ namespace KnightsOfEmpire.Common.GameStates
             return p.Distance2Rect(f);
         }
 
-        public List<Building> GetEnemyBuildingsInRange(Unit unit, float range)
+        public List<Building> GetEnemyBuildingsInRange(Unit unit, float range, float[,] visibilityLevel = null)
         {
             List<Building> targets = new List<Building>();
             Building nearest = null;
@@ -50,6 +50,14 @@ namespace KnightsOfEmpire.Common.GameStates
                         if (nearest == null) nearest = another;
                         else
                         {
+                            if (visibilityLevel != null)
+                            {
+                                Vector2i tilePos = another.Position;
+                                if (visibilityLevel[tilePos.X, tilePos.Y] <= FogState.VisibilityMinLevel)
+                                {
+                                    continue;
+                                }
+                            }
                             if (currDist < Distance2Building(unit.Position, nearest))
                             {
                                 targets.Add(nearest);

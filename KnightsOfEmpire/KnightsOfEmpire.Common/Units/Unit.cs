@@ -11,8 +11,6 @@ namespace KnightsOfEmpire.Common.Units
 {
     public class Unit
     {
-        public float ForceMoveTime = 0.25f;
-
         public UnitGroup UnitGroup;
 
         public UnitGroup PreviousCompletedGroup;
@@ -86,6 +84,7 @@ namespace KnightsOfEmpire.Common.Units
             MoveDirection = new Vector2f(data.MoveDirectionX, data.MoveDirectionY);
             Stats.Health = data.Health;
             Stance = data.Stance;
+            AttackProgress = data.AttackProgress;
         }
       
 
@@ -116,18 +115,15 @@ namespace KnightsOfEmpire.Common.Units
 
         public void Move(float DeltaTime)
         {
-            ForceMoveTime = Math.Max(0, ForceMoveTime - DeltaTime);
-            bool HasTarget = TargetDirection.Length2() <= float.Epsilon;
-            if (ForceMoveTime>0)
-            {
-                TargetDirection = MoveDirection;
-            }
             PreviousPosition = new Vector2f(Position.X, Position.Y);
             if (Stance == UnitStance.Attacking && UnitGroup==null) TargetDirection = new Vector2f(0.0f, 0.0f);
-            if (HasTarget) MoveDirection = new Vector2f(0.0f, 0.0f);
+            if (TargetDirection.Length2() <= float.Epsilon) MoveDirection = new Vector2f(0.0f, 0.0f);
             MoveDirection = MoveDirection.LerpTimeStep(TargetDirection, UnitDirectionRotationSpeed, DeltaTime);
-            Position += MoveDirection * DeltaTime;
-            if (MoveDirection.Length2() <= float.Epsilon) Stance = UnitStance.Moving;
+            if (MoveDirection.Length2() >= float.Epsilon)
+            {
+                Position += MoveDirection * DeltaTime;
+                Stance = UnitStance.Moving;
+            }
             else Stance = UnitStance.Idle;
         }
 
@@ -167,7 +163,6 @@ namespace KnightsOfEmpire.Common.Units
             }
             if (AttackProgress >= 1.0f)
             {
-                ;
                 ResetAttack();
             }
         }  

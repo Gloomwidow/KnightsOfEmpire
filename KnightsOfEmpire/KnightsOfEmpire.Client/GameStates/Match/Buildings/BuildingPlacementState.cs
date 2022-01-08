@@ -53,7 +53,6 @@ namespace KnightsOfEmpire.GameStates.Match
         {
             if (friendlyBuildings.Count > 0)
             {
-                bool inRange = false;
                 foreach (Building b in friendlyBuildings)
                 {
                     int dist = Math.Max(Math.Abs(b.Position.X - tileBuildPos.X), Math.Abs(b.Position.Y - tileBuildPos.Y));
