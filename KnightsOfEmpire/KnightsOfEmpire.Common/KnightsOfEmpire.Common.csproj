@@ -109,9 +109,11 @@
     <Compile Include="Extensions\ReceivedPacketExtension.cs" />
     <Compile Include="Extensions\Vector2fExtension.cs" />
     <Compile Include="GameStates\BuildingState.cs" />
+    <Compile Include="GameStates\FogState.cs" />
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\GameStateManager.cs" />
     <Compile Include="GameStates\UnitState.cs" />
+    <Compile Include="Helper\Intersections.cs" />
     <Compile Include="Helper\Constants.cs" />
     <Compile Include="Helper\IdToTextureRect.cs" />
     <Compile Include="Map\Map.cs" />

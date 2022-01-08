@@ -19,6 +19,7 @@ namespace KnightsOfEmpire.Server.GameStates
             RegisterGameState(new UnitUpdateState());
             RegisterGameState(new BuildingUpdateState());
             RegisterGameState(new PlayerReconnectState());
+            RegisterGameState(new FogOfWarState());
             RegisterTCPRedirects(new (string Header, Type T)[]
                 {
                     (PacketsHeaders.GameUnitHeaderStart, typeof(UnitUpdateState)),

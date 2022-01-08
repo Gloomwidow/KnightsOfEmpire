@@ -48,6 +48,8 @@ namespace KnightsOfEmpire.Common.Map
         public int[] starterPositionsX { get; set; }
         public int[] starterPositionsY { get; set; }
 
+        public List<Vector2i> WallTiles;
+
         public bool IsTileInBounds(int x, int y)
         {
             if (x < 0 || x >= TileCountX) return false;
@@ -63,7 +65,7 @@ namespace KnightsOfEmpire.Common.Map
         public bool IsTileVisionObstructed(int x, int y)
         {
             if (!IsTileInBounds(x, y)) return true;
-            return TileTypes[x][y] == TileType.Wall;
+            return TileTypes[x][y] == TileType.Wall || TileTypes[x][y] == TileType.Building;
         }
 
         public bool CanUnitBeSpawnedOnPos(Vector2f pos)
@@ -196,6 +198,19 @@ namespace KnightsOfEmpire.Common.Map
                 string[] starterPos = lines[lines.Length-1-i].Split(' ');
                 starterPositionsX[i] = int.Parse(starterPos[0]);
                 starterPositionsY[i] = int.Parse(starterPos[1]);
+            }
+
+            WallTiles = new List<Vector2i>();
+
+            for(int x=0;x<TileCountX;x++)
+            {
+                for (int y = 0; y < TileCountY; y++)
+                {
+                    if (TileTypes[x][y] == TileType.Wall || TileTypes[x][y] == TileType.Building)
+                    {
+                        WallTiles.Add(new Vector2i(x, y));
+                    }
+                }
             }
         }
 

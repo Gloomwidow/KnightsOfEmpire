@@ -75,7 +75,8 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     }
                     Vector2f flowVector = new Vector2f(0, 0);
 
-                    List<Unit> enemyInRange = GetEnemyUnitsInRange(u, u.Stats.AttackDistance);
+                    List<Unit> enemyInRange = GetEnemyUnitsInRange(u, u.Stats.AttackDistance, 
+                        parent.GetSiblingGameState<FogOfWarState>().GetPlayerVisibilityField(u.PlayerId));
                     List<Unit> alliesInRange = GetFriendlyUnitsInRange(u, Unit.UnitAvoidanceDistance);
                     List<Unit> alliesInVision = GetFriendlyUnitsInRange(u, Unit.UnitGroupVisionDistance);
                     List<Building> buildingsInRange =
@@ -92,16 +93,12 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                         u.UnitGroup.CompleteGroup(u);
                     }
 
-                    bool movementBlocked = false;
-                    // if unit is in moving group, get its movement direction
                     if (u.UnitGroup != null && !u.IsGroupCompleted)
                     {
                         if (!u.UnitGroup.Target.Equals(Map.ToTilePos(u.Position)))
                             flowVector = NavigationManager.GetFlowVector(u.Position, u.UnitGroup.Target);
                         else
                             flowVector = (u.UnitGroup.PreciseTarget - u.Position).Normalized();
-                        movementBlocked = NavigationManager.IsNextPositionOccupied(u.PlayerId, u.Position, u.UnitGroup.Target);
-
                     }
 
                     if (enemyInRange.Count > 0)
@@ -124,15 +121,8 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
                     u.Attack(Server.DeltaTime, enemyInRange, buildingsInRange);
 
-                    //TO-DO: find when density behaviour could bug out and correct that
-                    // if (!movementBlocked)
-                    //{
-
                     u.Update(flowVector, alliesInRange);
                     u.Move(Server.DeltaTime);
-
-
-                    //}
 
                     u.Position = Server.Resources.Map.SnapToWall(u.PreviousPosition, u.Position);
                     u.Position = Server.Resources.Map.SnapToBounds(u.Position);
@@ -140,7 +130,6 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     if (u.UnitGroup != null)
                     {
                         u.UnitGroup.UpdateUnitComplete(u);
-                        NavigationManager.MoveUnitOnDensityMap(u);
                     }
 
                 }
@@ -204,19 +193,25 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             unit.UnitTypeId = request.UnitTypeId;
             unit.Stats.Health = unit.Stats.MaxHealth;
 
-            //TO-DO: check if player has building to train this unit (check Building Pos)
-            //TO-DO: once training buildings are available, spawn in different position near the building
-            if(request.BuildingPosY + 1 == Server.Resources.Map.TileCountY) 
+            UnitGroup moveGroup = new UnitGroup();
+            Random rand = new Random();
+            float offset = -0.48f + ((float)rand.NextDouble())*0.98f;
+            moveGroup.TargetX = (request.BuildingPosX + 0.5f + offset) * Map.TilePixelSize;
+            if (request.BuildingPosY + 1 == Server.Resources.Map.TileCountY) 
             {
-                unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY - 0.5f) * Map.TilePixelSize);
+                unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY - 0.1f) * Map.TilePixelSize);
+                moveGroup.TargetY = (request.BuildingPosY - 0.85f) * Map.TilePixelSize;
             }
             else 
             {
-                unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY + 1.5f) * Map.TilePixelSize);
+                unit.Position = new Vector2f((request.BuildingPosX + 0.5f) * Map.TilePixelSize, (request.BuildingPosY + 1.1f) * Map.TilePixelSize);
+                moveGroup.TargetY = (request.BuildingPosY + 1.85f) * Map.TilePixelSize;
             }
-            unit.MoveDirection = new Vector2f(1, 0);
 
             GameUnits[packet.ClientID].Add(unit);
+            moveGroup.Join(unit);
+            UnitGroups.Add(moveGroup);
+
             RegisterUnitRequest registerRequest = new RegisterUnitRequest
             {
                 ID = unit.ID,

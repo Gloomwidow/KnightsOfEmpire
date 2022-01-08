@@ -1,5 +1,7 @@
 ﻿using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Units;
+using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +38,7 @@ namespace KnightsOfEmpire.Common.GameStates
             return neighbors;
         }
 
-        public List<Unit> GetEnemyUnitsInRange(Unit unit, float range)
+        public List<Unit> GetEnemyUnitsInRange(Unit unit, float range, float[,] visibilityLevel = null)
         {
             List<Unit> targets = new List<Unit>();
             Unit nearest = null;
@@ -50,6 +52,14 @@ namespace KnightsOfEmpire.Common.GameStates
                     float currDist = another.Position.Distance2(unit.Position);
                     if (currDist <= range * range)
                     {
+                        if(visibilityLevel!=null)
+                        {
+                            Vector2i tilePos = Map.Map.ToTilePos(another.Position);
+                            if(visibilityLevel[tilePos.X,tilePos.Y]<=FogState.VisibilityMinLevel)
+                            {
+                                continue;
+                            }
+                        }
                         if (nearest == null) nearest = another;
                         else
                         {
@@ -63,10 +73,7 @@ namespace KnightsOfEmpire.Common.GameStates
                     }
                 }
             }
-            if(nearest!=null)
-            {
-                targets.Add(nearest);
-            }
+            if(nearest!=null) targets.Add(nearest);
             return targets;
         }
     }
