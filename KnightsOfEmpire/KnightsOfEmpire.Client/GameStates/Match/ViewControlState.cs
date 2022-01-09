@@ -18,6 +18,8 @@ using System.Net;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
+using KnightsOfEmpire.GameStates.Match;
+using KnightsOfEmpire.Common.Buildings;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -63,7 +65,7 @@ namespace KnightsOfEmpire.GameStates
         {
             View = new View(new Vector2f(400, 400), new Vector2f(800, 800));
             mouseScrollZoomHandler = new EventHandler<MouseWheelScrollEventArgs>(OnMouseScroll);
-            Client.RenderWindow.MouseWheelScrolled += mouseScrollZoomHandler;
+            Client.RenderWindow.MouseWheelScrolled += mouseScrollZoomHandler; 
         }
 
         public override void LoadDependencies()

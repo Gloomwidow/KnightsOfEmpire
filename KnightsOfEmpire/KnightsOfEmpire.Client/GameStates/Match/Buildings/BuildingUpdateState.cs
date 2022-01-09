@@ -179,6 +179,14 @@ namespace KnightsOfEmpire.GameStates.Match
             GameBuildings[request.PlayerId].Add(building);
             Client.Resources.Map.TileTypes[request.BuildingPosX][request.BuildingPosY] = TileType.Building;
             HasBuildingsChanged = true;
+
+            if(building.BuildingId == 32 && request.PlayerId == Client.Resources.PlayerGameId) 
+            {
+                View view = GameStateManager.GameState.GetSiblingGameState<ViewControlState>().View;
+                float PositionX = building.Position.X * Map.TilePixelSize;
+                float PositionY = building.Position.Y * Map.TilePixelSize;
+                view.Center = new Vector2f(PositionX, PositionY);
+            }
         }
         protected void UnregisterBuilding(ReceivedPacket packet)
         {
