@@ -18,6 +18,7 @@ using System.Net;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
+using KnightsOfEmpire.Common.Buildings;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -141,6 +142,12 @@ namespace KnightsOfEmpire.GameStates
         public override void Dispose()
         {
             Client.RenderWindow.MouseWheelScrolled -= mouseScrollZoomHandler;
+        }
+        public void CenterViewOnBuilding(Building building) 
+        {
+            float PositionX = building.Position.X * Map.TilePixelSize;
+            float PositionY = building.Position.Y * Map.TilePixelSize;
+            View.Center = new Vector2f(PositionX, PositionY);
         }
     }
 }
