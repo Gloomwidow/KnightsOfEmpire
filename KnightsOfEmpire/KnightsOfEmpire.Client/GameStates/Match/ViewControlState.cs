@@ -18,8 +18,6 @@ using System.Net;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Navigation;
 using System.Runtime.InteropServices;
-using KnightsOfEmpire.GameStates.Match;
-using KnightsOfEmpire.Common.Buildings;
 
 namespace KnightsOfEmpire.GameStates
 {
