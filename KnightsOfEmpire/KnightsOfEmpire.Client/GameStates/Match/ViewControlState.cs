@@ -29,6 +29,8 @@ namespace KnightsOfEmpire.GameStates
         private float minimumZoom = 0.5f;
         private float maximumZoom = 5.0f;
         private float gameZoopSpeed = 25.0f;
+        private float delay = 0.2f;
+        private float timeInEdge = 0;
 
         public Vector2i MousePosition;
         public int EdgeViewMoveOffset = 50;
@@ -79,33 +81,60 @@ namespace KnightsOfEmpire.GameStates
             MousePosition = Mouse.GetPosition(Client.RenderWindow);
             float ViewScrollSpeedPerFrame = ViewScrollSpeed * Client.DeltaTime;
 
+            bool mouseInEdge = false;
+
+
             if (MousePosition.X >= 0 && MousePosition.X <= EdgeViewMoveOffset)
             {
                 if (View.Center.X >= ViewCenterLeftBoundX)
                 {
-                    View.Move(new Vector2f(-ViewScrollSpeedPerFrame, 0));
+                    if(timeInEdge > delay) 
+                    {
+                        View.Move(new Vector2f(-ViewScrollSpeedPerFrame, 0));
+                    }
+                    mouseInEdge = true;
                 }
             }
             else if (MousePosition.X >= (Client.RenderWindow.Size.X - EdgeViewMoveOffset) && MousePosition.X <= Client.RenderWindow.Size.X)
             {
                 if (View.Center.X <= ViewCenterRightBoundX)
                 {
-                    View.Move(new Vector2f(ViewScrollSpeedPerFrame, 0));
+                    if (timeInEdge > delay)
+                    {
+                        View.Move(new Vector2f(ViewScrollSpeedPerFrame, 0));
+                    }
+                    mouseInEdge = true;
                 }
             }
             if (MousePosition.Y >= 0 && MousePosition.Y <= EdgeViewMoveOffset)
             {
                 if (View.Center.Y >= ViewCenterTopBoundY)
                 {
-                    View.Move(new Vector2f(0, -ViewScrollSpeedPerFrame));
+                    if (timeInEdge > delay)
+                    {
+                        View.Move(new Vector2f(0, -ViewScrollSpeedPerFrame));
+                    }
+                    mouseInEdge = true;
                 }
             }
             else if (MousePosition.Y >= (Client.RenderWindow.Size.Y - EdgeViewMoveOffset) - ViewBottomBoundGuiHeight && MousePosition.Y <= Client.RenderWindow.Size.Y - ViewBottomBoundGuiHeight)
             {
                 if (View.Center.Y <= ViewCenterBottomBoundY)
                 {
-                    View.Move(new Vector2f(0, ViewScrollSpeedPerFrame));
+                    if (timeInEdge > delay)
+                    {
+                        View.Move(new Vector2f(0, ViewScrollSpeedPerFrame));
+                    }
+                    mouseInEdge = true;
                 }
+            }
+            if (mouseInEdge) 
+            {
+                timeInEdge += Client.DeltaTime;
+            }
+            else 
+            {
+                timeInEdge = 0;
             }
         }
 
