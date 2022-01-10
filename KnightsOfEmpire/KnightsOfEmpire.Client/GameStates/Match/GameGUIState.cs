@@ -370,14 +370,11 @@ namespace KnightsOfEmpire.GameStates
             timeOnButton = 0;
         }
 
-        private void MenuButtonClick(object sender, EventArgs e)
-        {
-            // TODO: Add functionality
-        }
-
         private void LeaveButtonClick(object sender, EventArgs e)
         {
-            // TODO: Add functionality
+            Client.TCPClient.Stop();
+            Client.UDPClient.Stop();
+            GameStateManager.GameState = new MainState("You have left the game");
         }
 
         public void ResizePanel()
@@ -581,8 +578,8 @@ namespace KnightsOfEmpire.GameStates
                 button.Position = new Vector2f(0, 0);
                 button.Size = new Vector2f(150, 32.5f);
                 button.TextSize = 16;
-                button.Text = "Menu";
-                button.Clicked += MenuButtonClick;
+                button.Text = "";
+                button.Enabled = false;
                 buttonsPanel.Add(button);
 
                 button = new Button();

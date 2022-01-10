@@ -35,6 +35,10 @@ namespace KnightsOfEmpire.Server
 
         private static Stopwatch TickTimer;
 
+        private static  string ServerAddress = "127.0.0.1";
+
+        private static int ServerPort = 26969;
+
         /// <summary>
         /// Time between each frame render. Use it to synchronize rendering with real-time, so frames per second won't have impact on graphic execution speed.
         /// </summary>
@@ -45,17 +49,47 @@ namespace KnightsOfEmpire.Server
         public static void EnableConnection()
         {
             if(TCPServer!=null) TCPServer.Stop();
-            TCPServer = new TCPServer("127.0.0.1", 26969, Constants.MaxPlayers, 30);
+            TCPServer = new TCPServer(ServerAddress, ServerPort, Constants.MaxPlayers, 30);
             TCPServer.Start();
 
             if (UDPServer != null) UDPServer.Stop();
-            UDPServer = new UDPServer("127.0.0.1", 26969);
+            UDPServer = new UDPServer(ServerAddress, ServerPort);
             UDPServer.Start();
         }
 
         static void Main(string[] args)
         {
             UnitIdManager.SetupIds(2);
+            Console.WriteLine("Reading configuration file!");
+            try
+            {
+                string[] config = File.ReadAllLines(Constants.ConfigFile);
+                if(config.Length!=2)
+                {
+                    Console.WriteLine("Wrong configuration file, aborting start!");
+                    return;
+                }
+                ServerAddress = config[0];
+                ServerPort = int.Parse(config[1]);
+            }
+            catch(Exception ex)
+            {
+                if (ex is FileNotFoundException)
+                {
+                    Console.WriteLine("server.config was not found in server location. Creating new config and launching on defaults!");
+                    string[] lines =
+                    {
+                        ServerAddress,ServerPort.ToString()
+                    };
+                    File.WriteAllLines(Constants.ConfigFile, lines);
+                }
+                else
+                {
+                    Console.WriteLine("Wrong server.config format. Aborting start...");
+                    return;
+                }             
+            }
+
             Console.WriteLine("Server starting up!");
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnExit);
