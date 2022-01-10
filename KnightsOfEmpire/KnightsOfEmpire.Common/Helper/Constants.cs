@@ -31,5 +31,13 @@ namespace KnightsOfEmpire.Common.Helper
                 return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @".\Assets\Maps"));
             }
         }
+
+        public static string ConfigFile
+        {
+            get
+            {
+                return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @".\server.config"));
+            }
+        }
     }
 }

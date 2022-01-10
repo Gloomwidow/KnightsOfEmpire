@@ -119,6 +119,10 @@ namespace KnightsOfEmpire.GameStates
         /// </summary>
         public override void Update()
         {
+            if (Client.TCPClient == null || !Client.TCPClient.isRunning)
+            {
+                GameStateManager.GameState = new MainState($"An error occured with connection: {Client.TCPClient.LastError}");
+            }
             switch (state)
             {
                 case State.First:
@@ -155,10 +159,6 @@ namespace KnightsOfEmpire.GameStates
                                     }
                                 }
                             }
-                        }
-                        if(playerNumber > maxPlayers)
-                        {
-                            throw new Exception("Too many player, change max player");
                         }
 
                         int j = 0;

@@ -16,6 +16,8 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
         protected Socket ServerSocket;
 
+        public string LastError { get; private set; }
+
         public TCPClient(string address, int port)
         {
             ReceivedPackets = new ConcurrentQueue<ReceivedPacket>();
@@ -166,11 +168,14 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             {
                 Console.WriteLine("Connection with server was closed unexpectedly (server is down?).");
                 Console.WriteLine("Stopping TCPClient since connection was closed.");
+                LastError = "Server closed connection!";
                 Stop();
             }
             else if (ex.SocketErrorCode == SocketError.ConnectionRefused)
             {
                 Console.WriteLine("Connection with server was refused (is server up or ports open?).");
+                LastError = "Server refusal!";
+                Stop();
             }
         }
     }
