@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightsOfEmpire.Common", "K
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnightsOfEmpire.Tests", "KnightsOfEmpire.Tests\KnightsOfEmpire.Tests.csproj", "{C4DA81C8-34C7-4199-A61F-2A110260AE37}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "KnightsOfEmpire", "KnightsOfEmpire\KnightsOfEmpire.vdproj", "{765259ED-AE37-450C-8775-D4E39BC5418E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{C4DA81C8-34C7-4199-A61F-2A110260AE37}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C4DA81C8-34C7-4199-A61F-2A110260AE37}.Release|x64.ActiveCfg = Release|Any CPU
 		{C4DA81C8-34C7-4199-A61F-2A110260AE37}.Release|x64.Build.0 = Release|Any CPU
+		{765259ED-AE37-450C-8775-D4E39BC5418E}.Debug|Any CPU.ActiveCfg = Debug
+		{765259ED-AE37-450C-8775-D4E39BC5418E}.Debug|x64.ActiveCfg = Debug
+		{765259ED-AE37-450C-8775-D4E39BC5418E}.Release|Any CPU.ActiveCfg = Release
+		{765259ED-AE37-450C-8775-D4E39BC5418E}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
