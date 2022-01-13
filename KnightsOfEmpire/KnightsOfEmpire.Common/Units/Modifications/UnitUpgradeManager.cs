@@ -1,6 +1,7 @@
 ﻿using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Units.Enum;
 using KnightsOfEmpire.Common.Units.Modifications.Archetypes;
+using KnightsOfEmpire.Common.Units.Modifications.Custom;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,9 @@ namespace KnightsOfEmpire.Common.Units.Modifications
 {
     public static class UnitUpgradeManager
     {
+        public static int UnitUpgradesStartIndex = 1;
+        public static int UnitUpgradesEndIndex = 2;
+
 
         public static readonly Dictionary<UnitType, int> ArchetypeUpgradesIds = new Dictionary<UnitType, int>
         {
@@ -26,6 +30,10 @@ namespace KnightsOfEmpire.Common.Units.Modifications
         public static Dictionary<int, UnitUpgrade> UnitUpgrades = new Dictionary<int, UnitUpgrade>
         {
             [0] = new EmptyUnitUpgrade(),
+
+            [1] = new AttackModification(),
+            [2] = new SpeedModification(),
+
             [ArchetypeUpgradesIds[UnitType.Melee]] = new MeleeArchetypeUnitUpgrade(),
             [ArchetypeUpgradesIds[UnitType.Ranged]] = new RangedArchetypeUnitUpgrade(),
             [ArchetypeUpgradesIds[UnitType.Cavalry]] = new CavalryArchetypeUnitUpgrade(),
@@ -38,16 +46,18 @@ namespace KnightsOfEmpire.Common.Units.Modifications
         {
             Units = new CustomUnit[]
             {
-                new CustomUnit(UnitType.Melee, 0),
-                new CustomUnit(UnitType.Melee, 1),
-                new CustomUnit(UnitType.Ranged, 0),
-                new CustomUnit(UnitType.Ranged, 1),
-                new CustomUnit(UnitType.Cavalry, 0),
-                new CustomUnit(UnitType.Cavalry, 1),
-                new CustomUnit(UnitType.Siege, 0),
-                new CustomUnit(UnitType.Siege, 1),
+                new CustomUnit(UnitType.Melee, 0, "Melee 1"),
+                new CustomUnit(UnitType.Melee, 1, "Melee 2"),
+                new CustomUnit(UnitType.Ranged, 0, "Ranged 1"),
+                new CustomUnit(UnitType.Ranged, 1, "Ranged 2"),
+                new CustomUnit(UnitType.Cavalry, 0, "Cavalry 1"),
+                new CustomUnit(UnitType.Cavalry, 1, "Cavalry 2"),
+                new CustomUnit(UnitType.Siege, 0, "Siege 1"),
+                new CustomUnit(UnitType.Siege, 1, "Siege 2"),
             }
         };
+
+        
 
         public static bool IsCustomUnitsValid(CustomUnits units)
         {

@@ -155,6 +155,8 @@
     <Compile Include="Resources\Units\UpdateUnitData.cs" />
     <Compile Include="Resources\Units\UpdateUnitsResponse.cs" />
     <Compile Include="Units\Groups\UnitGroup.cs" />
+    <Compile Include="Units\Modifications\Custom\AttackModification.cs" />
+    <Compile Include="Units\Modifications\Custom\SpeedModification.cs" />
     <Compile Include="Units\Modifications\UnitUpgrade.cs" />
     <Compile Include="Units\Modifications\UnitUpgradeManager.cs" />
     <Compile Include="Units\UnitIdManager.cs" />

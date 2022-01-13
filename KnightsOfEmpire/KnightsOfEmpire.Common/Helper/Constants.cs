@@ -20,7 +20,7 @@ namespace KnightsOfEmpire.Common.Helper
                 Color.Red
             };
 
-        public const int MaxUnitsPerPlayer = 8;
+        public const int MaxUnitsPerPlayer = 32;
 
         public const int MaxUpgradesPerUnit = 4;
 
