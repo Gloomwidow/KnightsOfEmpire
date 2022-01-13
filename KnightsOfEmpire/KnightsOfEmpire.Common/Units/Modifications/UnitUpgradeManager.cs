@@ -16,7 +16,7 @@ namespace KnightsOfEmpire.Common.Units.Modifications
     public static class UnitUpgradeManager
     {
         public static int UnitUpgradesStartIndex = 1;
-        public static int UnitUpgradesEndIndex = 2;
+        public static int UnitUpgradesEndIndex = 11;
 
 
         public static readonly Dictionary<UnitType, int> ArchetypeUpgradesIds = new Dictionary<UnitType, int>
@@ -32,7 +32,16 @@ namespace KnightsOfEmpire.Common.Units.Modifications
             [0] = new EmptyUnitUpgrade(),
 
             [1] = new AttackModification(),
-            [2] = new SpeedModification(),
+            [2] = new AttackModification2(),
+            [3] = new AttackModification3(),
+            [4] = new AttackModification4(),
+            [5] = new AttackModification5(),
+            [6] = new SpeedModification(),
+            [7] = new SpeedModification2(),
+            [8] = new HealthModification(),
+            [9] = new HealthModification2(),
+            [10] = new ViewModification(),
+            [11] = new ViewModification2(),
 
             [ArchetypeUpgradesIds[UnitType.Melee]] = new MeleeArchetypeUnitUpgrade(),
             [ArchetypeUpgradesIds[UnitType.Ranged]] = new RangedArchetypeUnitUpgrade(),
@@ -61,12 +70,12 @@ namespace KnightsOfEmpire.Common.Units.Modifications
 
         public static bool IsCustomUnitsValid(CustomUnits units)
         {
-            // 1. Units count must be of length Constants.MaxUnitPerPlayer
+            // 1. Units count must less than Constants.MaxUnitPerPlayer
             // 2. Units upgrades count must be of length Constants.MaxUpgradesPerUnit (excluding Archetype Upgrade)
             // 3. Upgrades with declared ids must exists in UnitUpgrades
             // 4. Upgrades won't have archetype upgrades (those are handled by UnitType)
 
-            if (units.Units.Length != Constants.MaxUnitsPerPlayer) return false;
+            if (units.Units.Length >= Constants.MaxUnitsPerPlayer) return false;
             foreach(CustomUnit unitInfo in units.Units)
             {
                 if (unitInfo.UpgradeList.Length != Constants.MaxUpgradesPerUnit) return false;
