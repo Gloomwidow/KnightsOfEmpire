@@ -405,7 +405,7 @@ namespace KnightsOfEmpire.GameStates
             aboutPanel.Add(label);
 
             label = new Label();
-            label.Text = "Thesis Supervisor: EngD Maciej Bartoszuk";
+            label.Text = "Thesis Supervisor: Ph. D., Eng. Maciej Bartoszuk";
             label.Position = new Vector2f(0, 360);
             label.Size = new Vector2f(1280, 40);
             label.TextSize = 18;

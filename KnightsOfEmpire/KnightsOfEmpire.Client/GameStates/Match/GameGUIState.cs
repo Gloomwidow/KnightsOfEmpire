@@ -163,6 +163,7 @@ namespace KnightsOfEmpire.GameStates
             {
                 for (int j = 0; j < unitsButtons.GetLength(0); j++)
                 {
+                    if (id >= Client.Resources.PlayerCustomUnits.Units.Length) break;
                     Unit u = UnitUpgradeManager.ProduceUnit(Client.Resources.PlayerCustomUnits.Units[id]);
                     if ((int)Client.Resources.PlayerCustomUnits.Units[id].UnitType == SelectedBuilding.TrainType)
                     {
@@ -299,7 +300,7 @@ namespace KnightsOfEmpire.GameStates
             buttonData = ((char, int))(((BitmapButton)sender).UserData);
             int counter = 0;
             int id = 0;
-            while(counter < Constants.MaxUnitsPerPlayer) 
+            while(counter < Client.Resources.PlayerCustomUnits.Units.Length) 
             {
                 if ((int)Client.Resources.PlayerCustomUnits.Units[counter].UnitType == SelectedBuilding.TrainType)
                 {
@@ -343,7 +344,7 @@ namespace KnightsOfEmpire.GameStates
                 if (SelectedBuilding == null || SelectedBuilding.TrainType == -1) return;
                 int counter = 0;
                 int id = 0;
-                while (counter < Constants.MaxUnitsPerPlayer)
+                while (counter < Client.Resources.PlayerCustomUnits.Units.Length)
                 {
                     if ((int)Client.Resources.PlayerCustomUnits.Units[counter].UnitType == SelectedBuilding.TrainType)
                     {
