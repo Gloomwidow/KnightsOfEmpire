@@ -122,28 +122,36 @@ namespace KnightsOfEmpire.Common.Map
         public Vector2f SnapToWall(Vector2f oldPos, Vector2f newPos)
         {
             Vector2i obstaclePos = ToTilePos(newPos);
-            if (IsTileWalkable(obstaclePos.X, obstaclePos.Y)) return newPos;
             Vector2f result = new Vector2f(newPos.X, newPos.Y);
-            float leftSide = obstaclePos.X * TilePixelSize;
-            float rightSide = (obstaclePos.X + 1) * TilePixelSize;
-            float upSide = obstaclePos.Y * TilePixelSize;
-            float downSide = (obstaclePos.Y + 1) * TilePixelSize;
-            if(oldPos.X<leftSide)
+            for (int i = -1; i <= 1; i++)
             {
-                result.X = leftSide - WallPushBackBias;
-                if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
-                else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
-            }
-            else if(oldPos.X>rightSide)
-            {
-                result.X = rightSide + WallPushBackBias;
-                if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
-                else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
-            }
-            else
-            {
-                if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
-                else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (IsTileWalkable(obstaclePos.X, obstaclePos.Y)) continue;
+
+                    float leftSide = obstaclePos.X * TilePixelSize;
+                    float rightSide = (obstaclePos.X + 1) * TilePixelSize;
+                    float upSide = obstaclePos.Y * TilePixelSize;
+                    float downSide = (obstaclePos.Y + 1) * TilePixelSize;
+
+                    if (oldPos.X < leftSide)
+                    {
+                        result.X = leftSide - WallPushBackBias;
+                        if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
+                        else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
+                    }
+                    else if (oldPos.X > rightSide)
+                    {
+                        result.X = rightSide + WallPushBackBias;
+                        if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
+                        else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
+                    }
+                    else
+                    {
+                        if (oldPos.Y < upSide) result.Y = upSide - WallPushBackBias;
+                        else if (oldPos.Y > downSide) result.Y = downSide + WallPushBackBias;
+                    }
+                }
             }
             return result;
         }
