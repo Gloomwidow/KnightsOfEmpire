@@ -1,4 +1,5 @@
 ﻿using KnightsOfEmpire.Common.GameStates;
+using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace KnightsOfEmpire.GameStates.Match
 
         public override void Initialize()
         {
+            Client.RenderWindow.Size = new Vector2u(1280, 720);
+            Client.Gui.View = new View(new FloatRect(new Vector2f(0, 0), new Vector2f(Client.RenderWindow.Size.X, Client.RenderWindow.Size.Y)));
             InitializePanel();
             panel.Visible = true;
             Client.Gui.Add(panel);
@@ -38,6 +41,7 @@ namespace KnightsOfEmpire.GameStates.Match
 
         private void StartButton(object sender, EventArgs e)
         {
+            Client.TCPClient.Stop();
             GameStateManager.GameState = new MainState();
         }
 
