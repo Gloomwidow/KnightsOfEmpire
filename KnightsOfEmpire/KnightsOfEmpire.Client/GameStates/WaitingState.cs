@@ -169,7 +169,7 @@ namespace KnightsOfEmpire.GameStates
                                 Panel panel = (Panel)playerListPanel.Get("Player" + j.ToString());
                                 ((Label)panel.Get(nicknameLabelStr)).Text = playersNicknames[i];
                                 ((Label)panel.Get(readyLabelStr)).Text = playersReadyStatus[i] ? "Yes" : "No";
-                                ((Label)panel.Get(selectedMapLabelStr)).Text = ServerMaps!=null?ServerMaps[selectedMapId[i]].MapName:"";
+                                ((Label)panel.Get(selectedMapLabelStr)).Text = ServerMaps!=null?ServerMaps[selectedMapId!=null?selectedMapId[i]:0].MapName:"";
                                 panel.Visible = true;
                                 j++;
                             }

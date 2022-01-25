@@ -111,7 +111,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
             //send map packet
             SentPacket mapPacket = new SentPacket(PacketsHeaders.MapServerResponse, packet.ClientID);
-            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(Server.Resources.Map));
+            mapPacket.stringBuilder.Append(JsonSerializer.Serialize(Server.Resources.MapsPool));
             Server.TCPServer.SendToClient(mapPacket);
 
             //start game on client
