@@ -22,7 +22,7 @@ namespace KnightsOfEmpire.Common.Buildings
             [0] = new BuildingInfo 
             {
                 Name = "Supply Depot",
-                Description = "Increases max unit capacity, allowing Empires to have more units at once.",
+                Description = "Increases max unit capacity.",
                 Building = new Building
                 {
                     BuildCost = 100,

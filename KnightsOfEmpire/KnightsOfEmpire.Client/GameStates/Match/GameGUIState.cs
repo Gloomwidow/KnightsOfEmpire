@@ -334,6 +334,7 @@ namespace KnightsOfEmpire.GameStates
                 if (info != null)
                 {
                     infoLabel.Text = info.Name + "\n" + "(Cost: " + info.Building.BuildCost.ToString() + ")" + "\n" + info.Description;
+                    infoLabel.Size = new Vector2f(200, 80);
                     return;
                 }
                 
@@ -351,9 +352,11 @@ namespace KnightsOfEmpire.GameStates
                         if (buttonData.id == id)
                         {
                             Unit info = UnitUpgradeManager.ProduceUnit(Client.Resources.PlayerCustomUnits.Units[counter]);
-                            infoLabel.Text = "Cost: " + info.Stats.TrainCost.ToString() + "\n" 
-                                + "Health: " + info.Stats.MaxHealth.ToString() + "\n" 
-                                + "Attack: " + info.Stats.AttackDamage.ToString() + "\n";
+                            infoLabel.Text = Client.Resources.PlayerCustomUnits.Units[counter].Name + "\n"
+                                + "Cost: " + info.Stats.TrainCost.ToString() + "\n"
+                                + "Health: " + info.Stats.MaxHealth.ToString() + "\n"
+                                + "Attack: " + info.Stats.AttackDamage.ToString();
+                            infoLabel.Size = new Vector2f(130, 80);
                             return;
                         }
                         id++;
@@ -630,6 +633,7 @@ namespace KnightsOfEmpire.GameStates
             infoLabel.Renderer.BorderColor = Color.Black;
             infoLabel.Renderer.Borders = new Outline(1f);
             infoLabel.VerticalAlignmentAlignment = VerticalAlignment.Center;
+            infoLabel.HorizontalAlignment = HorizontalAlignment.Center;
             infoLabel.TextSize = 14;
             infoLabel.Text = "Info: Abc";
 
