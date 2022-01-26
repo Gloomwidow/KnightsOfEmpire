@@ -41,7 +41,7 @@ namespace KnightsOfEmpire.Common.Navigation
                 flowFields[destination.X, destination.Y] = field;
                 watch.Stop();
                 long elapsedMs = watch.ElapsedMilliseconds;
-                Console.WriteLine($"Single Flowfield execution time: {elapsedMs * 1.00 / 1000.00}s");
+                Logger.Log($"Single Flowfield execution time: {elapsedMs * 1.00 / 1000.00}s");
             }
             return flowFields[destination.X, destination.Y].GetFlowVector(currentPosition.X, currentPosition.Y);
         }

@@ -10,6 +10,7 @@ using KnightsOfEmpire.Common.Networking;
 using System.Threading;
 using KnightsOfEmpire.Common.Resources.Waiting;
 using System.Text.Json;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.Common.Networking.TCP
 {
@@ -207,7 +208,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex, packet.ClientID);
             }
         }
@@ -233,7 +234,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Logger.Log(ex.ToString());
                     if (ex is SocketException) HandleSocketException((SocketException)ex, packet.ClientID);
                 }
             }
@@ -256,12 +257,10 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             try
             {  
                 int bytesSent = Connections[receiverID].socket.EndSend(ar);
-                //Console.WriteLine($"Sent {bytesSent} bytes to client {receiverID}.");
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex, receiverID);
             }
         }
@@ -272,11 +271,8 @@ namespace KnightsOfEmpire.Common.Networking.TCP
 
             DataState state = (DataState)ar.AsyncState;
             Socket sender = Connections[state.ConnectionID].socket;
-            //Console.WriteLine($"Receiving data from client {state.ConnectionID}");
-
             try
             {
-                
 
                 int bytesRead = sender.EndReceive(ar);
 
@@ -295,7 +291,6 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                     {
                         string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
                         bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
-                        //Console.WriteLine($"Read {content.Length} bytes from {sender.RemoteEndPoint}. \n Data : { packetContent.Substring(0,Math.Min(packetContent.Length, 100)) }");
 
                         ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, packetContent);
 
@@ -315,7 +310,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex, state.ConnectionID);
             }
         }

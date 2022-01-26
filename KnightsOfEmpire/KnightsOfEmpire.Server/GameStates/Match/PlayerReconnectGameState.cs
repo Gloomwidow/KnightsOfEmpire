@@ -1,6 +1,7 @@
 ﻿using KnightsOfEmpire.Common.Buildings;
 using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Buildings;
 using KnightsOfEmpire.Common.Resources.Units;
@@ -59,7 +60,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
             if (request == null)
             {
-                Console.WriteLine("Error reading packet!");
+                Logger.Log("Error reading packet!");
                 SendRefusal(packet.ClientID);
                 return;
             }
@@ -87,11 +88,11 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 return;
             }
 
-            Console.WriteLine($"Nickname {request.Nickname} found on pos {position}");
+            Logger.Log($"Nickname {request.Nickname} found on pos {position}");
 
             if (position != packet.ClientID)
             {
-                Console.WriteLine($"Swapping needed!");
+                Logger.Log($"Swapping needed!");
                 Server.TCPServer.SwapConnection(packet.ClientID, position);
             }
 

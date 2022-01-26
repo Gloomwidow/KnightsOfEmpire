@@ -1,4 +1,5 @@
-﻿using KnightsOfEmpire.Common.Networking;
+﻿using KnightsOfEmpire.Common.Helper;
+using KnightsOfEmpire.Common.Networking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace KnightsOfEmpire.Common.Extensions
            }
            catch (Exception ex)
            {
-                Console.WriteLine(ex.Message);
+                Logger.Log(ex.Message);
            }
            return request;
         }

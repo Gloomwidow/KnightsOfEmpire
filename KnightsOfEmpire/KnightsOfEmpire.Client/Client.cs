@@ -19,6 +19,7 @@ using KnightsOfEmpire.GameStates;
 using KnightsOfEmpire.Common.Networking.UDP;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.GameStates.Match;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire
 {
@@ -127,7 +128,7 @@ namespace KnightsOfEmpire
             while (RenderWindow.IsOpen)
             {
                 DeltaTime = DeltaTimeClock.Restart().AsSeconds();
-                if (DeltaTime >= 1.0f / 15.0f) Console.WriteLine($"Huge DeltaTime:{DeltaTime}");
+                if (DeltaTime >= 1.0f / 15.0f) Logger.Log($"Huge DeltaTime:{DeltaTime}");
 
 
                 RenderWindow.DispatchEvents();

@@ -33,9 +33,15 @@ namespace KnightsOfEmpire.GameStates.Match
         public override void Update()
         {
             base.Update();
-            
-            List<Vector2i> visionStartPosition = PlayerUnits.GroupBy(u => Map.ToTilePos(u.Position)).Select(u => Map.ToTilePos(u.First().Position)).ToList();
-            visionStartPosition.AddRange(PlayerBuildings.Select(b => b.Position));
+
+            List<(Vector2i, int)> visionStartPosition = PlayerUnits.GroupBy(u => Map.ToTilePos(u.Position)).
+                    Select(g =>(
+                        g.Key,
+                        g.OrderByDescending(u => u.Stats.VisibilityDistance)
+                         .Select(u => u.Stats.VisibilityDistance)
+                         .FirstOrDefault())).ToList();
+
+            visionStartPosition.AddRange(PlayerBuildings.Select(b => (b.Position, BuildingVisibilityDistance)));
 
             CalculateVision(visionStartPosition);
         }

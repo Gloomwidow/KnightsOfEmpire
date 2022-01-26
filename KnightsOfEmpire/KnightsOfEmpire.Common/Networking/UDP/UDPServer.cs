@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KnightsOfEmpire.Common.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -45,7 +46,7 @@ namespace KnightsOfEmpire.Common.Networking.UDP
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 return;
             }
 
@@ -66,7 +67,6 @@ namespace KnightsOfEmpire.Common.Networking.UDP
             {
                 DataState so = (DataState)ar.AsyncState;
                 int bytes = Socket.EndSendTo(ar);
-                //Console.WriteLine($"Sent {bytes} bytes to client {so.ConnectionID}!");
             }
             catch(Exception ex)
             {

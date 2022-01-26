@@ -105,13 +105,13 @@ namespace KnightsOfEmpire.Common.Units.Modifications
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.ToString());
+                        Logger.Log(ex.ToString());
                     }
                 }
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
             }
             if (customUnits != null) return customUnits;
             else return defaultUnits;
@@ -137,6 +137,7 @@ namespace KnightsOfEmpire.Common.Units.Modifications
             {
                 UnitUpgrades[upgradeId].Upgrade(u);
             }
+            u.Stats.Clamp();
 
             return u;
         }

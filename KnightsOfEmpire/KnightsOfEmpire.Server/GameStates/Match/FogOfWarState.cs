@@ -42,9 +42,14 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             base.Update();
             Parallel.For(0, MaxPlayerCount, (i, state) =>
             {
-                List<Vector2i> visionStartPosition = GameUnits[i].GroupBy
-                        (u => Map.ToTilePos(u.Position)).Select(u => Map.ToTilePos(u.First().Position)).ToList();
-                visionStartPosition.AddRange(GameBuildings[i].Select(b => b.Position));
+                List<(Vector2i, int)> visionStartPosition = GameUnits[i].GroupBy(u => Map.ToTilePos(u.Position)).
+                  Select(g => (
+                      g.Key,
+                      g.OrderByDescending(u => u.Stats.VisibilityDistance)
+                       .Select(u => u.Stats.VisibilityDistance)
+                       .FirstOrDefault())).ToList();
+
+                visionStartPosition.AddRange(GameBuildings[i].Select(b => (b.Position, BuildingVisibilityDistance)));
 
                 CalculateVision(visionStartPosition, i);
             }

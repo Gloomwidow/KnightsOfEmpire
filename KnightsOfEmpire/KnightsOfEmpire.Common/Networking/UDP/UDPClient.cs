@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using KnightsOfEmpire.Common.Resources;
 using System.Text.Json;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.Common.Networking.UDP
 {
@@ -55,7 +56,7 @@ namespace KnightsOfEmpire.Common.Networking.UDP
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
             }
             isRunning = false;
             Console.WriteLine($"UDP Client stopped!");
@@ -84,7 +85,6 @@ namespace KnightsOfEmpire.Common.Networking.UDP
 
                 }
                 Socket.BeginReceiveFrom(so.buffer, 0, DataState.BufferSize, SocketFlags.None, ref SenderEndpoint, new AsyncCallback(ReceiveCallback), so);
-                //Console.WriteLine($"Received {bytes} bytes from server.\n {r.GetContent()}");
             }
             catch(Exception ex)
             {

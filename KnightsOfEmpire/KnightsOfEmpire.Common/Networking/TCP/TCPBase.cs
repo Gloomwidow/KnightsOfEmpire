@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KnightsOfEmpire.Common.Helper;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                     ReceivedPacket removedPacket;
                     if (!ReceivedPackets.TryDequeue(out removedPacket))
                     {
-                        Console.WriteLine("An error occured while getting packets! Stopping retrieving and returning list.");
+                        Logger.Log("An error occured while getting packets! Stopping retrieving and returning list.");
                         break;
                     }
                     received.Add(removedPacket);

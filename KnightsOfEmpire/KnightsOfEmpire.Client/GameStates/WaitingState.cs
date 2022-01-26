@@ -20,6 +20,7 @@ using KnightsOfEmpire.Common.Resources.Waiting;
 
 using KnightsOfEmpire.GameStates.Match;
 using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -456,7 +457,7 @@ namespace KnightsOfEmpire.GameStates
 
             Client.TCPClient.SendToServer(mapPacket);
 
-            Console.WriteLine("Client: Send map request to server. Map status: " + isMapRecved);
+            Logger.Log("Client: Send map request to server. Map status: " + isMapRecved);
         }
 
         private void SendCustomUnitsRequest()
@@ -467,7 +468,7 @@ namespace KnightsOfEmpire.GameStates
 
             Client.TCPClient.SendToServer(mapPacket);
 
-            Console.WriteLine("Send custom units request");
+            Logger.Log("Send custom units request");
         }
 
         // TCP Handler
@@ -494,18 +495,18 @@ namespace KnightsOfEmpire.GameStates
                         }
                         break;
                     case WaitingMessage.ServerRefuse:
-                        {                       
-                            Console.WriteLine("Stop TCP");
+                        {
+                            Logger.Log("Stop TCP");
                             Client.TCPClient.Stop();
-                            Console.WriteLine("Server refused you");
+                            Logger.Log("Server refused you");
                             GameStateManager.GameState = new MainState("Server refused you!");
                         }
                         break;
                     case WaitingMessage.ServerFull:
                         {
-                            Console.WriteLine("Server is full");
+                            Logger.Log("Server is full");
                             GameStateManager.GameState = new MainState("Server is full!");
-                            Console.WriteLine("Stop TCP");
+                            Logger.Log("Stop TCP");
                             Client.TCPClient.Stop();
                         }
                         break;
@@ -518,9 +519,9 @@ namespace KnightsOfEmpire.GameStates
                         break;
                     case WaitingMessage.ServerChangeNick:
                         {
-                            Console.WriteLine("Change your nickname");
+                            Logger.Log("Change your nickname");
                             GameStateManager.GameState = new MainState("There is already a player with that nickname!");
-                            Console.WriteLine("Stop TCP");
+                            Logger.Log("Stop TCP");
                             Client.TCPClient.Stop();
                         }
                         break;

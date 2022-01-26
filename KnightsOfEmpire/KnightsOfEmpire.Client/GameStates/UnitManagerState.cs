@@ -19,6 +19,7 @@ using KnightsOfEmpire.Common.Units.Enum;
 using KnightsOfEmpire.Common.Units;
 using KnightsOfEmpire.Common.Units.Modifications;
 using KnightsOfEmpire.Common.Units.Modifications.Archetypes;
+using KnightsOfEmpire.Common.Map;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -33,7 +34,7 @@ namespace KnightsOfEmpire.GameStates
 
         string soldiers = "Soldiers";
         string archers = "Archers";
-        string riders = "Riders";
+        string riders = "Cavalry";
         string machines = "Machines";
 
         ScrollablePanel soldiersScroll;
@@ -51,13 +52,12 @@ namespace KnightsOfEmpire.GameStates
 
         Label healthLabel;
         Label priceLabel;
-        Label movmentSpeedLabel;
+        Label movementSpeedLabel;
         Label viewDistanceLabel;
         Label damageLabel;
-        Label buldingMultiLabel;
+        Label buildingMultiLabel;
         Label attackSpeedLabel;
         Label attackDistLabel;
-
 
         List<CustomUnit> customUnits;
 
@@ -248,6 +248,7 @@ namespace KnightsOfEmpire.GameStates
 
         void PictureUnitClick(object o, EventArgs e)
         {
+            if (selectedUnitPanel == null) return;
             CustomUnit customUnit = (CustomUnit)selectedUnitPanel.UserData;
             customUnit.TextureId = (customUnit.TextureId + 1) % maxTextureNumber;
 
@@ -279,8 +280,7 @@ namespace KnightsOfEmpire.GameStates
 
         void PictureUpgradeDoubleClick(object o, EventArgs e)
         {
-            if (selectedUnitPanel == null)
-                return;
+            if (selectedUnitPanel == null) return;
 
             Picture picture = (Picture)o;
             picture.Renderer.Texture = no;
@@ -297,6 +297,7 @@ namespace KnightsOfEmpire.GameStates
 
         void EditBoxUnitChange(object o, EventArgs e)
         {
+            if (selectedUnitPanel == null) return;
             CustomUnit customUnit = (CustomUnit)selectedUnitPanel.UserData;
             customUnit.Name = unitEditbox.Text;
 
@@ -528,7 +529,7 @@ namespace KnightsOfEmpire.GameStates
                 panel.Add(label);
 
                 label = new Label();
-                label.Text = "Movment\nSpeed";
+                label.Text = "Movement\nSpeed";
                 label.Position = new Vector2f(10, 85);
                 label.Size = new Vector2f(80, 40);
                 label.TextSize = 14;
@@ -578,7 +579,7 @@ namespace KnightsOfEmpire.GameStates
                 label.VerticalAlignmentAlignment = VerticalAlignment.Center;
                 label.IgnoreMouseEvents = true;
                 panel.Add(label);
-                movmentSpeedLabel = label;
+                movementSpeedLabel = label;
 
                 label = new Label();
                 label.Text = "0";
@@ -621,7 +622,7 @@ namespace KnightsOfEmpire.GameStates
                 panel.Add(label);
 
                 label = new Label();
-                label.Text = "Bulding\nMultiplier";
+                label.Text = "Building\nMultiplier";
                 label.Position = new Vector2f(10, 50);
                 label.Size = new Vector2f(80, 40);
                 label.TextSize = 14;
@@ -670,7 +671,7 @@ namespace KnightsOfEmpire.GameStates
                 label.VerticalAlignmentAlignment = VerticalAlignment.Center;
                 label.IgnoreMouseEvents = true;
                 panel.Add(label);
-                buldingMultiLabel = label;
+                buildingMultiLabel = label;
 
                 label = new Label();
                 label.Text = "0";
@@ -832,13 +833,15 @@ namespace KnightsOfEmpire.GameStates
 
             healthLabel.Text = unit.Stats.MaxHealth.ToString();
             priceLabel.Text = unit.Stats.TrainCost.ToString();
-            viewDistanceLabel.Text = unit.Stats.VisibilityDistance.ToString();
-            movmentSpeedLabel.Text = unit.Stats.MovementSpeed.ToString("0.####");
+            viewDistanceLabel.Text = unit.Stats.VisibilityDistance.ToString()+" Tiles";
+            float speed = unit.Stats.MovementSpeed / Map.TilePixelSize;
+            movementSpeedLabel.Text = speed.ToString("0.####")+" Tiles/s";
 
             damageLabel.Text = unit.Stats.AttackDamage.ToString();
-            buldingMultiLabel.Text = unit.Stats.BuildingsDamageMultiplier.ToString("0.####");
+            buildingMultiLabel.Text = unit.Stats.BuildingsDamageMultiplier.ToString("0.####");
             attackSpeedLabel.Text = unit.Stats.AttackSpeed.ToString("0.####");
-            attackDistLabel.Text = unit.Stats.AttackDistance.ToString("0.####");
+            float attackDist = unit.Stats.AttackDistance / Map.TilePixelSize;
+            attackDistLabel.Text = attackDist.ToString("0.####")+" Tiles";
         }
     }
 }

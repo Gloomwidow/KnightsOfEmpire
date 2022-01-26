@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Extensions;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.Common.Networking.UDP
 {
@@ -44,7 +45,7 @@ namespace KnightsOfEmpire.Common.Networking.UDP
                     ReceivedPacket removedPacket;
                     if (!ReceivedPackets.TryDequeue(out removedPacket))
                     {
-                        Console.WriteLine("An error occured while getting packets! Stopping retrieving and returning list.");
+                        Logger.Log("An error occured while getting packets! Stopping retrieving and returning list.");
                         break;
                     }
                     received.Add(removedPacket);

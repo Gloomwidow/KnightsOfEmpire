@@ -1,4 +1,5 @@
 ﻿using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Units;
 using KnightsOfEmpire.Common.Units;
@@ -57,8 +58,8 @@ namespace KnightsOfEmpire.GameStates.Match
                             SentPacket packet = new SentPacket(PacketsHeaders.GameUnitsMoveToTileRequest);
                             packet.stringBuilder.Append(JsonSerializer.Serialize(request));
                             Client.TCPClient.SendToServer(packet);
-                            Console.WriteLine(packet.stringBuilder.ToString());
-                            Console.WriteLine($"Moving units:{request.UnitIDs}");
+                            Logger.Log(packet.stringBuilder.ToString());
+                            Logger.Log($"Moving units:{request.UnitIDs}");
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 ﻿using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources.Waiting;
 using KnightsOfEmpire.Common.Units;
@@ -132,8 +133,7 @@ namespace KnightsOfEmpire.Server.GameStates
                         if(IsMapSend[i] == false)
                         {
                             SendMapPacket(i);
-
-                            Console.WriteLine("Server: Map was send to client " + i.ToString());
+                            Logger.Log("Server: Map was send to client " + i.ToString());
                         }
 
                         if(IsUnitsReceived[i] == false)
@@ -296,7 +296,7 @@ namespace KnightsOfEmpire.Server.GameStates
             }
             IsUnitsReceived[packet.ClientID] = true;
             Server.Resources.GameCustomUnits[packet.ClientID] = request;
-            Console.WriteLine("Custom units saved succesfully");
+            Logger.Log("Custom units saved succesfully");
             SendCustomUnitsResponse(packet.ClientID, true);
         }
     }

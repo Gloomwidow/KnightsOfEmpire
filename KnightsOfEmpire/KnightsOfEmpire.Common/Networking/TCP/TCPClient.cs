@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Net;
 using System.Collections.Concurrent;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.Common.Networking.TCP
 {
@@ -49,7 +50,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex);
                 return;
             }
@@ -73,7 +74,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if(ex is SocketException) HandleSocketException((SocketException)ex);
             }
         }
@@ -83,12 +84,11 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             try
             {
                 int bytesSent = ServerSocket.EndSend(ar);
-                //Console.WriteLine($"Sent {bytesSent} bytes to server.");
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex);
             }
         }
@@ -100,7 +100,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                 String content = String.Empty;
 
                 DataState state = (DataState)ar.AsyncState;
-                Console.WriteLine($"Receiving data from server!");
+                Logger.Log($"Receiving data from server!");
 
                 int bytesRead = ServerSocket.EndReceive(ar);
 
@@ -118,7 +118,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
                     {
                         string packetContent = content.Substring(bufferPacketStart, lastEofPos - bufferPacketStart + Packet.EOFTag.Length);
                         bufferPacketStart = lastEofPos + Packet.EOFTag.Length;
-                        Console.WriteLine($"Read {content.Length} bytes from server. \n Content staarts with: { content.Substring(0, Math.Min(content.Length, 100)) }");
+                        Logger.Log($"Read {content.Length} bytes from server. \n Content starts with: { content.Substring(0, Math.Min(content.Length, 100)) }");
 
                         ReceivedPacket packet = new ReceivedPacket(state.ConnectionID, packetContent);
 
@@ -137,7 +137,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Logger.Log(ex.ToString());
                 if (ex is SocketException) HandleSocketException((SocketException)ex);
             }
         }
@@ -156,7 +156,7 @@ namespace KnightsOfEmpire.Common.Networking.TCP
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                Logger.Log(ex.ToString());
             }
 
             isRunning = false;

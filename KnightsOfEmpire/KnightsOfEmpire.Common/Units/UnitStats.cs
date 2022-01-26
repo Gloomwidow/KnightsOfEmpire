@@ -47,6 +47,19 @@ namespace KnightsOfEmpire.Common.Units
             VisibilityDistance = 5;
         }
 
+        public void Clamp()
+        {
+            Health = Math.Max(1, Health);
+            MaxHealth = Math.Max(1, MaxHealth);
+            MovementSpeed = Math.Max(1, MovementSpeed);
+            AttackDamage = Math.Max(1, AttackDamage);
+            AttackSpeed = Math.Max(0.01f, AttackSpeed);
+            AttackDistance = Math.Max(Unit.UnitSize + 1, AttackDistance);
+            BuildingsDamageMultiplier = Math.Max(0.01f, BuildingsDamageMultiplier);
+            TrainCost = Math.Max(1, TrainCost);
+            VisibilityDistance = Math.Max(1, VisibilityDistance);
+        }
+
         //TO-DO: Add any other parameters that will be needed for troops or upgrades system.
     }
 }

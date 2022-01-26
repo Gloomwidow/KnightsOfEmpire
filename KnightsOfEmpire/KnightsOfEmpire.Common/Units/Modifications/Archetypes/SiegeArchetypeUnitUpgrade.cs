@@ -11,7 +11,7 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Archetypes
         public SiegeArchetypeUnitUpgrade()
         {
             this.Name = "Siege Type";
-            this.Description = "Siege Units deal 25% increased damage to buildings.";
+            this.Description = "Siege Units deal 50% increased damage to buildings.";
         }
 
         public override void Upgrade(Unit u)

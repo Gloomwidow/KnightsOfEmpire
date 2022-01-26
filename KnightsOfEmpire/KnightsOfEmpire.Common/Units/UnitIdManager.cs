@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KnightsOfEmpire.Common.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace KnightsOfEmpire.Common.Units
             if (isSet) return;
             Symbols = new int[chars];
             isSet = true;
-            Console.WriteLine($"Maximum unique ids is {Math.Pow(MaxChars + 1 - SymbolStart, chars)}.");
+            Logger.Log($"Maximum unique ids is {Math.Pow(MaxChars + 1 - SymbolStart, chars)}.");
         }
 
         public static char[] GetNewId()

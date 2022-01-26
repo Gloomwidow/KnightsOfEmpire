@@ -1,6 +1,7 @@
 ﻿using KnightsOfEmpire.Common.Buildings;
 using KnightsOfEmpire.Common.Extensions;
 using KnightsOfEmpire.Common.GameStates;
+using KnightsOfEmpire.Common.Helper;
 using KnightsOfEmpire.Common.Map;
 using KnightsOfEmpire.Common.Networking;
 using KnightsOfEmpire.Common.Resources;
@@ -43,10 +44,10 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             }
             Random rand = new Random();
             (int x, int y)[] ShuffledStartPoses = StartPoses.OrderBy(x => rand.Next()).ToArray();
-            Console.WriteLine("Positions");
+            Logger.Log("Positions");
             foreach ((int x, int y) sp in ShuffledStartPoses)
             {
-                Console.WriteLine($"{sp.x} {sp.y}");
+                Logger.Log($"{sp.x} {sp.y}");
             }
             int pos = 0;
             for (int i = 0; i < MaxPlayerCount; i++)
@@ -127,7 +128,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             CreateBuildingRequest request = packet.GetDeserializedClassOrDefault<CreateBuildingRequest>();
             if (request == null)
             {
-                Console.WriteLine($"build: Request malformed!");
+                Logger.Log($"build: Request malformed!");
                 return;
             }
             Vector2i tileBuildPos = Map.ToTilePos(new Vector2f(request.BuildingPosX, request.BuildingPosY));
@@ -148,7 +149,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                     if (!gameMap.IsTileInBounds(tileBuildPos.X + i, tileBuildPos.Y + j)) continue;
                     if (!gameMap.IsTileWalkable(tileBuildPos.X + i, tileBuildPos.Y + j))
                     {
-                        Console.WriteLine($"{tileBuildPos}: Tile or neighborhood is blocking!");
+                        Logger.Log($"{tileBuildPos}: Tile or neighborhood is blocking!");
                         return;
                     }
                 }
@@ -160,7 +161,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 {
                     if (Map.ToTilePos(unit.Position).Equals(tileBuildPos))
                     {
-                        Console.WriteLine($"{tileBuildPos}: unit is blocking!");
+                        Logger.Log($"{tileBuildPos}: unit is blocking!");
                         return;
                     }
                 }
@@ -180,7 +181,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
                 }
                 if (!inRange)
                 {
-                    Console.WriteLine($"{tileBuildPos}: No friendly buildings in range!");
+                    Logger.Log($"{tileBuildPos}: No friendly buildings in range!");
                     return;
                 }
             }
@@ -188,13 +189,13 @@ namespace KnightsOfEmpire.Server.GameStates.Match
             Building creation = BuildingManager.GetBuilding(request.BuildingTypeId);
             if (creation == null)
             {
-                Console.WriteLine($"{tileBuildPos}: No building of type {request.BuildingTypeId} exists!");
+                Logger.Log($"{tileBuildPos}: No building of type {request.BuildingTypeId} exists!");
                 return;
             }
 
             if (!Server.Resources.UseGold(clientID, creation.BuildCost))
             {
-                Console.WriteLine($"{tileBuildPos}: Not enough gold {creation.BuildCost}!");
+                Logger.Log($"{tileBuildPos}: Not enough gold {creation.BuildCost}!");
                 return;
             }
 
@@ -215,7 +216,7 @@ namespace KnightsOfEmpire.Server.GameStates.Match
 
             SentPacket sentPacket = new SentPacket(PacketsHeaders.RegisterBuildingRequest);
             sentPacket.stringBuilder.Append(JsonSerializer.Serialize(response));
-            Console.WriteLine($"{tileBuildPos}: Build successful!");
+            Logger.Log($"{tileBuildPos}: Build successful!");
             Server.TCPServer.Broadcast(sentPacket);
         }
 

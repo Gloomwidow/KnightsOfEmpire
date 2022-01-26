@@ -10,17 +10,15 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public ViewModification()
         {
-            this.Name = "View";
-            this.Description = "View Distance: +50% Cost: +20 Health: -50%";
+            this.Name = "Scouts";
+            this.Description = "+1 View Distance, +10% Movement Speed, +50 cost";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.VisibilityDistance += u.Stats.VisibilityDistance / 2;
-            u.Stats.TrainCost += 20;
-
-            u.Stats.MaxHealth /= 2;
-            u.Stats.Health /= 2;
+            u.Stats.VisibilityDistance += 1;
+            u.Stats.TrainCost += 50;
+            u.Stats.MovementSpeed += new UnitStats().MovementSpeed * 0.1f;
         }
     }
 
@@ -28,15 +26,16 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public ViewModification2()
         {
-            this.Name = "View";
-            this.Description = "View Distance: +1 Cost: +10 Damage: -10";
+            this.Name = "Spies";
+            this.Description = "+2 View Distance, -10% Health, -10% Attack";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.VisibilityDistance += 1;
-            u.Stats.TrainCost += 10;
-            u.Stats.AttackDamage -= 10;
+            u.Stats.VisibilityDistance += 2;
+            u.Stats.MaxHealth -= (int)(new UnitStats().MaxHealth * 0.1f);
+            u.Stats.Health -= (int)(new UnitStats().MaxHealth * 0.1f);
+            u.Stats.AttackDamage -= (int)(new UnitStats().AttackDamage * 0.1f);
         }
     }
 }

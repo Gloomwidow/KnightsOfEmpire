@@ -116,6 +116,7 @@
     <Compile Include="Helper\Intersections.cs" />
     <Compile Include="Helper\Constants.cs" />
     <Compile Include="Helper\IdToTextureRect.cs" />
+    <Compile Include="Helper\Logger.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\TileType.cs" />
     <Compile Include="Navigation\FlowField.cs" />

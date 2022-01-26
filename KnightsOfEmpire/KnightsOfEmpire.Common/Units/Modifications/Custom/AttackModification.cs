@@ -10,15 +10,14 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public AttackModification()
         {
-            this.Name = "Attack";
-            this.Description = "Damage: +100% Cost: +200% Attack Speed: -40%";
+            this.Name = "Heavy Swing";
+            this.Description = "+20 Damage, -50% Attack Speed";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.AttackDamage *= 2;
-            u.Stats.TrainCost *= 3;
-            u.Stats.AttackSpeed *= 0.6f;
+            u.Stats.AttackDamage += 20;
+            u.Stats.AttackSpeed *= 0.5f;
         }
     }
 
@@ -26,14 +25,14 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public AttackModification2()
         {
-            this.Name = "Attack";
-            this.Description = "Damage: +10 Cost: +50";
+            this.Name = "Strength Training";
+            this.Description = "+5 Damage, +10 Cost";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.AttackDamage += 10;
-            u.Stats.TrainCost += 50;
+            u.Stats.AttackDamage += 5;
+            u.Stats.TrainCost += 10;
         }
     }
 
@@ -41,15 +40,15 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public AttackModification3()
         {
-            this.Name = "Attack";
-            this.Description = "Damage: +20 Cost: +40 MovmentSpeed: -50%";
+            this.Name = "Eagle Eye";
+            this.Description = "+1 View Distance, +1 Attack Range, +25 Cost";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.AttackDamage += 20;
+            u.Stats.AttackDistance += Map.Map.TilePixelSize;
             u.Stats.TrainCost += 50;
-            u.Stats.MovementSpeed *= 0.5f;
+            u.Stats.VisibilityDistance+=1;
         }
     }
 
@@ -57,15 +56,15 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public AttackModification4()
         {
-            this.Name = "Attack";
-            this.Description = "Damage: -50% Cost: +40 AttackDistance: +50%";
+            this.Name = "Blinding Rage";
+            this.Description = "+5 Damage, +10% Attack Speed, -2 View Distance";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.AttackDamage /= 2;
-            u.Stats.TrainCost += 40;
-            u.Stats.AttackDistance *= 1.5f;
+            u.Stats.AttackDamage += 5;
+            u.Stats.AttackSpeed += new UnitStats().AttackSpeed * 0.1f;
+            u.Stats.VisibilityDistance -= 2;
         }
     }
 
@@ -73,15 +72,14 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public AttackModification5()
         {
-            this.Name = "Attack Buldings";
-            this.Description = "Damage: +10 Cost: +100\nBuildingsDamageMultiplier +20%";
+            this.Name = "Demolition Expert";
+            this.Description = "+20% Building Multiplier, +25 Cost";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.AttackDamage += 10;
-            u.Stats.TrainCost += 100;
-            u.Stats.BuildingsDamageMultiplier *= 1.2f;
+            u.Stats.TrainCost += 25;
+            u.Stats.BuildingsDamageMultiplier += 0.2f;
         }
     }
 

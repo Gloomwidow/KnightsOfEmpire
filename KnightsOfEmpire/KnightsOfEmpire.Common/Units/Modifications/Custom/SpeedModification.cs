@@ -10,14 +10,14 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public SpeedModification()
         {
-            this.Name = "Speed";
-            this.Description = "Speed: +10   Cost: +40";
+            this.Name = "Athletics Training";
+            this.Description = "+10% Speed, +15 Cost";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.MovementSpeed += 10;
-            u.Stats.TrainCost += 40;
+            u.Stats.MovementSpeed += new UnitStats().MovementSpeed*0.1f;
+            u.Stats.TrainCost += 15;
         }
     }
 
@@ -25,17 +25,16 @@ namespace KnightsOfEmpire.Common.Units.Modifications.Custom
     {
         public SpeedModification2()
         {
-            this.Name = "Speed";
-            this.Description = "Speed: +50% Cost: +20 Health: -50%";
+            this.Name = "Armor Lightening";
+            this.Description = "+20% Movement Speed, -10% Health, +20 Cost";
         }
 
         public override void Upgrade(Unit u)
         {
-            u.Stats.MovementSpeed *= 1.5f;
             u.Stats.TrainCost += 20;
-
-            u.Stats.MaxHealth /= 2;
-            u.Stats.Health /= 2;
+            u.Stats.MovementSpeed += new UnitStats().MovementSpeed*0.2f;
+            u.Stats.MaxHealth -= (int)(new UnitStats().MaxHealth*0.1f);
+            u.Stats.Health -= (int)(new UnitStats().MaxHealth * 0.1f);
         }
     }
 }

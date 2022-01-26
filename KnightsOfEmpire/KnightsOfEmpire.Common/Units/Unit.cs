@@ -123,6 +123,7 @@ namespace KnightsOfEmpire.Common.Units
             {
                 Position += MoveDirection * DeltaTime;
                 Stance = UnitStance.Moving;
+                ResetAttack();
             }
             else Stance = UnitStance.Idle;
         }

@@ -18,6 +18,7 @@ using KnightsOfEmpire.Common.Networking.TCP;
 using KnightsOfEmpire.Common.Networking.UDP;
 using KnightsOfEmpire.Common.Resources;
 using KnightsOfEmpire.Common.Resources.Waiting;
+using KnightsOfEmpire.Common.Helper;
 
 namespace KnightsOfEmpire.GameStates
 {
@@ -132,8 +133,8 @@ namespace KnightsOfEmpire.GameStates
 
                         Client.TCPClient.SendToServer(infoPacket);
 
-                        Console.WriteLine("First Packet Send");
-                        Console.WriteLine(JsonSerializer.Serialize(request));
+                        Logger.Log("First Packet Send");
+                        Logger.Log(JsonSerializer.Serialize(request));
 
                         GameStateManager.GameState = new WaitingState();
                     }
@@ -167,7 +168,7 @@ namespace KnightsOfEmpire.GameStates
 
             state = State.TryValidate;
 
-            Console.WriteLine("IP:" + ip + " Port: " + port);
+            Logger.Log("IP:" + ip + " Port: " + port);
         }
 
         private void Back(object sender, EventArgs e)
