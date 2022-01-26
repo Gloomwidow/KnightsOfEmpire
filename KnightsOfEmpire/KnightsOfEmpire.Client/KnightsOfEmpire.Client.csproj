@@ -57,6 +57,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -139,6 +142,9 @@
       <Project>{189dc325-08c4-4559-9aa3-5bf131a6923c}</Project>
       <Name>KnightsOfEmpire.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets" Condition="Exists('..\packages\TGUI.Net.win-x64.0.8.8.17\build\TGUI.Net.win-x64.targets')" />
